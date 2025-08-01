@@ -427,10 +427,8 @@ int focaltech_probe(struct device *dev, int irq, const struct input_id *id,
 
 	/* Power ON */
 	ret = focaltech_power_on(cd);
-	if (ret) {
-		dev_err(dev, "Failed power on");
-		return ret;
-	};
+	if (ret)
+		return dev_err_probe(dev, ret, "Failed power on\n");
 
 	/* Get firmware path */
 	ret = device_property_read_string(dev, "firmware-name", &cd->fw_path);
@@ -446,10 +444,9 @@ int focaltech_probe(struct device *dev, int irq, const struct input_id *id,
 
 	/* Setup input device */
 	ret = focaltech_input_dev_config(cd, id);
-	if (ret) {
-		dev_err(dev, "Failed set input device\n");
-		return ret;
-	}
+	if (ret)
+		return dev_err_probe
+			(dev, ret, "Failed set input device\n");
 
 	/* Get touchscreen type */
 	if (!ic_data->is_incell) {
@@ -466,11 +463,16 @@ int focaltech_probe(struct device *dev, int irq, const struct input_id *id,
 
 	/* Request IRQ */
 	ret = devm_request_threaded_irq(dev, cd->irq, NULL, focaltech_irq,
-				IRQF_TRIGGER_FALLING | IRQF_ONESHOT, "focaltech", cd);
-	if (ret) {
-		dev_err(dev, "Request threaded IRQ failed: %d\n", ret);
-		return ret;
-	}
+			IRQF_TRIGGER_FALLING | IRQF_ONESHOT, "focaltech", cd);
+	if (ret)
+		return dev_err_probe
+			(dev, ret, "Request threaded IRQ failed\n");
+
+	/* Firmware upload */
+	/*ret = focaltech_fwupload_init(cd);
+	if (ret)
+		return dev_err_probe
+			(dev, ret, "Init firmware upload fail\n");*/
 
 	dev_set_drvdata(dev, cd);
 
