@@ -38,17 +38,13 @@
 static int focaltech_spi_xfer(struct spi_device *spi,
 			      u8 *tx_buf, u8 *rx_buf, u32 len)
 {
-	struct spi_message msg;
 	struct spi_transfer xfer = {
 		.tx_buf = tx_buf,
 		.rx_buf = rx_buf,
 		.len = len,
 	};
 
-	spi_message_init(&msg);
-	spi_message_add_tail(&xfer, &msg);
-
-	return spi_sync(spi, &msg);
+	return spi_sync_transfer(spi, &xfer, 1);
 }
 
 static void crckermit(u8 *data, u32 len, u16 *crc_out)
@@ -88,48 +84,41 @@ static int focaltech_spi_write(void *context,
 	struct spi_device *spi = context;
 	const struct focaltech_ic_data *ic_data =
 						spi_get_device_match_data(spi);
-	const u8 *writebuf = (u8 *)data;
-	u32 txlen = 0;
+	const u8 *writebuf = data;
+	u32 len = 0;
 	u32 datalen = count - 1;
 	int ret;
 
 	dev_dbg(&spi->dev, "%s: line: %d\n", __func__, __LINE__);
 
-	u8 *txbuf __free(kfree) =
+	u8 *buf __free(kfree) =
 		kzalloc(count + ic_data->spi_prefix_len, GFP_KERNEL);
-	u8 *rxbuf __free(kfree) =
-		kzalloc(count + ic_data->spi_prefix_len, GFP_KERNEL);
-	if (!txbuf || !rxbuf) {
-		udelay(FOCALTECH_CS_HIGH_DELAY);
+	if (!buf)
 		return -ENOMEM;
-	}
 
-	txbuf[txlen++] = writebuf[0];
-	txbuf[txlen++] = FOCALTECH_WRITE_CMD;
-	txbuf[txlen++] = (datalen >> 8) & 0xFF;
-	txbuf[txlen++] = datalen & 0xFF;
+	buf[len++] = writebuf[0];
+	buf[len++] = FOCALTECH_WRITE_CMD;
+	buf[len++] = (datalen >> 8) & 0xFF;
+	buf[len++] = datalen & 0xFF;
 	if (datalen > 0) {
-		txlen = txlen + FOCALTECH_SPI_DUMMY_LEN;
-		memcpy(&txbuf[txlen], &writebuf[1], datalen);
-		txlen = txlen + datalen;
+		len += FOCALTECH_SPI_DUMMY_LEN;
+		memcpy(&buf[len], &writebuf[1], datalen);
+		len += datalen;
 	}
 
 	for (int i = 0; i < FOCALTECH_SPI_RETRY_NUM; i++) {
-		ret = focaltech_spi_xfer(spi, txbuf, rxbuf, txlen);
-		if ((0 == ret) && ((rxbuf[3] & 0xA0) == 0))
-			break;
-		else {
-			dev_dbg(&spi->dev,
-				"data write(addr:%x),status:%x,retry:%d,ret:%d",
-				writebuf[0], rxbuf[3], i, ret);
+		ret = focaltech_spi_xfer(spi, buf, buf, len);
+		if (ret) {
+			dev_err(&spi->dev, "SPI transfer error, %d\n", ret);
+			udelay(FOCALTECH_CS_HIGH_DELAY);
+			continue;
+		}
+
+		if (buf[3] & 0xa0) {
 			ret = -EIO;
 			udelay(FOCALTECH_CS_HIGH_DELAY);
-		}
-	}
-	if (ret < 0) {
-		dev_err(&spi->dev,
-			"data write(addr:%x) fail,status:%x,ret:%d",
-			writebuf[0], rxbuf[3], ret);
+		} else
+			break;
 	}
 
 	return ret;
@@ -142,38 +131,40 @@ static int focaltech_spi_read(void *context,
 	struct spi_device *spi = context;
 	const struct focaltech_ic_data *ic_data =
 						spi_get_device_match_data(spi);
-	const u8 *cmd = (u8 *)reg_buf;
-	u32 dp, txlen = 0;
+	const u8 *cmd = reg_buf;
+	u32 dp, len = 0;
 	int i = 0;
 	int ret;
 
 	dev_dbg(&spi->dev, "%s: line: %d\n", __func__, __LINE__);
 
-	u8 *txbuf __free(kfree) =
+	u8 *buf __free(kfree) =
 		kzalloc(val_size + ic_data->spi_prefix_len, GFP_KERNEL);
-	u8 *rxbuf __free(kfree) =
-		kzalloc(val_size + ic_data->spi_prefix_len, GFP_KERNEL);
-	if (!txbuf || !rxbuf) {
-		udelay(FOCALTECH_CS_HIGH_DELAY);
+	if (!buf)
 		return -ENOMEM;
-	}
 
-	txbuf[txlen++] = cmd[0];
-	txbuf[txlen++] = FOCALTECH_READ_CMD;
-	txbuf[txlen++] = (val_size >> 8) & 0xFF;
-	txbuf[txlen++] = val_size & 0xFF;
-	dp = txlen + FOCALTECH_SPI_DUMMY_LEN;
-	txlen = dp + val_size;
+	buf[len++] = cmd[0];
+	buf[len++] = FOCALTECH_READ_CMD;
+	buf[len++] = (val_size >> 8) & 0xFF;
+	buf[len++] = val_size & 0xFF;
+	dp = len + FOCALTECH_SPI_DUMMY_LEN;
+	len = dp + val_size;
 	if (FOCALTECH_READ_CMD & FOCALTECH_DATA_CRC_EN)
-		txlen = txlen + 2;
+		len += 2;
 
 	for (i = 0; i < FOCALTECH_SPI_RETRY_NUM; i++) {
-		ret = focaltech_spi_xfer(spi, txbuf, rxbuf, txlen);
-		if ((0 == ret) && ((rxbuf[3] & 0xA0) == 0)) {
-			memcpy((u8 *)val_buf, &rxbuf[dp], val_size);
+		ret = focaltech_spi_xfer(spi, buf, buf, len);
+		if (ret) {
+			dev_err(&spi->dev, "SPI transfer error, %d\n", ret);
+			udelay(FOCALTECH_CS_HIGH_DELAY);
+			continue;
+		}
+
+		if (!(buf[3] & 0xA0)) {
+			memcpy((u8 *)val_buf, &buf[dp], val_size);
 			/* crc check */
 			if (FOCALTECH_READ_CMD & FOCALTECH_DATA_CRC_EN) {
-				ret = rdata_check(&rxbuf[dp], txlen - dp);
+				ret = rdata_check(&buf[dp], len - dp);
 				if (ret < 0) {
 					dev_dbg(&spi->dev,
 						"data read(addr:%x) crc abnormal,retry:%d",
@@ -184,19 +175,9 @@ static int focaltech_spi_read(void *context,
 			}
 			break;
 		} else {
-			dev_dbg(&spi->dev,
-				"data read(addr:%x) status:%x,retry:%d,ret:%d",
-				cmd[0], rxbuf[3], i, ret);
 			ret = -EIO;
 			udelay(FOCALTECH_CS_HIGH_DELAY);
 		}
-	}
-
-	if (ret < 0) {
-		dev_err(&spi->dev, "data read(addr:%x) %s,status:%x,ret:%d",
-			cmd[0],
-			(i >= FOCALTECH_SPI_RETRY_NUM) ? "crc abnormal" : "fail",
-			rxbuf[3], ret);
 	}
 
 	return ret;

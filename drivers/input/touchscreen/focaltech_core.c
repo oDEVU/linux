@@ -99,12 +99,12 @@ static irqreturn_t focaltech_irq(int irq, void *data)
 {
 	struct focaltech_core *cd = data;
 	int ts_etype = 0;
-	u8 *touch_buf;
 	int ret;
 
 	dev_dbg(cd->dev, "%s: line: %d\n", __func__, __LINE__);
 
-	touch_buf = devm_kzalloc(cd->dev, FOCALTECH_MAX_TOUCH_BUF, GFP_ATOMIC);
+	u8 *touch_buf =
+		devm_kmalloc(cd->dev, FOCALTECH_MAX_TOUCH_BUF, GFP_ATOMIC);
 	if (!touch_buf)
 		return IRQ_NONE;
 
@@ -212,7 +212,7 @@ static int focaltech_get_chip_types(struct focaltech_core *cd,
 	dev_err(cd->dev,
 		"No matching chip type for ID 0x%02x%02x\n", id_h, id_l);
 
-	return /*-ENODATA*/0;
+	return -ENODATA;
 }
 
 static int focaltech_get_ic_information
