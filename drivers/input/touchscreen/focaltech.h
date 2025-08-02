@@ -1,6 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
+ * Copyright (c) 2012-2020, Focaltech Ltd. All rights reserved.
  * Copyright (C) 2025 Danila Tikhonov <danila@jiaxyga.com>
+ *
+ * Based on fts_ts and goodix_berlin drivers
  */
 
 #ifndef __FOCALTECH_H_
@@ -25,6 +28,7 @@ struct focaltech_ic_data {
 	bool hid_supported;
 	struct focaltech_ic_ids ids;
 	ssize_t spi_prefix_len;
+	ssize_t data_len;
 };
 
 struct device;

@@ -1,6 +1,15 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
+ * Copyright (c) 2012-2020, Focaltech Ltd. All rights reserved.
  * Copyright (C) 2025 Danila Tikhonov <danila@jiaxyga.com>
+ *
+ * Based on fts_ts and goodix_berlin_core drivers
+ *
+ * Support is missing for:
+ * - ESD Management
+ * - Stylus Events
+ * - Gesture Events
+ * - DRM Notifier
  */
 
 #define DEBUG
@@ -26,34 +35,28 @@
 #define FOCALTECH_TOUCH_E_NUM		1
 
 #define FOCALTECH_MAX_TOUCH_BUF		4096
-#define FOCALTECH_TOUCH_DATA_LEN	(10 * 6 + 2)
 #define FOCALTECH_ADDR			0x01
 
-#define TOUCH_DEFAULT			0x00
-#define TOUCH_EVENT_NUM			0x02
-#define TOUCH_FW_INIT			0x81
-#define TOUCH_IGNORE			0xFE
-#define TOUCH_ERROR			0xFF
-
-/* TODO
- * 1) Drop exta dbg print calls
- */
+#define FOCALTECH_TOUCH_DEFAULT		0x00
+#define FOCALTECH_TOUCH_EVENT_NUM	0x02
+#define FOCALTECH_TOUCH_EXTRA_MSG	0x08
+#define FOCALTECH_TOUCH_PEN		0x0b
+#define FOCALTECH_TOUCH_GESTURE		0x80
+#define FOCALTECH_TOUCH_FW_INIT		0x81
+#define FOCALTECH_TOUCH_IGNORE		0xfe
+#define FOCALTECH_TOUCH_ERROR		0xff
 
 struct focaltech_core {
 	struct device *dev;
 	struct regmap *regmap;
-
 	struct regulator_bulk_data *supplies;
 	struct gpio_desc *reset_gpio;
-
 	struct touchscreen_properties props;
 	struct input_dev *input_dev;
-
+	const char *fw_path;
 	int irq;
 
 	const struct focaltech_ic_data *ic_data;
-
-	const char *fw_path;
 };
 
 static const struct regulator_bulk_data focaltech_supplies[] = {
@@ -62,7 +65,7 @@ static const struct regulator_bulk_data focaltech_supplies[] = {
 };
 
 static int focaltech_request_handle_reset
-				(struct focaltech_core *cd, int hdelayms)
+				(struct focaltech_core *cd, int sleepms)
 {
 	dev_dbg(cd->dev, "%s: line: %d\n", __func__, __LINE__);
 
@@ -70,29 +73,28 @@ static int focaltech_request_handle_reset
 	usleep_range(1000, 1100);
 	gpiod_set_value_cansleep(cd->reset_gpio, 1);
 
-	if (hdelayms)
-		msleep(hdelayms);
+	if (sleepms)
+		msleep(sleepms);
 
 	return 0;
 }
 
 /* DEBUG */
-static void fts_show_touch_buffer(struct focaltech_core *cd, u8 *data, u32 datalen)
+static void focaltech_show_touch_buffer(
+			struct focaltech_core *cd, u8 *data, u32 datalen)
 {
 	const u32 bufsize = 1024;
-	u32 i = 0;
 	u32 count = 0;
-	char *tmpbuf = NULL;
 
-	tmpbuf = kzalloc(bufsize, GFP_ATOMIC);
+	char *tmpbuf __free(kfree) = kzalloc(bufsize, GFP_ATOMIC);
 	if (!tmpbuf)
 		return;
 
-	for (i = 0; i < datalen && count < bufsize - 1; i++)
-		count += scnprintf(tmpbuf + count, bufsize - count, "%02X,", data[i]);
+	for (int i = 0; i < datalen && count < bufsize - 1; i++)
+		count += scnprintf
+			(tmpbuf + count, bufsize - count, "%02X,", data[i]);
 
 	dev_dbg(cd->dev, "touch_buf:%s", tmpbuf);
-	kfree(tmpbuf);
 }
 
 static irqreturn_t focaltech_irq(int irq, void *data)
@@ -103,54 +105,68 @@ static irqreturn_t focaltech_irq(int irq, void *data)
 
 	dev_dbg(cd->dev, "%s: line: %d\n", __func__, __LINE__);
 
-	u8 *touch_buf =
-		devm_kmalloc(cd->dev, FOCALTECH_MAX_TOUCH_BUF, GFP_ATOMIC);
+	u8 *touch_buf __free(kfree) =
+			kmalloc(FOCALTECH_MAX_TOUCH_BUF, GFP_ATOMIC);
 	if (!touch_buf)
 		return IRQ_NONE;
 
 	memset(touch_buf, 0xff, FOCALTECH_MAX_TOUCH_BUF);
 
-	ret = regmap_raw_read(cd->regmap, FOCALTECH_ADDR, touch_buf, FOCALTECH_TOUCH_DATA_LEN);
-	if ((ret < 0) && (touch_buf[0] == 0xef)) {
-		dev_dbg(cd->dev, "%s: line: %d: (fts_release_all_finger & fts_fw_recovery) TOUCH_E_NUM\n", __func__, __LINE__);
-		goto out;
+	ret = regmap_raw_read(cd->regmap, FOCALTECH_ADDR,
+					touch_buf, cd->ic_data->data_len); // ?
+	if (ret) {
+		dev_err(cd->dev, "Failed to get event data: %d\n", ret);
+		ts_etype = FOCALTECH_TOUCH_ERROR;
+	}
+
+	if ((touch_buf[0] == 0xef) || ((touch_buf[1] == 0xef) &&
+	    (touch_buf[2] == 0xef) && (touch_buf[3] == 0xef))) {
+		/* fts_release_all_finger() */
+		/* fts_fw_recovery() */
+		ts_etype = FOCALTECH_TOUCH_ERROR;
 	};
 
-	if (ret) {
-		dev_err(cd->dev, "Touch data(%x) abnormal, ret: %d", touch_buf[1], ret);
-		dev_err(cd->dev, "Read touch data fails. TOUCH_FW_INIT");
-		goto out;
-	}
+#ifdef DEBUG
+	focaltech_show_touch_buffer(cd, touch_buf, cd->ic_data->data_len); // ?
+#endif
 
-	if ((touch_buf[1] == 0xef) && (touch_buf[2] == 0xef) && (touch_buf[3] == 0xef))
-		dev_dbg(cd->dev, "%s: line: %d: (fts_release_all_finger & fts_fw_recovery) TOUCH_E_NUM\n", __func__, __LINE__);
+	if ((touch_buf[1] == 0xff) && (touch_buf[2] == 0xff) &&
+	    (touch_buf[3] == 0xff) && (touch_buf[4] == 0xff))
+		ts_etype = FOCALTECH_TOUCH_FW_INIT;
 
-	fts_show_touch_buffer(cd, touch_buf, FOCALTECH_TOUCH_DATA_LEN);
+	if (!ts_etype)
+		ts_etype = ((touch_buf[FOCALTECH_TOUCH_E_NUM] >> 4) & 0x0F);
 
-	if ((touch_buf[1] == 0xFF) && (touch_buf[2] == 0xFF) &&
-	    (touch_buf[3] == 0xFF) && (touch_buf[4] == 0xFF)) {
-		dev_dbg(cd->dev, "Touch buff is 0xff, need recovery state. TOUCH_FW_INIT");
-		goto out;
-	}
-
-	ts_etype = ((touch_buf[FOCALTECH_TOUCH_E_NUM] >> 4) & 0x0F);
-	dev_dbg(cd->dev, "%s: line: %d etype = %d\n", __func__, __LINE__, ts_etype);
+	dev_dbg(cd->dev, "%s: line: %d etype = %d\n",
+						__func__, __LINE__, ts_etype);
 
 	switch (ts_etype) {
-	case TOUCH_DEFAULT:
+	case FOCALTECH_TOUCH_DEFAULT:
 		dev_dbg(cd->dev, "TOUCH_DEFAULT\n");
 		break;
-	case TOUCH_EVENT_NUM:
+	case FOCALTECH_TOUCH_EVENT_NUM:
 		dev_dbg(cd->dev, "TOUCH_EVENT_NUM\n");
 		break;
-	case TOUCH_FW_INIT:
+	case FOCALTECH_TOUCH_EXTRA_MSG:
+		dev_dbg(cd->dev, "TOUCH_EXTRA_MSG\n");
+		break;
+	case FOCALTECH_TOUCH_PEN:
+		dev_dbg(cd->dev, "TOUCH_PEN\n");
+		break;
+	case FOCALTECH_TOUCH_GESTURE:
+		dev_dbg(cd->dev, "TOUCH_GESTURE\n");
+		break;
+	case FOCALTECH_TOUCH_FW_INIT:
+		/* fts_release_all_finger() */
+		/* fts_fw_recovery() */
 		dev_dbg(cd->dev, "TOUCH_FW_INIT\n");
 		break;
-	case TOUCH_IGNORE:
-	case TOUCH_ERROR:
+	case FOCALTECH_TOUCH_IGNORE:
+	case FOCALTECH_TOUCH_ERROR:
 		dev_dbg(cd->dev, "TOUCH_IGNORE_ERROR\n");
+		break;
 	default:
-		dev_info(cd->dev, "Unknown touch event(%d)\n", ts_etype);
+		dev_info(cd->dev, "Unknown touch event: %d\n", ts_etype);
 		break;
 	}
 	goto out;
@@ -165,15 +181,14 @@ static int focaltech_read_bootid(struct focaltech_core *cd, u8 *id)
 	u8 chip_id[2];
 	int ret;
 
-	dev_dbg(cd->dev, "%s: line: %d\n", __func__, __LINE__);
-
 	ret = regmap_raw_write(cd->regmap, 0, buf, sizeof(buf));
 	if (ret < 0) {
 		dev_err(cd->dev, "Start cmd write fail: %d\n", ret);
 		return ret;
 	}
 
-	msleep(FOCALTECH_CMD_START_DELAY);
+	usleep_range(FOCALTECH_CMD_START_DELAY * 1000,
+		     FOCALTECH_CMD_START_DELAY * 1000 + 100);
 
 	ret = regmap_bulk_read(cd->regmap, FOCALTECH_CMD_READ_ID,
 						chip_id, sizeof(chip_id));
@@ -182,7 +197,7 @@ static int focaltech_read_bootid(struct focaltech_core *cd, u8 *id)
 		return ret;
 	}
 
-	if (chip_id[0] == 0x00 || chip_id[1] == 0x00) {
+	if (!chip_id[0] || !chip_id[1]) {
 		dev_err(cd->dev, "Read BootID invalid: 0x%02x%02x\n",
 							chip_id[0], chip_id[1]);
 		return -EIO;
@@ -218,14 +233,14 @@ static int focaltech_get_chip_types(struct focaltech_core *cd,
 static int focaltech_get_ic_information
 	(struct focaltech_core *cd, const struct focaltech_ic_data *ic_data)
 {
-	int ret, cnt;
 	u8 chip_id[2];
+	int ret;
 
 	dev_dbg(cd->dev, "%s: line: %d\n", __func__, __LINE__);
 
-	for (cnt = 0; cnt < 3; cnt++) {
-		focaltech_request_handle_reset(cd, 0);
-		mdelay(FOCALTECH_CMD_START_DELAY + cnt * 8);
+	for (int cnt = 0; cnt < 3; cnt++) {
+		focaltech_request_handle_reset(cd,
+				FOCALTECH_CMD_START_DELAY + cnt * 8);
 
 		ret = focaltech_read_bootid(cd, chip_id);
 		if (ret < 0) {
@@ -241,15 +256,10 @@ static int focaltech_get_ic_information
 			continue;
 		}
 
-		break;
+		return 0;
 	}
 
-	if (cnt >= 3) {
-		dev_err(cd->dev, "Failed to get IC information\n");
-		return -EIO;
-	}
-
-	return 0;
+	return -EIO;
 }
 
 static int focaltech_input_dev_config(struct focaltech_core *cd,
@@ -469,7 +479,7 @@ int focaltech_probe(struct device *dev, int irq, const struct input_id *id,
 			(dev, ret, "Request threaded IRQ failed\n");
 
 	/* Firmware upload */
-	/*ret = focaltech_fwupload_init(cd);
+	/*ret = focaltech_fwupload(cd);
 	if (ret)
 		return dev_err_probe
 			(dev, ret, "Init firmware upload fail\n");*/

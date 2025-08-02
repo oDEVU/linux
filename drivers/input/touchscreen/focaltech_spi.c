@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
+ * Copyright (c) 2012-2020, Focaltech Ltd. All rights reserved.
  * Copyright (C) 2025 Danila Tikhonov <danila@jiaxyga.com>
+ *
+ * Based on fts_ts and goodix_berlin_spi drivers
  */
 
 #define DEBUG
@@ -28,6 +31,13 @@
 					 FOCALTECH_SPI_DUMMY_LEN)
 #define FOCALTECH_SPI_PREFIX_LEN_V2	(FOCALTECH_SPI_HEADER_LEN_V2 +	\
 					 FOCALTECH_SPI_DUMMY_LEN)
+#define FOCALTECH_MAX_POINTS_SUPPORT	10
+#define FOCALTECH_ONE_TCH_LEN		6
+#define FOCALTECH_ONE_TCH_LEN_V2	8
+#define FOCALTECH_DATA_LEN		(FOCALTECH_MAX_POINTS_SUPPORT *	\
+					FOCALTECH_ONE_TCH_LEN + 2)
+#define FOCALTECH_DATA_LEN_V2		(FOCALTECH_MAX_POINTS_SUPPORT *	\
+					FOCALTECH_ONE_TCH_LEN_V2 + 4)
 
 #define FOCALTECH_FLAG_HID_BIT		10
 #define FOCALTECH_FLAG_IDC_BIT		11
@@ -232,7 +242,7 @@ static int focaltech_spi_probe(struct spi_device *spi) {
 	return 0;
 }
 
-static const struct focaltech_ic_data ft3680_data = { /* sm7325-nothing-spacewar */
+static const struct focaltech_ic_data ft3680_data = {
 	.is_incell	= FOCALTECH_IS_INCELL(0x3680008A),
 	.hid_supported	= FOCALTECH_HID_SUPPORTED(0x3680008A),
 	.ids = {
@@ -247,9 +257,10 @@ static const struct focaltech_ic_data ft3680_data = { /* sm7325-nothing-spacewar
 		.bl_idl		= 0x00,	/* BOOTLOADER ID */
 	},
 	.spi_prefix_len = FOCALTECH_SPI_PREFIX_LEN,
+	.data_len = FOCALTECH_DATA_LEN,
 };
 
-static const struct focaltech_ic_data ft3683g_data = { /* mt6789-xiaomi-emerald */
+static const struct focaltech_ic_data ft3683g_data = {
 	.is_incell	= FOCALTECH_IS_INCELL(0x56720090),
 	.hid_supported	= FOCALTECH_HID_SUPPORTED(0x56720090),
 	.ids = {
@@ -264,6 +275,7 @@ static const struct focaltech_ic_data ft3683g_data = { /* mt6789-xiaomi-emerald 
 		.bl_idl		= 0xb3,	/* BOOTLOADER ID */
 	},
 	.spi_prefix_len = FOCALTECH_SPI_PREFIX_LEN_V2,
+	.data_len = FOCALTECH_DATA_LEN_V2,
 };
 
 static const struct spi_device_id focaltech_spi_ids[] = {
