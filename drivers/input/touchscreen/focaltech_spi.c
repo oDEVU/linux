@@ -256,6 +256,18 @@ static const struct focaltech_ic_data ft3680_data = {
 		.bl_idh		= 0x00,	/* BOOTLOADER ID */
 		.bl_idl		= 0x00,	/* BOOTLOADER ID */
 	},
+	.settings = {
+		.app2_offset	= (128 * 1024),
+		.ecclen_max	= (128 * 1024),
+		.eccok_val	= 0xa5,
+		.upgsts_boot	= 0x01,
+		.delay_init	= 8,
+		.spi_pe		= 0,
+		.length_coefficient	= 4,
+		.fd_check	= 0,
+		.drwr_support	= 0,
+		.ecc_delay	= 5,
+	},
 	.spi_prefix_len = FOCALTECH_SPI_PREFIX_LEN,
 	.data_len = FOCALTECH_DATA_LEN,
 };
@@ -273,6 +285,18 @@ static const struct focaltech_ic_data ft3683g_data = {
 		.pb_idl		= 0x00,	/* PRODUCTION BOARD ID */
 		.bl_idh		= 0x36,	/* BOOTLOADER ID */
 		.bl_idl		= 0xb3,	/* BOOTLOADER ID */
+	},
+	.settings = { /* FIXME */
+		.app2_offset	= (128 * 1024),
+		.ecclen_max	= (128 * 1024),
+		.eccok_val	= 0xa5,
+		.upgsts_boot	= 0x01,
+		.delay_init	= 8,
+		.spi_pe		= 0,
+		.length_coefficient	= 4,
+		.fd_check	= 0,
+		.drwr_support	= 0,
+		.ecc_delay	= 5,
 	},
 	.spi_prefix_len = FOCALTECH_SPI_PREFIX_LEN_V2,
 	.data_len = FOCALTECH_DATA_LEN_V2,

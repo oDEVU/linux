@@ -18,7 +18,6 @@
 #include <linux/gpio/consumer.h>
 #include <linux/input.h>
 #include <linux/input/mt.h>
-#include <linux/input/touchscreen.h>
 #include <linux/property.h>
 #include <linux/regmap.h>
 #include <linux/regulator/consumer.h>
@@ -26,10 +25,6 @@
 #include <linux/unaligned.h>
 
 #include "focaltech.h"
-
-#define FOCALTECH_CMD_START1		0x55
-#define FOCALTECH_CMD_START2		0xaa
-#define FOCALTECH_CMD_READ_ID		0x90
 
 #define FOCALTECH_CMD_START_DELAY	12
 #define FOCALTECH_TOUCH_E_NUM		1
@@ -46,26 +41,12 @@
 #define FOCALTECH_TOUCH_IGNORE		0xfe
 #define FOCALTECH_TOUCH_ERROR		0xff
 
-struct focaltech_core {
-	struct device *dev;
-	struct regmap *regmap;
-	struct regulator_bulk_data *supplies;
-	struct gpio_desc *reset_gpio;
-	struct touchscreen_properties props;
-	struct input_dev *input_dev;
-	const char *fw_path;
-	int irq;
-
-	const struct focaltech_ic_data *ic_data;
-};
-
 static const struct regulator_bulk_data focaltech_supplies[] = {
 	{ .supply = "vdd" },
 	{ .supply = "iovdd" },
 };
 
-static int focaltech_request_handle_reset
-				(struct focaltech_core *cd, int sleepms)
+void focaltech_request_handle_reset(struct focaltech_core *cd, int sleepms)
 {
 	dev_dbg(cd->dev, "%s: line: %d\n", __func__, __LINE__);
 
@@ -75,8 +56,6 @@ static int focaltech_request_handle_reset
 
 	if (sleepms)
 		msleep(sleepms);
-
-	return 0;
 }
 
 /* DEBUG */
@@ -122,7 +101,7 @@ static irqreturn_t focaltech_irq(int irq, void *data)
 	if ((touch_buf[0] == 0xef) || ((touch_buf[1] == 0xef) &&
 	    (touch_buf[2] == 0xef) && (touch_buf[3] == 0xef))) {
 		/* fts_release_all_finger() */
-		/* fts_fw_recovery() */
+		//focaltech_fw_recovery(cd);
 		ts_etype = FOCALTECH_TOUCH_ERROR;
 	};
 
@@ -158,7 +137,7 @@ static irqreturn_t focaltech_irq(int irq, void *data)
 		break;
 	case FOCALTECH_TOUCH_FW_INIT:
 		/* fts_release_all_finger() */
-		/* fts_fw_recovery() */
+		//focaltech_fw_recovery(cd);
 		dev_dbg(cd->dev, "TOUCH_FW_INIT\n");
 		break;
 	case FOCALTECH_TOUCH_IGNORE:
@@ -182,7 +161,7 @@ static int focaltech_read_bootid(struct focaltech_core *cd, u8 *id)
 	int ret;
 
 	ret = regmap_raw_write(cd->regmap, 0, buf, sizeof(buf));
-	if (ret < 0) {
+	if (ret) {
 		dev_err(cd->dev, "Start cmd write fail: %d\n", ret);
 		return ret;
 	}
@@ -326,7 +305,6 @@ static void focaltech_power_off(struct focaltech_core *cd)
 					cd->supplies);
 }
 
-
 static int focaltech_suspend(struct device *dev)
 {
 	struct focaltech_core *cd = dev_get_drvdata(dev);
@@ -404,6 +382,7 @@ int focaltech_probe(struct device *dev, int irq, const struct input_id *id,
 		    const struct focaltech_ic_data *ic_data)
 {
 	struct focaltech_core *cd;
+	struct focaltech_fw_status *fw_status;
 	int ret;
 
 	dev_dbg(dev, "%s: line: %d\n", __func__, __LINE__);
@@ -417,10 +396,15 @@ int focaltech_probe(struct device *dev, int irq, const struct input_id *id,
 	if (!cd)
 		return -ENOMEM;
 
+	fw_status = devm_kzalloc(dev, sizeof(*fw_status), GFP_KERNEL);
+	if (!fw_status)
+		return -ENOMEM;
+
 	cd->dev = dev;
 	cd->regmap = regmap;
 	cd->irq = irq;
 	cd->ic_data = ic_data;
+	cd->fw_status = fw_status;
 
 	/* Get reset GPIO */
 	cd->reset_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
@@ -479,10 +463,10 @@ int focaltech_probe(struct device *dev, int irq, const struct input_id *id,
 			(dev, ret, "Request threaded IRQ failed\n");
 
 	/* Firmware upload */
-	/*ret = focaltech_fwupload(cd);
+	ret = focaltech_fwupload(cd);
 	if (ret)
 		return dev_err_probe
-			(dev, ret, "Init firmware upload fail\n");*/
+			(dev, ret, "Init firmware upload fail\n");
 
 	dev_set_drvdata(dev, cd);
 
