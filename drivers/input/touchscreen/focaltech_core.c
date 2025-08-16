@@ -57,6 +57,7 @@ void focaltech_request_handle_reset(struct focaltech_core *cd, int sleepms)
 	if (sleepms)
 		msleep(sleepms);
 }
+EXPORT_SYMBOL(focaltech_request_handle_reset);
 
 /* DEBUG */
 static void focaltech_show_touch_buffer(
@@ -466,7 +467,7 @@ int focaltech_probe(struct device *dev, int irq, const struct input_id *id,
 	ret = focaltech_fwupload(cd);
 	if (ret)
 		return dev_err_probe
-			(dev, ret, "Init firmware upload fail\n");
+			(dev, -EPROBE_DEFER, "Init firmware upload fail\n");
 
 	dev_set_drvdata(dev, cd);
 

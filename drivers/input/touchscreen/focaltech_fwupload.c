@@ -593,7 +593,7 @@ void focaltech_fw_recovery(struct focaltech_core *cd) {
 		return;
 	}
 
-	dev_dbg(cd->dev, "Read ChipID: 0x%02x", (u8)chip_id);
+	dev_dbg(cd->dev, "Read ChipID: 0x%02x", chip_id[1]);
 
 	focaltech_wait_tp_to_valid(cd);
 
@@ -613,6 +613,8 @@ int focaltech_fwupload(struct focaltech_core *cd)
 
 	cd->fw_status->is_fw_loading = true;
 
+	msleep(10000); // HACK
+
 	ret = focaltech_fw_resume(cd, true);
 	if (ret)
 		return ret;
@@ -622,6 +624,7 @@ int focaltech_fwupload(struct focaltech_core *cd)
 
 	return ret;
 }
+EXPORT_SYMBOL(focaltech_fwupload);
 
 ////////////////////////////////////////////////////////
 
@@ -679,3 +682,7 @@ int focaltech_fwupload(struct focaltech_core *cd) {
 
 	return ret;
 }*/
+
+MODULE_LICENSE("GPL");
+MODULE_DESCRIPTION("FocalTech Touchscreen firmware upload driver");
+MODULE_AUTHOR("Danila Tikhonov <danila@jiaxyga.com>");
