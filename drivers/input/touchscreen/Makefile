@@ -7,6 +7,7 @@
 
 wm97xx-ts-y := wm97xx-core.o
 goodix_ts-y := goodix.o goodix_fwupload.o
+focaltech_ts-y := focaltech_core.o focaltech_fwupload.o focaltech_spi.o
 
 obj-$(CONFIG_TOUCHSCREEN_88PM860X)	+= 88pm860x-ts.o
 obj-$(CONFIG_TOUCHSCREEN_AD7877)	+= ad7877.o
@@ -33,8 +34,8 @@ obj-$(CONFIG_TOUCHSCREEN_DA9034)	+= da9034-ts.o
 obj-$(CONFIG_TOUCHSCREEN_DA9052)	+= da9052_tsi.o
 obj-$(CONFIG_TOUCHSCREEN_DYNAPRO)	+= dynapro.o
 obj-$(CONFIG_TOUCHSCREEN_EDT_FT5X06)	+= edt-ft5x06.o
-obj-$(CONFIG_TOUCHSCREEN_FOCALTECH_CORE)	+= focaltech_core.o focaltech_fwupload.o
-obj-$(CONFIG_TOUCHSCREEN_FOCALTECH_SPI)		+= focaltech_spi.o
+obj-$(CONFIG_TOUCHSCREEN_FOCALTECH_CORE)	+= focaltech_ts.o
+#obj-$(CONFIG_TOUCHSCREEN_FOCALTECH_SPI)		+= focaltech_spi.o
 obj-$(CONFIG_TOUCHSCREEN_HAMPSHIRE)	+= hampshire.o
 obj-$(CONFIG_TOUCHSCREEN_HYCON_HY46XX)	+= hycon-hy46xx.o
 obj-$(CONFIG_TOUCHSCREEN_GUNZE)		+= gunze.o

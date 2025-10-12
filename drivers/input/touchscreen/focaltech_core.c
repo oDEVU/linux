@@ -19,7 +19,6 @@
 #include <linux/input.h>
 #include <linux/input/mt.h>
 #include <linux/property.h>
-#include <linux/regmap.h>
 #include <linux/regulator/consumer.h>
 #include <linux/sizes.h>
 #include <linux/unaligned.h>
@@ -57,7 +56,7 @@ void focaltech_request_handle_reset(struct focaltech_core *cd, int sleepms)
 	if (sleepms)
 		msleep(sleepms);
 }
-EXPORT_SYMBOL(focaltech_request_handle_reset);
+EXPORT_SYMBOL_GPL(focaltech_request_handle_reset);
 
 /* DEBUG */
 static void focaltech_show_touch_buffer(
@@ -157,11 +156,10 @@ out:
 
 static int focaltech_read_bootid(struct focaltech_core *cd, u8 *id)
 {
-	u8 buf[] = { FOCALTECH_CMD_START1, FOCALTECH_CMD_START2 };
 	u8 chip_id[2];
 	int ret;
 
-	ret = regmap_raw_write(cd->regmap, 0, buf, sizeof(buf));
+	ret = regmap_write(cd->regmap, FOCALTECH_CMD_START1, FOCALTECH_CMD_START2);
 	if (ret) {
 		dev_err(cd->dev, "Start cmd write fail: %d\n", ret);
 		return ret;
@@ -378,33 +376,17 @@ const struct attribute_group *focaltech_groups[] = {
 };
 EXPORT_SYMBOL_GPL(focaltech_groups);
 
-int focaltech_probe(struct device *dev, int irq, const struct input_id *id,
-		    struct regmap *regmap,
-		    const struct focaltech_ic_data *ic_data)
+int focaltech_probe(struct focaltech_core *cd, const struct input_id *id)
 {
-	struct focaltech_core *cd;
 	struct focaltech_fw_status *fw_status;
 	int ret;
 
 	dev_dbg(dev, "%s: line: %d\n", __func__, __LINE__);
 
-	if (irq <= 0) {
-		dev_err(dev, "Missing interrupt number\n");
-		return -EINVAL;
-	}
-
-	cd = devm_kzalloc(dev, sizeof(*cd), GFP_KERNEL);
-	if (!cd)
-		return -ENOMEM;
-
 	fw_status = devm_kzalloc(dev, sizeof(*fw_status), GFP_KERNEL);
 	if (!fw_status)
 		return -ENOMEM;
 
-	cd->dev = dev;
-	cd->regmap = regmap;
-	cd->irq = irq;
-	cd->ic_data = ic_data;
 	cd->fw_status = fw_status;
 
 	/* Get reset GPIO */

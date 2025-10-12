@@ -86,7 +86,7 @@ static int focaltech_enter_boot_mode(struct focaltech_core *cd)
 
 		/* enter into boot & check boot id*/
 		for (int j = 0; j < FOCALTECH_READ_BOOTID_TIMEOUT; j++) {
-			ret = regmap_write(cd->regmap, FOCALTECH_CMD_START1, 1);
+			ret = regmap_write(cd->regmap, FOCALTECH_CMD_START1, FOCALTECH_CMD_START2);
 			if (ret)
 				return ret;
 
@@ -162,20 +162,20 @@ static int focaltech_ecc_cal_tp
 (struct focaltech_core *cd, u32 ecc_saddr, u32 ecc_len, u16 *ecc_value)
 {
 	int i = 0;
-	u8 cmd[FOCALTECH_ROMBOOT_CMD_ECC_NEW_LEN] = { 0 };
+	u8 cmd[FOCALTECH_ROMBOOT_CMD_ECC_NEW_LEN - 1] = { 0 };
 	u32 value[2] = { 0 }; //u8
 	int ret;
 
-	cmd[0] = FOCALTECH_ROMBOOT_CMD_ECC;
-	cmd[1] = BYTE_OFF_16(ecc_saddr);
-	cmd[2] = BYTE_OFF_8(ecc_saddr);
-	cmd[3] = BYTE_OFF_0(ecc_saddr);
-	cmd[4] = BYTE_OFF_16(ecc_len);
-	cmd[5] = BYTE_OFF_8(ecc_len);
-	cmd[6] = BYTE_OFF_0(ecc_len);
+	//cmd[0] = FOCALTECH_ROMBOOT_CMD_ECC;
+	cmd[0] = BYTE_OFF_16(ecc_saddr);
+	cmd[1] = BYTE_OFF_8(ecc_saddr);
+	cmd[2] = BYTE_OFF_0(ecc_saddr);
+	cmd[3] = BYTE_OFF_16(ecc_len);
+	cmd[4] = BYTE_OFF_8(ecc_len);
+	cmd[5] = BYTE_OFF_0(ecc_len);
 
 	/* make boot to calculate ecc in pram */
-	ret = regmap_write(cd->regmap, FOCALTECH_ROMBOOT_CMD_ECC_NEW_LEN, 1);
+	ret = regmap_raw_write(cd->regmap, FOCALTECH_ROMBOOT_CMD_ECC, cmd, sizeof(cmd));
 	if (ret) {
 		dev_err(cd->dev, "ecc calc cmd fail, ret: %d\n", ret);
 		return ret;
@@ -207,6 +207,7 @@ static int focaltech_ecc_cal_tp
 	/* get ecc value calculate in boot */
 
 	ret = regmap_raw_read(cd->regmap, FOCALTECH_ROMBOOT_CMD_ECC_READ, value, 2);
+	dev_err(cd->dev, "Read value: 0x%x%x", value[0], value[1]);
 	if (ret < 0) {
 		dev_err(cd->dev, "ecc read cmd fail");
 		return ret;
@@ -296,12 +297,12 @@ static int focaltech_dpram_write
 		return -EINVAL;
 	}
 
-	u8 *cmd = vmalloc(packet_size + FOCALTECH_CMD_WRITE_LEN + 1);
+	u8 *cmd = vmalloc(packet_size + FOCALTECH_CMD_WRITE_LEN);
 	if (!cmd) {
 		dev_err(cd->dev, "malloc memory for pram write buffer fail");
 		return -ENOMEM;
 	}
-	memset(cmd, 0, packet_size + FOCALTECH_CMD_WRITE_LEN + 1);
+	memset(cmd, 0, packet_size + FOCALTECH_CMD_WRITE_LEN);
 
 	packet_number = len / packet_size;
 	remainder = len % packet_size;
@@ -319,12 +320,12 @@ static int focaltech_dpram_write
 			packet_len = remainder;
 
 		/* set pram address */
-		cmd[0] = FOCALTECH_ROMBOOT_CMD_SET_PRAM_ADDR;
-		cmd[1] = BYTE_OFF_16(addr);
-		cmd[2] = BYTE_OFF_8(addr);
-		cmd[3] = BYTE_OFF_0(addr);
+		//cmd[0] = FOCALTECH_ROMBOOT_CMD_SET_PRAM_ADDR; // 0xAD
+		cmd[0] = BYTE_OFF_16(addr);
+		cmd[1] = BYTE_OFF_8(addr);
+		cmd[2] = BYTE_OFF_0(addr);
 
-		ret = regmap_raw_write(cd->regmap, 0, &cmd[0], FOCALTECH_ROMBOOT_CMD_SET_PRAM_ADDR_LEN);
+		ret = regmap_raw_write(cd->regmap, FOCALTECH_ROMBOOT_CMD_SET_PRAM_ADDR, cmd, 3);
 		if (ret) {
 			dev_err(cd->dev,
 				"set pram(%d) addr(%d) fail\n", i, addr);
@@ -332,12 +333,12 @@ static int focaltech_dpram_write
 		}
 
 		/* write pram data */
-		cmd[0] = FOCALTECH_ROMBOOT_CMD_WRITE;
+		//cmd[0] = FOCALTECH_ROMBOOT_CMD_WRITE; // 0xAE
 		for (j = 0; j < packet_len; j++) {
-			cmd[1 + j] = buf[offset + j];
+			cmd[j] = buf[offset + j];
 		}
 
-		ret = regmap_raw_write(cd->regmap, 0, &cmd[0], 1 + packet_len);
+		ret = regmap_raw_write(cd->regmap, FOCALTECH_ROMBOOT_CMD_WRITE, cmd, packet_len);
 		if (ret) {
 			dev_err(cd->dev, "write fw to pram(%d) fail", i);
 			goto write_pram_err;
@@ -388,7 +389,7 @@ static int focaltech_pram_write_ecc
 	/* check ecc */
 	ret = focaltech_ecc_check(cd, data, pram_app_size, pram_start_addr);
 	if (ret) {
-		dev_err(cd->dev, "pram ecc check fai\nl");
+		dev_err(cd->dev, "pram ecc check fail\n");
 		return ret;
 	}
 
@@ -401,7 +402,7 @@ static int focaltech_pram_start(struct focaltech_core *cd)
 
 	dev_dbg(cd->dev, "%s: line: %d\n", __func__, __LINE__);
 
-	ret = regmap_write(cd->regmap, FOCALTECH_ROMBOOT_CMD_START_APP, 1);
+	ret = regmap_write(cd->regmap, FOCALTECH_ROMBOOT_CMD_START_APP, 0);
 	if (ret) {
 		dev_err(cd->dev, "Write start PRAM cmd fail, ret: %d\n", ret);
 		return ret;
@@ -613,8 +614,6 @@ int focaltech_fwupload(struct focaltech_core *cd)
 
 	cd->fw_status->is_fw_loading = true;
 
-	msleep(10000); // HACK
-
 	ret = focaltech_fw_resume(cd, true);
 	if (ret)
 		return ret;
@@ -624,7 +623,7 @@ int focaltech_fwupload(struct focaltech_core *cd)
 
 	return ret;
 }
-EXPORT_SYMBOL(focaltech_fwupload);
+EXPORT_SYMBOL_GPL(focaltech_fwupload);
 
 ////////////////////////////////////////////////////////
 

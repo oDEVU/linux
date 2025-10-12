@@ -73,9 +73,7 @@ struct input_id;
 struct regmap;
 
 /* Core funcs */
-int focaltech_probe(struct device *dev, int irq, const struct input_id *id,
-		    struct regmap *regmap,
-		    const struct focaltech_ic_data *ic_data);
+int focaltech_probe(struct focaltech_core *cd, const struct input_id *id);
 void focaltech_request_handle_reset(struct focaltech_core *cd, int sleepms);
 
 /* Firmware uploader funcs */
