@@ -1398,6 +1398,8 @@ static ssize_t amdgpu_set_pp_power_profile_mode(struct device *dev,
 			if (ret)
 				return -EINVAL;
 			parameter_size++;
+			if (!tmp_str)
+				break;
 			while (isspace(*tmp_str))
 				tmp_str++;
 		}
@@ -1606,7 +1608,6 @@ static ssize_t amdgpu_set_thermal_throttling_logging(struct device *dev,
 	struct drm_device *ddev = dev_get_drvdata(dev);
 	struct amdgpu_device *adev = drm_to_adev(ddev);
 	long throttling_logging_interval;
-	unsigned long flags;
 	int ret = 0;
 
 	ret = kstrtol(buf, 0, &throttling_logging_interval);
@@ -1617,18 +1618,12 @@ static ssize_t amdgpu_set_thermal_throttling_logging(struct device *dev,
 		return -EINVAL;
 
 	if (throttling_logging_interval > 0) {
-		raw_spin_lock_irqsave(&adev->throttling_logging_rs.lock, flags);
 		/*
 		 * Reset the ratelimit timer internals.
 		 * This can effectively restart the timer.
 		 */
-		adev->throttling_logging_rs.interval =
-			(throttling_logging_interval - 1) * HZ;
-		adev->throttling_logging_rs.begin = 0;
-		adev->throttling_logging_rs.printed = 0;
-		adev->throttling_logging_rs.missed = 0;
-		raw_spin_unlock_irqrestore(&adev->throttling_logging_rs.lock, flags);
-
+		ratelimit_state_reset_interval(&adev->throttling_logging_rs,
+					       (throttling_logging_interval - 1) * HZ);
 		atomic_set(&adev->throttling_logging_enabled, 1);
 	} else {
 		atomic_set(&adev->throttling_logging_enabled, 0);
@@ -2944,6 +2939,23 @@ static ssize_t amdgpu_hwmon_show_vddgfx(struct device *dev,
 	return sysfs_emit(buf, "%d\n", vddgfx);
 }
 
+static ssize_t amdgpu_hwmon_show_vddboard(struct device *dev,
+					  struct device_attribute *attr,
+					  char *buf)
+{
+	struct amdgpu_device *adev = dev_get_drvdata(dev);
+	u32 vddboard;
+	int r;
+
+	/* get the voltage */
+	r = amdgpu_hwmon_get_sensor_generic(adev, AMDGPU_PP_SENSOR_VDDBOARD,
+					    (void *)&vddboard);
+	if (r)
+		return r;
+
+	return sysfs_emit(buf, "%d\n", vddboard);
+}
+
 static ssize_t amdgpu_hwmon_show_vddgfx_label(struct device *dev,
 					      struct device_attribute *attr,
 					      char *buf)
@@ -2951,6 +2963,12 @@ static ssize_t amdgpu_hwmon_show_vddgfx_label(struct device *dev,
 	return sysfs_emit(buf, "vddgfx\n");
 }
 
+static ssize_t amdgpu_hwmon_show_vddboard_label(struct device *dev,
+						struct device_attribute *attr,
+						char *buf)
+{
+	return sysfs_emit(buf, "vddboard\n");
+}
 static ssize_t amdgpu_hwmon_show_vddnb(struct device *dev,
 				       struct device_attribute *attr,
 				       char *buf)
@@ -3294,6 +3312,8 @@ static SENSOR_DEVICE_ATTR(in0_input, S_IRUGO, amdgpu_hwmon_show_vddgfx, NULL, 0)
 static SENSOR_DEVICE_ATTR(in0_label, S_IRUGO, amdgpu_hwmon_show_vddgfx_label, NULL, 0);
 static SENSOR_DEVICE_ATTR(in1_input, S_IRUGO, amdgpu_hwmon_show_vddnb, NULL, 0);
 static SENSOR_DEVICE_ATTR(in1_label, S_IRUGO, amdgpu_hwmon_show_vddnb_label, NULL, 0);
+static SENSOR_DEVICE_ATTR(in2_input, S_IRUGO, amdgpu_hwmon_show_vddboard, NULL, 0);
+static SENSOR_DEVICE_ATTR(in2_label, S_IRUGO, amdgpu_hwmon_show_vddboard_label, NULL, 0);
 static SENSOR_DEVICE_ATTR(power1_average, S_IRUGO, amdgpu_hwmon_show_power_avg, NULL, 0);
 static SENSOR_DEVICE_ATTR(power1_input, S_IRUGO, amdgpu_hwmon_show_power_input, NULL, 0);
 static SENSOR_DEVICE_ATTR(power1_cap_max, S_IRUGO, amdgpu_hwmon_show_power_cap_max, NULL, 0);
@@ -3341,6 +3361,8 @@ static struct attribute *hwmon_attributes[] = {
 	&sensor_dev_attr_in0_label.dev_attr.attr,
 	&sensor_dev_attr_in1_input.dev_attr.attr,
 	&sensor_dev_attr_in1_label.dev_attr.attr,
+	&sensor_dev_attr_in2_input.dev_attr.attr,
+	&sensor_dev_attr_in2_label.dev_attr.attr,
 	&sensor_dev_attr_power1_average.dev_attr.attr,
 	&sensor_dev_attr_power1_input.dev_attr.attr,
 	&sensor_dev_attr_power1_cap_max.dev_attr.attr,
@@ -3436,14 +3458,16 @@ static umode_t hwmon_attributes_visible(struct kobject *kobj,
 		effective_mode &= ~S_IWUSR;
 
 	/* not implemented yet for APUs other than GC 10.3.1 (vangogh) and 9.4.3 */
-	if (((adev->family == AMDGPU_FAMILY_SI) ||
-	     ((adev->flags & AMD_IS_APU) && (gc_ver != IP_VERSION(10, 3, 1)) &&
-	      (gc_ver != IP_VERSION(9, 4, 3) && gc_ver != IP_VERSION(9, 4, 4)))) &&
-	    (attr == &sensor_dev_attr_power1_cap_max.dev_attr.attr ||
-	     attr == &sensor_dev_attr_power1_cap_min.dev_attr.attr ||
-	     attr == &sensor_dev_attr_power1_cap.dev_attr.attr ||
-	     attr == &sensor_dev_attr_power1_cap_default.dev_attr.attr))
-		return 0;
+	if (attr == &sensor_dev_attr_power1_cap_max.dev_attr.attr ||
+	    attr == &sensor_dev_attr_power1_cap_min.dev_attr.attr ||
+	    attr == &sensor_dev_attr_power1_cap.dev_attr.attr ||
+	    attr == &sensor_dev_attr_power1_cap_default.dev_attr.attr) {
+		if (adev->family == AMDGPU_FAMILY_SI ||
+		    ((adev->flags & AMD_IS_APU) && gc_ver != IP_VERSION(10, 3, 1) &&
+		     (gc_ver != IP_VERSION(9, 4, 3) && gc_ver != IP_VERSION(9, 4, 4))) ||
+		    (amdgpu_sriov_vf(adev) && gc_ver == IP_VERSION(11, 0, 3)))
+			return 0;
+	}
 
 	/* not implemented yet for APUs having < GC 9.3.0 (Renoir) */
 	if (((adev->family == AMDGPU_FAMILY_SI) ||
@@ -3490,6 +3514,13 @@ static umode_t hwmon_attributes_visible(struct kobject *kobj,
 	      gc_ver == IP_VERSION(9, 5, 0))) &&
 	    (attr == &sensor_dev_attr_in1_input.dev_attr.attr ||
 	     attr == &sensor_dev_attr_in1_label.dev_attr.attr))
+		return 0;
+
+	/* only few boards support vddboard */
+	if ((attr == &sensor_dev_attr_in2_input.dev_attr.attr ||
+	     attr == &sensor_dev_attr_in2_label.dev_attr.attr) &&
+	     amdgpu_hwmon_get_sensor_generic(adev, AMDGPU_PP_SENSOR_VDDBOARD,
+					     (void *)&tmp) == -EOPNOTSUPP)
 		return 0;
 
 	/* no mclk on APUs other than gc 9,4,3*/
@@ -3617,6 +3648,9 @@ static int parse_input_od_command_lines(const char *buf,
 		if (ret)
 			return -EINVAL;
 		parameter_size++;
+
+		if (!tmp_str)
+			break;
 
 		while (isspace(*tmp_str))
 			tmp_str++;

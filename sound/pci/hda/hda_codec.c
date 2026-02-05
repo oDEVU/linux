@@ -639,24 +639,16 @@ static void hda_jackpoll_work(struct work_struct *work)
 	struct hda_codec *codec =
 		container_of(work, struct hda_codec, jackpoll_work.work);
 
-	/* for non-polling trigger: we need nothing if already powered on */
-	if (!codec->jackpoll_interval && snd_hdac_is_power_on(&codec->core))
-		return;
-
-	/* the power-up/down sequence triggers the runtime resume */
-	snd_hda_power_up_pm(codec);
-	/* update jacks manually if polling is required, too */
-	if (codec->jackpoll_interval) {
-		snd_hda_jack_set_dirty_all(codec);
-		snd_hda_jack_poll_all(codec);
-	}
-	snd_hda_power_down_pm(codec);
-
 	if (!codec->jackpoll_interval)
 		return;
 
-	schedule_delayed_work(&codec->jackpoll_work,
-			      codec->jackpoll_interval);
+	/* the power-up/down sequence triggers the runtime resume */
+	snd_hda_power_up(codec);
+	/* update jacks manually if polling is required, too */
+	snd_hda_jack_set_dirty_all(codec);
+	snd_hda_jack_poll_all(codec);
+	schedule_delayed_work(&codec->jackpoll_work, codec->jackpoll_interval);
+	snd_hda_power_down(codec);
 }
 
 /* release all pincfg lists */
@@ -1730,37 +1722,6 @@ int snd_hda_ctl_add(struct hda_codec *codec, hda_nid_t nid,
 	return 0;
 }
 EXPORT_SYMBOL_GPL(snd_hda_ctl_add);
-
-/**
- * snd_hda_add_nid - Assign a NID to a control element
- * @codec: HD-audio codec
- * @kctl: the control element to assign
- * @index: index to kctl
- * @nid: corresponding NID (optional)
- *
- * Add the given control element to an array inside the codec instance.
- * This function is used when #snd_hda_ctl_add cannot be used for 1:1
- * NID:KCTL mapping - for example "Capture Source" selector.
- */
-int snd_hda_add_nid(struct hda_codec *codec, struct snd_kcontrol *kctl,
-		    unsigned int index, hda_nid_t nid)
-{
-	struct hda_nid_item *item;
-
-	if (nid > 0) {
-		item = snd_array_new(&codec->nids);
-		if (!item)
-			return -ENOMEM;
-		item->kctl = kctl;
-		item->index = index;
-		item->nid = nid;
-		return 0;
-	}
-	codec_err(codec, "no NID for mapping control %s:%d:%d\n",
-		  kctl->id.name, kctl->id.index, index);
-	return -EINVAL;
-}
-EXPORT_SYMBOL_GPL(snd_hda_add_nid);
 
 /**
  * snd_hda_ctls_clear - Clear all controls assigned to the given codec
@@ -2926,12 +2887,12 @@ static void hda_call_codec_resume(struct hda_codec *codec)
 		snd_hda_regmap_sync(codec);
 	}
 
-	if (codec->jackpoll_interval)
-		hda_jackpoll_work(&codec->jackpoll_work.work);
-	else
-		snd_hda_jack_report_sync(codec);
+	snd_hda_jack_report_sync(codec);
 	codec->core.dev.power.power_state = PMSG_ON;
 	snd_hdac_leave_pm(&codec->core);
+	if (codec->jackpoll_interval)
+		schedule_delayed_work(&codec->jackpoll_work,
+				      codec->jackpoll_interval);
 }
 
 static int hda_codec_runtime_suspend(struct device *dev)
@@ -2943,8 +2904,6 @@ static int hda_codec_runtime_suspend(struct device *dev)
 	if (!codec->card)
 		return 0;
 
-	cancel_delayed_work_sync(&codec->jackpoll_work);
-
 	state = hda_call_codec_suspend(codec);
 	if (codec->link_down_at_suspend ||
 	    (codec_has_clkstop(codec) && codec_has_epss(codec) &&
@@ -2952,10 +2911,6 @@ static int hda_codec_runtime_suspend(struct device *dev)
 		snd_hdac_codec_link_down(&codec->core);
 	snd_hda_codec_display_power(codec, false);
 
-	if (codec->bus->jackpoll_in_suspend &&
-		(dev->power.power_state.event != PM_EVENT_SUSPEND))
-		schedule_delayed_work(&codec->jackpoll_work,
-					codec->jackpoll_interval);
 	return 0;
 }
 
@@ -3051,6 +3006,7 @@ void snd_hda_codec_shutdown(struct hda_codec *codec)
 	if (!codec->core.registered)
 		return;
 
+	codec->jackpoll_interval = 0; /* don't poll any longer */
 	cancel_delayed_work_sync(&codec->jackpoll_work);
 	list_for_each_entry(cpcm, &codec->pcm_list_head, list)
 		snd_pcm_suspend_all(cpcm->pcm);
@@ -3117,10 +3073,11 @@ int snd_hda_codec_build_controls(struct hda_codec *codec)
 	if (err < 0)
 		return err;
 
+	snd_hda_jack_report_sync(codec); /* call at the last init point */
 	if (codec->jackpoll_interval)
-		hda_jackpoll_work(&codec->jackpoll_work.work);
-	else
-		snd_hda_jack_report_sync(codec); /* call at the last init point */
+		schedule_delayed_work(&codec->jackpoll_work,
+				      codec->jackpoll_interval);
+
 	sync_power_up_states(codec);
 	return 0;
 }

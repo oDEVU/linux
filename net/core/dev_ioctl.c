@@ -464,8 +464,15 @@ int generic_hwtstamp_get_lower(struct net_device *dev,
 	if (!netif_device_present(dev))
 		return -ENODEV;
 
-	if (ops->ndo_hwtstamp_get)
-		return dev_get_hwtstamp_phylib(dev, kernel_cfg);
+	if (ops->ndo_hwtstamp_get) {
+		int err;
+
+		netdev_lock_ops(dev);
+		err = dev_get_hwtstamp_phylib(dev, kernel_cfg);
+		netdev_unlock_ops(dev);
+
+		return err;
+	}
 
 	/* Legacy path: unconverted lower driver */
 	return generic_hwtstamp_ioctl_lower(dev, SIOCGHWTSTAMP, kernel_cfg);
@@ -481,8 +488,15 @@ int generic_hwtstamp_set_lower(struct net_device *dev,
 	if (!netif_device_present(dev))
 		return -ENODEV;
 
-	if (ops->ndo_hwtstamp_set)
-		return dev_set_hwtstamp_phylib(dev, kernel_cfg, extack);
+	if (ops->ndo_hwtstamp_set) {
+		int err;
+
+		netdev_lock_ops(dev);
+		err = dev_set_hwtstamp_phylib(dev, kernel_cfg, extack);
+		netdev_unlock_ops(dev);
+
+		return err;
+	}
 
 	/* Legacy path: unconverted lower driver */
 	return generic_hwtstamp_ioctl_lower(dev, SIOCSHWTSTAMP, kernel_cfg);
@@ -572,9 +586,11 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, void __user *data,
 		return dev_set_mtu(dev, ifr->ifr_mtu);
 
 	case SIOCSIFHWADDR:
-		if (dev->addr_len > sizeof(struct sockaddr))
+		if (dev->addr_len > sizeof(ifr->ifr_hwaddr))
 			return -EINVAL;
-		return dev_set_mac_address_user(dev, &ifr->ifr_hwaddr, NULL);
+		return dev_set_mac_address_user(dev,
+						(struct sockaddr_storage *)&ifr->ifr_hwaddr,
+						NULL);
 
 	case SIOCSIFHWBROADCAST:
 		if (ifr->ifr_hwaddr.sa_family != dev->type)

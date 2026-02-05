@@ -2397,8 +2397,7 @@ static int renesas_usb3_stop(struct usb_gadget *gadget)
 		rzv2m_usb3drd_reset(usb3_to_dev(usb3)->parent, false);
 
 	renesas_usb3_stop_controller(usb3);
-	if (usb3->phy)
-		phy_exit(usb3->phy);
+	phy_exit(usb3->phy);
 
 	pm_runtime_put(usb3_to_dev(usb3));
 
@@ -2658,6 +2657,7 @@ static void renesas_usb3_remove(struct platform_device *pdev)
 	struct renesas_usb3 *usb3 = platform_get_drvdata(pdev);
 
 	debugfs_remove_recursive(usb3->dentry);
+	put_device(usb3->host_dev);
 	device_remove_file(&pdev->dev, &dev_attr_role);
 
 	cancel_work_sync(&usb3->role_work);
@@ -2984,8 +2984,7 @@ static int renesas_usb3_suspend(struct device *dev)
 		return 0;
 
 	renesas_usb3_stop_controller(usb3);
-	if (usb3->phy)
-		phy_exit(usb3->phy);
+	phy_exit(usb3->phy);
 	pm_runtime_put(dev);
 
 	return 0;

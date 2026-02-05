@@ -856,6 +856,7 @@ struct hns_roce_caps {
 	u16		default_ceq_arm_st;
 	u8		cong_cap;
 	enum hns_roce_cong_type default_cong_type;
+	u32             max_ack_req_msg_len;
 };
 
 enum hns_roce_device_state {
@@ -1026,6 +1027,26 @@ struct hns_roce_dev {
 	struct hns_roce_dev_debugfs dbgfs;
 	atomic64_t *dfx_cnt;
 };
+
+enum hns_roce_trace_type {
+	TRACE_SQ,
+	TRACE_RQ,
+	TRACE_SRQ,
+};
+
+static inline const char *trace_type_to_str(enum hns_roce_trace_type type)
+{
+	switch (type) {
+	case TRACE_SQ:
+		return "SQ";
+	case TRACE_RQ:
+		return "RQ";
+	case TRACE_SRQ:
+		return "SRQ";
+	default:
+		return "UNKNOWN";
+	}
+}
 
 static inline struct hns_roce_dev *to_hr_dev(struct ib_device *ib_dev)
 {

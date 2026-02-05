@@ -111,6 +111,7 @@ static DEVICE_ATTR(em_buffer, S_IWUSR | S_IRUGO,
 static DEVICE_ATTR(em_message_supported, S_IRUGO, ahci_show_em_supported, NULL);
 
 static struct attribute *ahci_shost_attrs[] = {
+	&dev_attr_link_power_management_supported.attr,
 	&dev_attr_link_power_management_policy.attr,
 	&dev_attr_em_message_type.attr,
 	&dev_attr_em_message.attr,
@@ -1034,7 +1035,7 @@ static void ahci_sw_activity(struct ata_link *link)
 
 static void ahci_sw_activity_blink(struct timer_list *t)
 {
-	struct ahci_em_priv *emp = from_timer(emp, t, timer);
+	struct ahci_em_priv *emp = timer_container_of(emp, t, timer);
 	struct ata_link *link = emp->link;
 	struct ata_port *ap = link->ap;
 

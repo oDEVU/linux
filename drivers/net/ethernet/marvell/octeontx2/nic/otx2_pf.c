@@ -206,7 +206,8 @@ static int otx2_register_flr_me_intr(struct otx2_nic *pf, int numvfs)
 
 	/* Register ME interrupt handler*/
 	irq_name = &hw->irq_name[RVU_PF_INT_VEC_VFME0 * NAME_SIZE];
-	snprintf(irq_name, NAME_SIZE, "RVUPF%d_ME0", rvu_get_pf(pf->pcifunc));
+	snprintf(irq_name, NAME_SIZE, "RVUPF%d_ME0",
+		 rvu_get_pf(pf->pdev, pf->pcifunc));
 	ret = request_irq(pci_irq_vector(pf->pdev, RVU_PF_INT_VEC_VFME0),
 			  otx2_pf_me_intr_handler, 0, irq_name, pf);
 	if (ret) {
@@ -216,7 +217,8 @@ static int otx2_register_flr_me_intr(struct otx2_nic *pf, int numvfs)
 
 	/* Register FLR interrupt handler */
 	irq_name = &hw->irq_name[RVU_PF_INT_VEC_VFFLR0 * NAME_SIZE];
-	snprintf(irq_name, NAME_SIZE, "RVUPF%d_FLR0", rvu_get_pf(pf->pcifunc));
+	snprintf(irq_name, NAME_SIZE, "RVUPF%d_FLR0",
+		 rvu_get_pf(pf->pdev, pf->pcifunc));
 	ret = request_irq(pci_irq_vector(pf->pdev, RVU_PF_INT_VEC_VFFLR0),
 			  otx2_pf_flr_intr_handler, 0, irq_name, pf);
 	if (ret) {
@@ -228,7 +230,7 @@ static int otx2_register_flr_me_intr(struct otx2_nic *pf, int numvfs)
 	if (numvfs > 64) {
 		irq_name = &hw->irq_name[RVU_PF_INT_VEC_VFME1 * NAME_SIZE];
 		snprintf(irq_name, NAME_SIZE, "RVUPF%d_ME1",
-			 rvu_get_pf(pf->pcifunc));
+			 rvu_get_pf(pf->pdev, pf->pcifunc));
 		ret = request_irq(pci_irq_vector
 				  (pf->pdev, RVU_PF_INT_VEC_VFME1),
 				  otx2_pf_me_intr_handler, 0, irq_name, pf);
@@ -238,7 +240,7 @@ static int otx2_register_flr_me_intr(struct otx2_nic *pf, int numvfs)
 		}
 		irq_name = &hw->irq_name[RVU_PF_INT_VEC_VFFLR1 * NAME_SIZE];
 		snprintf(irq_name, NAME_SIZE, "RVUPF%d_FLR1",
-			 rvu_get_pf(pf->pcifunc));
+			 rvu_get_pf(pf->pdev, pf->pcifunc));
 		ret = request_irq(pci_irq_vector
 				  (pf->pdev, RVU_PF_INT_VEC_VFFLR1),
 				  otx2_pf_flr_intr_handler, 0, irq_name, pf);
@@ -465,6 +467,9 @@ static void otx2_pfvf_mbox_handler(struct work_struct *work)
 
 	offset = ALIGN(sizeof(struct mbox_hdr), MBOX_MSG_ALIGN);
 
+	trace_otx2_msg_status(pf->pdev, "PF-VF down queue handler(forwarding)",
+			      vf_mbox->num_msgs);
+
 	for (id = 0; id < vf_mbox->num_msgs; id++) {
 		msg = (struct mbox_msghdr *)(mdev->mbase + mbox->rx_start +
 					     offset);
@@ -473,7 +478,7 @@ static void otx2_pfvf_mbox_handler(struct work_struct *work)
 			goto inval_msg;
 
 		/* Set VF's number in each of the msg */
-		msg->pcifunc &= RVU_PFVF_FUNC_MASK;
+		msg->pcifunc &= ~RVU_PFVF_FUNC_MASK;
 		msg->pcifunc |= (vf_idx + 1) & RVU_PFVF_FUNC_MASK;
 		offset = msg->next_msgoff;
 	}
@@ -502,6 +507,9 @@ static void otx2_pfvf_mbox_up_handler(struct work_struct *work)
 	mdev = &mbox->dev[vf_idx];
 
 	offset = mbox->rx_start + ALIGN(sizeof(struct mbox_hdr), MBOX_MSG_ALIGN);
+
+	trace_otx2_msg_status(pf->pdev, "PF-VF up queue handler(response)",
+			      vf_mbox->up_num_msgs);
 
 	for (id = 0; id < vf_mbox->up_num_msgs; id++) {
 		msg = mdev->mbase + offset;
@@ -695,7 +703,7 @@ static int otx2_register_pfvf_mbox_intr(struct otx2_nic *pf, int numvfs)
 	irq_name = &hw->irq_name[RVU_PF_INT_VEC_VFPF_MBOX0 * NAME_SIZE];
 	if (pf->pcifunc)
 		snprintf(irq_name, NAME_SIZE,
-			 "RVUPF%d_VF Mbox0", rvu_get_pf(pf->pcifunc));
+			 "RVUPF%d_VF Mbox0", rvu_get_pf(pf->pdev, pf->pcifunc));
 	else
 		snprintf(irq_name, NAME_SIZE, "RVUPF_VF Mbox0");
 	err = request_irq(pci_irq_vector(pf->pdev, RVU_PF_INT_VEC_VFPF_MBOX0),
@@ -711,7 +719,8 @@ static int otx2_register_pfvf_mbox_intr(struct otx2_nic *pf, int numvfs)
 		irq_name = &hw->irq_name[RVU_PF_INT_VEC_VFPF_MBOX1 * NAME_SIZE];
 		if (pf->pcifunc)
 			snprintf(irq_name, NAME_SIZE,
-				 "RVUPF%d_VF Mbox1", rvu_get_pf(pf->pcifunc));
+				 "RVUPF%d_VF Mbox1",
+				 rvu_get_pf(pf->pdev, pf->pcifunc));
 		else
 			snprintf(irq_name, NAME_SIZE, "RVUPF_VF Mbox1");
 		err = request_irq(pci_irq_vector(pf->pdev,
@@ -818,6 +827,9 @@ static void otx2_pfaf_mbox_handler(struct work_struct *work)
 
 	offset = mbox->rx_start + ALIGN(sizeof(*rsp_hdr), MBOX_MSG_ALIGN);
 	pf = af_mbox->pfvf;
+
+	trace_otx2_msg_status(pf->pdev, "PF-AF down queue handler(response)",
+			      num_msgs);
 
 	for (id = 0; id < num_msgs; id++) {
 		msg = (struct mbox_msghdr *)(mdev->mbase + offset);
@@ -974,6 +986,9 @@ static void otx2_pfaf_mbox_up_handler(struct work_struct *work)
 
 	offset = mbox->rx_start + ALIGN(sizeof(*rsp_hdr), MBOX_MSG_ALIGN);
 
+	trace_otx2_msg_status(pf->pdev, "PF-AF up queue handler(notification)",
+			      num_msgs);
+
 	for (id = 0; id < num_msgs; id++) {
 		msg = (struct mbox_msghdr *)(mdev->mbase + offset);
 
@@ -1023,6 +1038,9 @@ static irqreturn_t otx2_pfaf_mbox_intr_handler(int irq, void *pf_irq)
 
 		trace_otx2_msg_interrupt(pf->pdev, "UP message from AF to PF",
 					 BIT_ULL(0));
+
+		trace_otx2_msg_status(pf->pdev, "PF-AF up work queued(interrupt)",
+				      hdr->num_msgs);
 	}
 
 	if (mbox_data & MBOX_DOWN_MSG) {
@@ -1039,6 +1057,9 @@ static irqreturn_t otx2_pfaf_mbox_intr_handler(int irq, void *pf_irq)
 
 		trace_otx2_msg_interrupt(pf->pdev, "DOWN reply from AF to PF",
 					 BIT_ULL(0));
+
+		trace_otx2_msg_status(pf->pdev, "PF-AF down work queued(interrupt)",
+				      hdr->num_msgs);
 	}
 
 	return IRQ_HANDLED;
@@ -1954,7 +1975,7 @@ int otx2_open(struct net_device *netdev)
 	if (err) {
 		dev_err(pf->dev,
 			"RVUPF%d: IRQ registration failed for QERR\n",
-			rvu_get_pf(pf->pcifunc));
+			rvu_get_pf(pf->pdev, pf->pcifunc));
 		goto err_disable_napi;
 	}
 
@@ -1972,7 +1993,7 @@ int otx2_open(struct net_device *netdev)
 		if (name_len >= NAME_SIZE) {
 			dev_err(pf->dev,
 				"RVUPF%d: IRQ registration failed for CQ%d, irq name is too long\n",
-				rvu_get_pf(pf->pcifunc), qidx);
+				rvu_get_pf(pf->pdev, pf->pcifunc), qidx);
 			err = -EINVAL;
 			goto err_free_cints;
 		}
@@ -1983,7 +2004,7 @@ int otx2_open(struct net_device *netdev)
 		if (err) {
 			dev_err(pf->dev,
 				"RVUPF%d: IRQ registration failed for CQ%d\n",
-				rvu_get_pf(pf->pcifunc), qidx);
+				rvu_get_pf(pf->pdev, pf->pcifunc), qidx);
 			goto err_free_cints;
 		}
 		vec++;
@@ -2135,6 +2156,7 @@ static netdev_tx_t otx2_xmit(struct sk_buff *skb, struct net_device *netdev)
 {
 	struct otx2_nic *pf = netdev_priv(netdev);
 	int qidx = skb_get_queue_mapping(skb);
+	struct otx2_dev_stats *dev_stats;
 	struct otx2_snd_queue *sq;
 	struct netdev_queue *txq;
 	int sq_idx;
@@ -2147,6 +2169,8 @@ static netdev_tx_t otx2_xmit(struct sk_buff *skb, struct net_device *netdev)
 	/* Check for minimum and maximum packet length */
 	if (skb->len <= ETH_HLEN ||
 	    (!skb_shinfo(skb)->gso_size && skb->len > pf->tx_max_pktlen)) {
+		dev_stats = &pf->hw.dev_stats;
+		atomic_long_inc(&dev_stats->tx_discards);
 		dev_kfree_skb(skb);
 		return NETDEV_TX_OK;
 	}
@@ -3048,7 +3072,7 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		return err;
 	}
 
-	err = pci_request_regions(pdev, DRV_NAME);
+	err = pcim_request_all_regions(pdev, DRV_NAME);
 	if (err) {
 		dev_err(dev, "PCI request regions failed 0x%x\n", err);
 		return err;
@@ -3057,7 +3081,7 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	err = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(48));
 	if (err) {
 		dev_err(dev, "DMA mask config failed, abort\n");
-		goto err_release_regions;
+		return err;
 	}
 
 	pci_set_master(pdev);
@@ -3067,10 +3091,8 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	qos_txqs = min_t(int, qcount, OTX2_QOS_MAX_LEAF_NODES);
 
 	netdev = alloc_etherdev_mqs(sizeof(*pf), qcount + qos_txqs, qcount);
-	if (!netdev) {
-		err = -ENOMEM;
-		goto err_release_regions;
-	}
+	if (!netdev)
+		return -ENOMEM;
 
 	pci_set_drvdata(pdev, netdev);
 	SET_NETDEV_DEV(netdev, &pdev->dev);
@@ -3127,6 +3149,8 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	err = otx2_mcam_flow_init(pf);
 	if (err)
 		goto err_ptp_destroy;
+
+	otx2_set_hw_capabilities(pf);
 
 	err = cn10k_mcs_init(pf);
 	if (err)
@@ -3246,8 +3270,6 @@ err_detach_rsrc:
 err_free_netdev:
 	pci_set_drvdata(pdev, NULL);
 	free_netdev(netdev);
-err_release_regions:
-	pci_release_regions(pdev);
 	return err;
 }
 
@@ -3289,6 +3311,7 @@ static void otx2_vf_link_event_task(struct work_struct *work)
 	req = (struct cgx_link_info_msg *)msghdr;
 	req->hdr.id = MBOX_MSG_CGX_LINK_EVENT;
 	req->hdr.sig = OTX2_MBOX_REQ_SIG;
+	req->hdr.pcifunc = pf->pcifunc;
 	memcpy(&req->link_info, &pf->linfo, sizeof(req->link_info));
 
 	otx2_mbox_wait_for_zero(&pf->mbox_pfvf[0].mbox_up, vf_idx);
@@ -3447,8 +3470,6 @@ static void otx2_remove(struct pci_dev *pdev)
 	pci_free_irq_vectors(pf->pdev);
 	pci_set_drvdata(pdev, NULL);
 	free_netdev(netdev);
-
-	pci_release_regions(pdev);
 }
 
 static struct pci_driver otx2_pf_driver = {

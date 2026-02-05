@@ -1121,7 +1121,7 @@ EXPORT_SYMBOL_NS_GPL(thc_port_select, "INTEL_THC");
 
 static u8 thc_get_spi_freq_div_val(struct thc_device *dev, u32 spi_freq_val)
 {
-	int frequency[] = {
+	static const int frequency[] = {
 		THC_SPI_FREQUENCY_7M,
 		THC_SPI_FREQUENCY_15M,
 		THC_SPI_FREQUENCY_17M,
@@ -1130,7 +1130,7 @@ static u8 thc_get_spi_freq_div_val(struct thc_device *dev, u32 spi_freq_val)
 		THC_SPI_FREQUENCY_31M,
 		THC_SPI_FREQUENCY_41M,
 	};
-	u8 frequency_div[] = {
+	static const u8 frequency_div[] = {
 		THC_SPI_FRQ_DIV_2,
 		THC_SPI_FRQ_DIV_1,
 		THC_SPI_FRQ_DIV_7,
@@ -1539,7 +1539,7 @@ int thc_i2c_subip_regs_save(struct thc_device *dev)
 
 	for (int i = 0; i < ARRAY_SIZE(i2c_subip_regs); i++) {
 		ret = thc_i2c_subip_pio_read(dev, i2c_subip_regs[i],
-					     &read_size, (u32 *)&dev->i2c_subip_regs + i);
+					     &read_size, &dev->i2c_subip_regs[i]);
 		if (ret < 0)
 			return ret;
 	}
@@ -1562,7 +1562,7 @@ int thc_i2c_subip_regs_restore(struct thc_device *dev)
 
 	for (int i = 0; i < ARRAY_SIZE(i2c_subip_regs); i++) {
 		ret = thc_i2c_subip_pio_write(dev, i2c_subip_regs[i],
-					      write_size, (u32 *)&dev->i2c_subip_regs + i);
+					      write_size, &dev->i2c_subip_regs[i]);
 		if (ret < 0)
 			return ret;
 	}

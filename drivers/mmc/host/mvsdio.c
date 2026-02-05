@@ -292,7 +292,7 @@ static u32 mvsd_finish_data(struct mvsd_host *host, struct mmc_data *data,
 		host->pio_ptr = NULL;
 		host->pio_size = 0;
 	} else {
-		dma_unmap_sg(mmc_dev(host->mmc), data->sg, host->sg_frags,
+		dma_unmap_sg(mmc_dev(host->mmc), data->sg, data->sg_len,
 			     mmc_get_dma_dir(data));
 	}
 
@@ -509,7 +509,7 @@ static irqreturn_t mvsd_irq(int irq, void *dev)
 
 static void mvsd_timeout_timer(struct timer_list *t)
 {
-	struct mvsd_host *host = from_timer(host, t, timer);
+	struct mvsd_host *host = timer_container_of(host, t, timer);
 	void __iomem *iobase = host->base;
 	struct mmc_request *mrq;
 	unsigned long flags;

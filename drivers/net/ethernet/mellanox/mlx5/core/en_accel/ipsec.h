@@ -185,6 +185,7 @@ struct mlx5e_ipsec_rx_create_attr {
 	u32 family;
 	int prio;
 	int pol_level;
+	int pol_miss_level;
 	int sa_level;
 	int status_level;
 	enum mlx5_flow_namespace_type chains_ns;
@@ -274,6 +275,7 @@ struct mlx5e_ipsec_limits {
 struct mlx5e_ipsec_sa_entry {
 	struct mlx5e_ipsec_esn_state esn_state;
 	struct xfrm_state *x;
+	struct net_device *dev;
 	struct mlx5e_ipsec *ipsec;
 	struct mlx5_accel_esp_xfrm_attrs attrs;
 	void (*set_iv_op)(struct sk_buff *skb, struct xfrm_state *x,

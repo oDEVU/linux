@@ -82,15 +82,10 @@ static int quicki2c_acpi_get_dsd_property(struct acpi_device *adev, acpi_string 
 {
 	acpi_handle handle = acpi_device_handle(adev);
 	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
-	union acpi_object obj = { .type = type };
-	struct acpi_object_list arg_list = {
-		.count = 1,
-		.pointer = &obj,
-	};
 	union acpi_object *ret_obj;
 	acpi_status status;
 
-	status = acpi_evaluate_object(handle, dsd_method_name, &arg_list, &buffer);
+	status = acpi_evaluate_object(handle, dsd_method_name, NULL, &buffer);
 	if (ACPI_FAILURE(status)) {
 		acpi_handle_err(handle,
 				"Can't evaluate %s method: %d\n", dsd_method_name, status);
@@ -411,6 +406,7 @@ static struct quicki2c_device *quicki2c_dev_init(struct pci_dev *pdev, void __io
  */
 static void quicki2c_dev_deinit(struct quicki2c_device *qcdev)
 {
+	thc_interrupt_quiesce(qcdev->thc_hw, true);
 	thc_interrupt_enable(qcdev->thc_hw, false);
 	thc_ltr_unconfig(qcdev->thc_hw);
 

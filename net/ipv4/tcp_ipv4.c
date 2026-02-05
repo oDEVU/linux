@@ -2417,7 +2417,8 @@ do_time_wait:
 		goto csum_error;
 	}
 
-	tw_status = tcp_timewait_state_process(inet_twsk(sk), skb, th, &isn);
+	tw_status = tcp_timewait_state_process(inet_twsk(sk), skb, th, &isn,
+					       &drop_reason);
 	switch (tw_status) {
 	case TCP_TW_SYN: {
 		struct sock *sk2 = inet_lookup_listener(net,
@@ -2895,7 +2896,7 @@ static void get_openreq4(const struct request_sock *req,
 		jiffies_delta_to_clock_t(delta),
 		req->num_timeout,
 		from_kuid_munged(seq_user_ns(f),
-				 sock_i_uid(req->rsk_listener)),
+				 sk_uid(req->rsk_listener)),
 		0,  /* non standard timer */
 		0, /* open_requests have no inode */
 		0,
@@ -2953,7 +2954,7 @@ static void get_tcp4_sock(struct sock *sk, struct seq_file *f, int i)
 		timer_active,
 		jiffies_delta_to_clock_t(timer_expires - jiffies),
 		icsk->icsk_retransmits,
-		from_kuid_munged(seq_user_ns(f), sock_i_uid(sk)),
+		from_kuid_munged(seq_user_ns(f), sk_uid(sk)),
 		icsk->icsk_probes_out,
 		sock_i_ino(sk),
 		refcount_read(&sk->sk_refcnt), sk,
@@ -3245,9 +3246,9 @@ static int bpf_iter_tcp_seq_show(struct seq_file *seq, void *v)
 		const struct request_sock *req = v;
 
 		uid = from_kuid_munged(seq_user_ns(seq),
-				       sock_i_uid(req->rsk_listener));
+				       sk_uid(req->rsk_listener));
 	} else {
-		uid = from_kuid_munged(seq_user_ns(seq), sock_i_uid(sk));
+		uid = from_kuid_munged(seq_user_ns(seq), sk_uid(sk));
 	}
 
 	meta.seq = seq;
@@ -3494,8 +3495,8 @@ static int __net_init tcp_sk_init(struct net *net)
 	 * which are too large can cause TCP streams to be bursty.
 	 */
 	net->ipv4.sysctl_tcp_tso_win_divisor = 3;
-	/* Default TSQ limit of 16 TSO segments */
-	net->ipv4.sysctl_tcp_limit_output_bytes = 16 * 65536;
+	/* Default TSQ limit of 4 MB */
+	net->ipv4.sysctl_tcp_limit_output_bytes = 4 << 20;
 
 	/* rfc5961 challenge ack rate limiting, per net-ns, disabled by default. */
 	net->ipv4.sysctl_tcp_challenge_ack_limit = INT_MAX;

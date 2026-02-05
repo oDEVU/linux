@@ -183,6 +183,9 @@ static int debugfs_reconfigure(struct fs_context *fc)
 	struct debugfs_fs_info *sb_opts = sb->s_fs_info;
 	struct debugfs_fs_info *new_opts = fc->s_fs_info;
 
+	if (!new_opts)
+		return 0;
+
 	sync_filesystem(sb);
 
 	/* structure copy of new mount options to sb */
@@ -282,10 +285,16 @@ static int debugfs_fill_super(struct super_block *sb, struct fs_context *fc)
 
 static int debugfs_get_tree(struct fs_context *fc)
 {
+	int err;
+
 	if (!(debugfs_allow & DEBUGFS_ALLOW_API))
 		return -EPERM;
 
-	return get_tree_single(fc, debugfs_fill_super);
+	err = get_tree_single(fc, debugfs_fill_super);
+	if (err)
+		return err;
+
+	return debugfs_reconfigure(fc);
 }
 
 static void debugfs_free_fc(struct fs_context *fc)
@@ -346,7 +355,7 @@ struct dentry *debugfs_lookup(const char *name, struct dentry *parent)
 	if (!parent)
 		parent = debugfs_mount->mnt_root;
 
-	dentry = lookup_positive_unlocked(name, parent, strlen(name));
+	dentry = lookup_noperm_positive_unlocked(&QSTR(name), parent);
 	if (IS_ERR(dentry))
 		return NULL;
 	return dentry;
@@ -388,7 +397,7 @@ static struct dentry *start_creating(const char *name, struct dentry *parent)
 	if (unlikely(IS_DEADDIR(d_inode(parent))))
 		dentry = ERR_PTR(-ENOENT);
 	else
-		dentry = lookup_one_len(name, parent, strlen(name));
+		dentry = lookup_noperm(&QSTR(name), parent);
 	if (!IS_ERR(dentry) && d_really_is_positive(dentry)) {
 		if (d_is_dir(dentry))
 			pr_err("Directory '%s' with parent '%s' already present!\n",
@@ -872,7 +881,7 @@ int __printf(2, 3) debugfs_change_name(struct dentry *dentry, const char *fmt, .
 	}
 	if (strcmp(old_name.name.name, new_name) == 0)
 		goto out;
-	target = lookup_one_len(new_name, parent, strlen(new_name));
+	target = lookup_noperm(&QSTR(new_name), parent);
 	if (IS_ERR(target)) {
 		error = PTR_ERR(target);
 		goto out;

@@ -1290,7 +1290,7 @@ static void cw1200_do_join(struct cw1200_common *priv)
 		rcu_read_lock();
 		ssidie = ieee80211_bss_get_ie(bss, WLAN_EID_SSID);
 		if (ssidie) {
-			join.ssid_len = ssidie[1];
+			join.ssid_len = min(ssidie[1], IEEE80211_MAX_SSID_LEN);
 			memcpy(join.ssid, &ssidie[2], join.ssid_len);
 		}
 		rcu_read_unlock();
@@ -2112,7 +2112,8 @@ void cw1200_multicast_stop_work(struct work_struct *work)
 
 void cw1200_mcast_timeout(struct timer_list *t)
 {
-	struct cw1200_common *priv = from_timer(priv, t, mcast_timeout);
+	struct cw1200_common *priv = timer_container_of(priv, t,
+							mcast_timeout);
 
 	wiphy_warn(priv->hw->wiphy,
 		   "Multicast delivery timeout.\n");

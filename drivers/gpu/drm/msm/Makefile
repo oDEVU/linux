@@ -48,7 +48,6 @@ msm-display-$(CONFIG_DRM_MSM_MDP4) += \
 	disp/mdp4/mdp4_dsi_encoder.o \
 	disp/mdp4/mdp4_dtv_encoder.o \
 	disp/mdp4/mdp4_lcdc_encoder.o \
-	disp/mdp4/mdp4_lvds_connector.o \
 	disp/mdp4/mdp4_lvds_pll.o \
 	disp/mdp4/mdp4_irq.o \
 	disp/mdp4/mdp4_kms.o \
@@ -196,6 +195,11 @@ ADRENO_HEADERS = \
 	generated/a4xx.xml.h \
 	generated/a5xx.xml.h \
 	generated/a6xx.xml.h \
+	generated/a6xx_descriptors.xml.h \
+	generated/a6xx_enums.xml.h \
+	generated/a6xx_perfcntrs.xml.h \
+	generated/a7xx_enums.xml.h \
+	generated/a7xx_perfcntrs.xml.h \
 	generated/a6xx_gmu.xml.h \
 	generated/adreno_common.xml.h \
 	generated/adreno_pm4.xml.h \

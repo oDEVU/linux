@@ -583,7 +583,7 @@ const struct file_operations simple_offset_dir_operations = {
 	.fsync		= noop_fsync,
 };
 
-static struct dentry *find_next_child(struct dentry *parent, struct dentry *prev)
+struct dentry *find_next_child(struct dentry *parent, struct dentry *prev)
 {
 	struct dentry *child = NULL, *d;
 
@@ -603,6 +603,7 @@ static struct dentry *find_next_child(struct dentry *parent, struct dentry *prev
 	dput(prev);
 	return child;
 }
+EXPORT_SYMBOL(find_next_child);
 
 void simple_recursive_removal(struct dentry *dentry,
                               void (*callback)(struct dentry *))
@@ -612,7 +613,7 @@ void simple_recursive_removal(struct dentry *dentry,
 		struct dentry *victim = NULL, *child;
 		struct inode *inode = this->d_inode;
 
-		inode_lock(inode);
+		inode_lock_nested(inode, I_MUTEX_CHILD);
 		if (d_is_dir(this))
 			inode->i_flags |= S_DEAD;
 		while ((child = find_next_child(this, victim)) == NULL) {
@@ -624,7 +625,7 @@ void simple_recursive_removal(struct dentry *dentry,
 			victim = this;
 			this = this->d_parent;
 			inode = this->d_inode;
-			inode_lock(inode);
+			inode_lock_nested(inode, I_MUTEX_CHILD);
 			if (simple_positive(victim)) {
 				d_invalidate(victim);	// avoid lost mounts
 				if (d_is_dir(victim))
@@ -1647,10 +1648,14 @@ struct inode *alloc_anon_inode(struct super_block *s)
 	 * that it already _is_ on the dirty list.
 	 */
 	inode->i_state = I_DIRTY;
+	/*
+	 * Historically anonymous inodes don't have a type at all and
+	 * userspace has come to rely on this.
+	 */
 	inode->i_mode = S_IRUSR | S_IWUSR;
 	inode->i_uid = current_fsuid();
 	inode->i_gid = current_fsgid();
-	inode->i_flags |= S_PRIVATE;
+	inode->i_flags |= S_PRIVATE | S_ANON_INODE;
 	simple_inode_init_ts(inode);
 	return inode;
 }
@@ -2121,6 +2126,8 @@ struct dentry *stashed_dentry_get(struct dentry **stashed)
 	dentry = rcu_dereference(*stashed);
 	if (!dentry)
 		return NULL;
+	if (IS_ERR(dentry))
+		return dentry;
 	if (!lockref_get_not_dead(&dentry->d_lockref))
 		return NULL;
 	return dentry;
@@ -2169,8 +2176,7 @@ static struct dentry *prepare_anon_dentry(struct dentry **stashed,
 	return dentry;
 }
 
-static struct dentry *stash_dentry(struct dentry **stashed,
-				   struct dentry *dentry)
+struct dentry *stash_dentry(struct dentry **stashed, struct dentry *dentry)
 {
 	guard(rcu)();
 	for (;;) {
@@ -2211,12 +2217,15 @@ static struct dentry *stash_dentry(struct dentry **stashed,
 int path_from_stashed(struct dentry **stashed, struct vfsmount *mnt, void *data,
 		      struct path *path)
 {
-	struct dentry *dentry;
+	struct dentry *dentry, *res;
 	const struct stashed_operations *sops = mnt->mnt_sb->s_fs_info;
 
 	/* See if dentry can be reused. */
-	path->dentry = stashed_dentry_get(stashed);
-	if (path->dentry) {
+	res = stashed_dentry_get(stashed);
+	if (IS_ERR(res))
+		return PTR_ERR(res);
+	if (res) {
+		path->dentry = res;
 		sops->put_data(data);
 		goto out_path;
 	}
@@ -2227,8 +2236,17 @@ int path_from_stashed(struct dentry **stashed, struct vfsmount *mnt, void *data,
 		return PTR_ERR(dentry);
 
 	/* Added a new dentry. @data is now owned by the filesystem. */
-	path->dentry = stash_dentry(stashed, dentry);
-	if (path->dentry != dentry)
+	if (sops->stash_dentry)
+		res = sops->stash_dentry(stashed, dentry);
+	else
+		res = stash_dentry(stashed, dentry);
+	if (IS_ERR(res)) {
+		dput(dentry);
+		return PTR_ERR(res);
+	}
+	path->dentry = res;
+	/* A dentry was reused. */
+	if (res != dentry)
 		dput(dentry);
 
 out_path:

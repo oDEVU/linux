@@ -9,7 +9,8 @@
 
 static void eiointc_set_sw_coreisr(struct loongarch_eiointc *s)
 {
-	int ipnum, cpu, irq_index, irq_mask, irq;
+	int ipnum, cpu, cpuid, irq;
+	struct kvm_vcpu *vcpu;
 
 	for (irq = 0; irq < EIOINTC_IRQS; irq++) {
 		ipnum = s->ipmap.reg_u8[irq / 32];
@@ -17,20 +18,23 @@ static void eiointc_set_sw_coreisr(struct loongarch_eiointc *s)
 			ipnum = count_trailing_zeros(ipnum);
 			ipnum = (ipnum >= 0 && ipnum < 4) ? ipnum : 0;
 		}
-		irq_index = irq / 32;
-		irq_mask = BIT(irq & 0x1f);
 
-		cpu = s->coremap.reg_u8[irq];
-		if (!!(s->coreisr.reg_u32[cpu][irq_index] & irq_mask))
-			set_bit(irq, s->sw_coreisr[cpu][ipnum]);
+		cpuid = s->coremap.reg_u8[irq];
+		vcpu = kvm_get_vcpu_by_cpuid(s->kvm, cpuid);
+		if (!vcpu)
+			continue;
+
+		cpu = vcpu->vcpu_id;
+		if (test_bit(irq, (unsigned long *)s->coreisr.reg_u32[cpu]))
+			__set_bit(irq, s->sw_coreisr[cpu][ipnum]);
 		else
-			clear_bit(irq, s->sw_coreisr[cpu][ipnum]);
+			__clear_bit(irq, s->sw_coreisr[cpu][ipnum]);
 	}
 }
 
 static void eiointc_update_irq(struct loongarch_eiointc *s, int irq, int level)
 {
-	int ipnum, cpu, found, irq_index, irq_mask;
+	int ipnum, cpu, found;
 	struct kvm_vcpu *vcpu;
 	struct kvm_interrupt vcpu_irq;
 
@@ -41,20 +45,22 @@ static void eiointc_update_irq(struct loongarch_eiointc *s, int irq, int level)
 	}
 
 	cpu = s->sw_coremap[irq];
-	vcpu = kvm_get_vcpu(s->kvm, cpu);
-	irq_index = irq / 32;
-	irq_mask = BIT(irq & 0x1f);
+	vcpu = kvm_get_vcpu_by_id(s->kvm, cpu);
+	if (unlikely(vcpu == NULL)) {
+		kvm_err("%s: invalid target cpu: %d\n", __func__, cpu);
+		return;
+	}
 
 	if (level) {
 		/* if not enable return false */
-		if (((s->enable.reg_u32[irq_index]) & irq_mask) == 0)
+		if (!test_bit(irq, (unsigned long *)s->enable.reg_u32))
 			return;
-		s->coreisr.reg_u32[cpu][irq_index] |= irq_mask;
+		__set_bit(irq, (unsigned long *)s->coreisr.reg_u32[cpu]);
 		found = find_first_bit(s->sw_coreisr[cpu][ipnum], EIOINTC_IRQS);
-		set_bit(irq, s->sw_coreisr[cpu][ipnum]);
+		__set_bit(irq, s->sw_coreisr[cpu][ipnum]);
 	} else {
-		s->coreisr.reg_u32[cpu][irq_index] &= ~irq_mask;
-		clear_bit(irq, s->sw_coreisr[cpu][ipnum]);
+		__clear_bit(irq, (unsigned long *)s->coreisr.reg_u32[cpu]);
+		__clear_bit(irq, s->sw_coreisr[cpu][ipnum]);
 		found = find_first_bit(s->sw_coreisr[cpu][ipnum], EIOINTC_IRQS);
 	}
 
@@ -66,20 +72,25 @@ static void eiointc_update_irq(struct loongarch_eiointc *s, int irq, int level)
 }
 
 static inline void eiointc_update_sw_coremap(struct loongarch_eiointc *s,
-					int irq, void *pvalue, u32 len, bool notify)
+					int irq, u64 val, u32 len, bool notify)
 {
-	int i, cpu;
-	u64 val = *(u64 *)pvalue;
+	int i, cpu, cpuid;
+	struct kvm_vcpu *vcpu;
 
 	for (i = 0; i < len; i++) {
-		cpu = val & 0xff;
+		cpuid = val & 0xff;
 		val = val >> 8;
 
 		if (!(s->status & BIT(EIOINTC_ENABLE_CPU_ENCODE))) {
-			cpu = ffs(cpu) - 1;
-			cpu = (cpu >= 4) ? 0 : cpu;
+			cpuid = ffs(cpuid) - 1;
+			cpuid = (cpuid >= 4) ? 0 : cpuid;
 		}
 
+		vcpu = kvm_get_vcpu_by_cpuid(s->kvm, cpuid);
+		if (!vcpu)
+			continue;
+
+		cpu = vcpu->vcpu_id;
 		if (s->sw_coremap[irq + i] == cpu)
 			continue;
 
@@ -99,8 +110,8 @@ void eiointc_set_irq(struct loongarch_eiointc *s, int irq, int level)
 	unsigned long flags;
 	unsigned long *isr = (unsigned long *)s->isr.reg_u8;
 
-	level ? set_bit(irq, isr) : clear_bit(irq, isr);
 	spin_lock_irqsave(&s->lock, flags);
+	level ? __set_bit(irq, isr) : __clear_bit(irq, isr);
 	eiointc_update_irq(s, irq, level);
 	spin_unlock_irqrestore(&s->lock, flags);
 }
@@ -305,6 +316,11 @@ static int kvm_eiointc_read(struct kvm_vcpu *vcpu,
 		return -EINVAL;
 	}
 
+	if (addr & (len - 1)) {
+		kvm_err("%s: eiointc not aligned addr %llx len %d\n", __func__, addr, len);
+		return -EINVAL;
+	}
+
 	vcpu->kvm->stat.eiointc_read_exits++;
 	spin_lock_irqsave(&eiointc->lock, flags);
 	switch (len) {
@@ -398,7 +414,7 @@ static int loongarch_eiointc_writeb(struct kvm_vcpu *vcpu,
 		irq = offset - EIOINTC_COREMAP_START;
 		index = irq;
 		s->coremap.reg_u8[index] = data;
-		eiointc_update_sw_coremap(s, irq, (void *)&data, sizeof(data), true);
+		eiointc_update_sw_coremap(s, irq, data, sizeof(data), true);
 		break;
 	default:
 		ret = -EINVAL;
@@ -436,17 +452,16 @@ static int loongarch_eiointc_writew(struct kvm_vcpu *vcpu,
 		break;
 	case EIOINTC_ENABLE_START ... EIOINTC_ENABLE_END:
 		index = (offset - EIOINTC_ENABLE_START) >> 1;
-		old_data = s->enable.reg_u32[index];
+		old_data = s->enable.reg_u16[index];
 		s->enable.reg_u16[index] = data;
 		/*
 		 * 1: enable irq.
 		 * update irq when isr is set.
 		 */
 		data = s->enable.reg_u16[index] & ~old_data & s->isr.reg_u16[index];
-		index = index << 1;
 		for (i = 0; i < sizeof(data); i++) {
 			u8 mask = (data >> (i * 8)) & 0xff;
-			eiointc_enable_irq(vcpu, s, index + i, mask, 1);
+			eiointc_enable_irq(vcpu, s, index * 2 + i, mask, 1);
 		}
 		/*
 		 * 0: disable irq.
@@ -455,7 +470,7 @@ static int loongarch_eiointc_writew(struct kvm_vcpu *vcpu,
 		data = ~s->enable.reg_u16[index] & old_data & s->isr.reg_u16[index];
 		for (i = 0; i < sizeof(data); i++) {
 			u8 mask = (data >> (i * 8)) & 0xff;
-			eiointc_enable_irq(vcpu, s, index, mask, 0);
+			eiointc_enable_irq(vcpu, s, index * 2 + i, mask, 0);
 		}
 		break;
 	case EIOINTC_BOUNCE_START ... EIOINTC_BOUNCE_END:
@@ -484,7 +499,7 @@ static int loongarch_eiointc_writew(struct kvm_vcpu *vcpu,
 		irq = offset - EIOINTC_COREMAP_START;
 		index = irq >> 1;
 		s->coremap.reg_u16[index] = data;
-		eiointc_update_sw_coremap(s, irq, (void *)&data, sizeof(data), true);
+		eiointc_update_sw_coremap(s, irq, data, sizeof(data), true);
 		break;
 	default:
 		ret = -EINVAL;
@@ -529,10 +544,9 @@ static int loongarch_eiointc_writel(struct kvm_vcpu *vcpu,
 		 * update irq when isr is set.
 		 */
 		data = s->enable.reg_u32[index] & ~old_data & s->isr.reg_u32[index];
-		index = index << 2;
 		for (i = 0; i < sizeof(data); i++) {
 			u8 mask = (data >> (i * 8)) & 0xff;
-			eiointc_enable_irq(vcpu, s, index + i, mask, 1);
+			eiointc_enable_irq(vcpu, s, index * 4 + i, mask, 1);
 		}
 		/*
 		 * 0: disable irq.
@@ -541,7 +555,7 @@ static int loongarch_eiointc_writel(struct kvm_vcpu *vcpu,
 		data = ~s->enable.reg_u32[index] & old_data & s->isr.reg_u32[index];
 		for (i = 0; i < sizeof(data); i++) {
 			u8 mask = (data >> (i * 8)) & 0xff;
-			eiointc_enable_irq(vcpu, s, index, mask, 0);
+			eiointc_enable_irq(vcpu, s, index * 4 + i, mask, 0);
 		}
 		break;
 	case EIOINTC_BOUNCE_START ... EIOINTC_BOUNCE_END:
@@ -570,7 +584,7 @@ static int loongarch_eiointc_writel(struct kvm_vcpu *vcpu,
 		irq = offset - EIOINTC_COREMAP_START;
 		index = irq >> 2;
 		s->coremap.reg_u32[index] = data;
-		eiointc_update_sw_coremap(s, irq, (void *)&data, sizeof(data), true);
+		eiointc_update_sw_coremap(s, irq, data, sizeof(data), true);
 		break;
 	default:
 		ret = -EINVAL;
@@ -615,10 +629,9 @@ static int loongarch_eiointc_writeq(struct kvm_vcpu *vcpu,
 		 * update irq when isr is set.
 		 */
 		data = s->enable.reg_u64[index] & ~old_data & s->isr.reg_u64[index];
-		index = index << 3;
 		for (i = 0; i < sizeof(data); i++) {
 			u8 mask = (data >> (i * 8)) & 0xff;
-			eiointc_enable_irq(vcpu, s, index + i, mask, 1);
+			eiointc_enable_irq(vcpu, s, index * 8 + i, mask, 1);
 		}
 		/*
 		 * 0: disable irq.
@@ -627,7 +640,7 @@ static int loongarch_eiointc_writeq(struct kvm_vcpu *vcpu,
 		data = ~s->enable.reg_u64[index] & old_data & s->isr.reg_u64[index];
 		for (i = 0; i < sizeof(data); i++) {
 			u8 mask = (data >> (i * 8)) & 0xff;
-			eiointc_enable_irq(vcpu, s, index, mask, 0);
+			eiointc_enable_irq(vcpu, s, index * 8 + i, mask, 0);
 		}
 		break;
 	case EIOINTC_BOUNCE_START ... EIOINTC_BOUNCE_END:
@@ -656,7 +669,7 @@ static int loongarch_eiointc_writeq(struct kvm_vcpu *vcpu,
 		irq = offset - EIOINTC_COREMAP_START;
 		index = irq >> 3;
 		s->coremap.reg_u64[index] = data;
-		eiointc_update_sw_coremap(s, irq, (void *)&data, sizeof(data), true);
+		eiointc_update_sw_coremap(s, irq, data, sizeof(data), true);
 		break;
 	default:
 		ret = -EINVAL;
@@ -676,6 +689,11 @@ static int kvm_eiointc_write(struct kvm_vcpu *vcpu,
 
 	if (!eiointc) {
 		kvm_err("%s: eiointc irqchip not valid!\n", __func__);
+		return -EINVAL;
+	}
+
+	if (addr & (len - 1)) {
+		kvm_err("%s: eiointc not aligned addr %llx len %d\n", __func__, addr, len);
 		return -EINVAL;
 	}
 
@@ -787,20 +805,31 @@ static int kvm_eiointc_ctrl_access(struct kvm_device *dev,
 	int ret = 0;
 	unsigned long flags;
 	unsigned long type = (unsigned long)attr->attr;
-	u32 i, start_irq;
+	u32 i, start_irq, val;
 	void __user *data;
 	struct loongarch_eiointc *s = dev->kvm->arch.eiointc;
 
 	data = (void __user *)attr->addr;
+	switch (type) {
+	case KVM_DEV_LOONGARCH_EXTIOI_CTRL_INIT_NUM_CPU:
+	case KVM_DEV_LOONGARCH_EXTIOI_CTRL_INIT_FEATURE:
+		if (copy_from_user(&val, data, 4))
+			return -EFAULT;
+		break;
+	default:
+		break;
+	}
+
 	spin_lock_irqsave(&s->lock, flags);
 	switch (type) {
 	case KVM_DEV_LOONGARCH_EXTIOI_CTRL_INIT_NUM_CPU:
-		if (copy_from_user(&s->num_cpu, data, 4))
-			ret = -EFAULT;
+		if (val >= EIOINTC_ROUTE_MAX_VCPUS)
+			ret = -EINVAL;
+		else
+			s->num_cpu = val;
 		break;
 	case KVM_DEV_LOONGARCH_EXTIOI_CTRL_INIT_FEATURE:
-		if (copy_from_user(&s->features, data, 4))
-			ret = -EFAULT;
+		s->features = val;
 		if (!(s->features & BIT(EIOINTC_HAS_VIRT_EXTENSION)))
 			s->status |= BIT(EIOINTC_ENABLE);
 		break;
@@ -809,7 +838,7 @@ static int kvm_eiointc_ctrl_access(struct kvm_device *dev,
 		for (i = 0; i < (EIOINTC_IRQS / 4); i++) {
 			start_irq = i * 4;
 			eiointc_update_sw_coremap(s, start_irq,
-					(void *)&s->coremap.reg_u32[i], sizeof(u32), false);
+					s->coremap.reg_u32[i], sizeof(u32), false);
 		}
 		break;
 	default:
@@ -822,19 +851,17 @@ static int kvm_eiointc_ctrl_access(struct kvm_device *dev,
 
 static int kvm_eiointc_regs_access(struct kvm_device *dev,
 					struct kvm_device_attr *attr,
-					bool is_write)
+					bool is_write, int *data)
 {
-	int addr, cpuid, offset, ret = 0;
+	int addr, cpu, offset, ret = 0;
 	unsigned long flags;
 	void *p = NULL;
-	void __user *data;
 	struct loongarch_eiointc *s;
 
 	s = dev->kvm->arch.eiointc;
 	addr = attr->attr;
-	cpuid = addr >> 16;
+	cpu = addr >> 16;
 	addr &= 0xffff;
-	data = (void __user *)attr->addr;
 	switch (addr) {
 	case EIOINTC_NODETYPE_START ... EIOINTC_NODETYPE_END:
 		offset = (addr - EIOINTC_NODETYPE_START) / 4;
@@ -857,8 +884,11 @@ static int kvm_eiointc_regs_access(struct kvm_device *dev,
 		p = &s->isr.reg_u32[offset];
 		break;
 	case EIOINTC_COREISR_START ... EIOINTC_COREISR_END:
+		if (cpu >= s->num_cpu)
+			return -EINVAL;
+
 		offset = (addr - EIOINTC_COREISR_START) / 4;
-		p = &s->coreisr.reg_u32[cpuid][offset];
+		p = &s->coreisr.reg_u32[cpu][offset];
 		break;
 	case EIOINTC_COREMAP_START ... EIOINTC_COREMAP_END:
 		offset = (addr - EIOINTC_COREMAP_START) / 4;
@@ -870,13 +900,10 @@ static int kvm_eiointc_regs_access(struct kvm_device *dev,
 	}
 
 	spin_lock_irqsave(&s->lock, flags);
-	if (is_write) {
-		if (copy_from_user(p, data, 4))
-			ret = -EFAULT;
-	} else {
-		if (copy_to_user(data, p, 4))
-			ret = -EFAULT;
-	}
+	if (is_write)
+		memcpy(p, data, 4);
+	else
+		memcpy(data, p, 4);
 	spin_unlock_irqrestore(&s->lock, flags);
 
 	return ret;
@@ -884,24 +911,28 @@ static int kvm_eiointc_regs_access(struct kvm_device *dev,
 
 static int kvm_eiointc_sw_status_access(struct kvm_device *dev,
 					struct kvm_device_attr *attr,
-					bool is_write)
+					bool is_write, int *data)
 {
 	int addr, ret = 0;
 	unsigned long flags;
 	void *p = NULL;
-	void __user *data;
 	struct loongarch_eiointc *s;
 
 	s = dev->kvm->arch.eiointc;
 	addr = attr->attr;
 	addr &= 0xffff;
 
-	data = (void __user *)attr->addr;
 	switch (addr) {
 	case KVM_DEV_LOONGARCH_EXTIOI_SW_STATUS_NUM_CPU:
+		if (is_write)
+			return ret;
+
 		p = &s->num_cpu;
 		break;
 	case KVM_DEV_LOONGARCH_EXTIOI_SW_STATUS_FEATURE:
+		if (is_write)
+			return ret;
+
 		p = &s->features;
 		break;
 	case KVM_DEV_LOONGARCH_EXTIOI_SW_STATUS_STATE:
@@ -912,13 +943,10 @@ static int kvm_eiointc_sw_status_access(struct kvm_device *dev,
 		return -EINVAL;
 	}
 	spin_lock_irqsave(&s->lock, flags);
-	if (is_write) {
-		if (copy_from_user(p, data, 4))
-			ret = -EFAULT;
-	} else {
-		if (copy_to_user(data, p, 4))
-			ret = -EFAULT;
-	}
+	if (is_write)
+		memcpy(p, data, 4);
+	else
+		memcpy(data, p, 4);
 	spin_unlock_irqrestore(&s->lock, flags);
 
 	return ret;
@@ -927,11 +955,27 @@ static int kvm_eiointc_sw_status_access(struct kvm_device *dev,
 static int kvm_eiointc_get_attr(struct kvm_device *dev,
 				struct kvm_device_attr *attr)
 {
+	int ret, data;
+
 	switch (attr->group) {
 	case KVM_DEV_LOONGARCH_EXTIOI_GRP_REGS:
-		return kvm_eiointc_regs_access(dev, attr, false);
+		ret = kvm_eiointc_regs_access(dev, attr, false, &data);
+		if (ret)
+			return ret;
+
+		if (copy_to_user((void __user *)attr->addr, &data, 4))
+			ret = -EFAULT;
+
+		return ret;
 	case KVM_DEV_LOONGARCH_EXTIOI_GRP_SW_STATUS:
-		return kvm_eiointc_sw_status_access(dev, attr, false);
+		ret = kvm_eiointc_sw_status_access(dev, attr, false, &data);
+		if (ret)
+			return ret;
+
+		if (copy_to_user((void __user *)attr->addr, &data, 4))
+			ret = -EFAULT;
+
+		return ret;
 	default:
 		return -EINVAL;
 	}
@@ -940,13 +984,21 @@ static int kvm_eiointc_get_attr(struct kvm_device *dev,
 static int kvm_eiointc_set_attr(struct kvm_device *dev,
 				struct kvm_device_attr *attr)
 {
+	int data;
+
 	switch (attr->group) {
 	case KVM_DEV_LOONGARCH_EXTIOI_GRP_CTRL:
 		return kvm_eiointc_ctrl_access(dev, attr);
 	case KVM_DEV_LOONGARCH_EXTIOI_GRP_REGS:
-		return kvm_eiointc_regs_access(dev, attr, true);
+		if (copy_from_user(&data, (void __user *)attr->addr, 4))
+			return -EFAULT;
+
+		return kvm_eiointc_regs_access(dev, attr, true, &data);
 	case KVM_DEV_LOONGARCH_EXTIOI_GRP_SW_STATUS:
-		return kvm_eiointc_sw_status_access(dev, attr, true);
+		if (copy_from_user(&data, (void __user *)attr->addr, 4))
+			return -EFAULT;
+
+		return kvm_eiointc_sw_status_access(dev, attr, true, &data);
 	default:
 		return -EINVAL;
 	}

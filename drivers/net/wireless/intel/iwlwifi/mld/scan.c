@@ -359,7 +359,7 @@ iwl_mld_scan_fits(struct iwl_mld *mld, int n_ssids,
 		  struct ieee80211_scan_ies *ies, int n_channels)
 {
 	return ((n_ssids <= PROBE_OPTION_MAX) &&
-		(n_channels <= mld->fw->ucode_capa.n_scan_channels) &
+		(n_channels <= mld->fw->ucode_capa.n_scan_channels) &&
 		(ies->common_ie_len + ies->len[NL80211_BAND_2GHZ] +
 		 ies->len[NL80211_BAND_5GHZ] + ies->len[NL80211_BAND_6GHZ] <=
 		 iwl_mld_scan_max_template_size()));
@@ -1920,6 +1920,9 @@ void iwl_mld_handle_scan_complete_notif(struct iwl_mld *mld,
 			IWL_DEBUG_SCAN(mld, "Scan link is no longer valid\n");
 
 		ieee80211_scan_completed(mld->hw, &info);
+
+		/* Scan is over, we can check again the tpt counters */
+		iwl_mld_stop_ignoring_tpt_updates(mld);
 	} else if (mld->scan.uid_status[uid] == IWL_MLD_SCAN_SCHED) {
 		ieee80211_sched_scan_stopped(mld->hw);
 		mld->scan.pass_all_sched_res = SCHED_SCAN_PASS_ALL_STATE_DISABLED;

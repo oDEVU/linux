@@ -2000,7 +2000,7 @@ mtk_wed_configure_irq(struct mtk_wed_device *dev, u32 irq_mask)
 		if (mtk_wed_is_v3_or_greater(dev->hw))
 			wed_set(dev, MTK_WED_CTRL, MTK_WED_CTRL_TX_TKID_ALI_EN);
 
-		/* initail tx interrupt trigger */
+		/* initial tx interrupt trigger */
 		wed_w32(dev, MTK_WED_WPDMA_INT_CTRL_TX,
 			MTK_WED_WPDMA_INT_CTRL_TX0_DONE_EN |
 			MTK_WED_WPDMA_INT_CTRL_TX0_DONE_CLR |
@@ -2011,7 +2011,7 @@ mtk_wed_configure_irq(struct mtk_wed_device *dev, u32 irq_mask)
 			FIELD_PREP(MTK_WED_WPDMA_INT_CTRL_TX1_DONE_TRIG,
 				   dev->wlan.tx_tbit[1]));
 
-		/* initail txfree interrupt trigger */
+		/* initial txfree interrupt trigger */
 		wed_w32(dev, MTK_WED_WPDMA_INT_CTRL_TX_FREE,
 			MTK_WED_WPDMA_INT_CTRL_TX_FREE_DONE_EN |
 			MTK_WED_WPDMA_INT_CTRL_TX_FREE_DONE_CLR |
@@ -2794,7 +2794,6 @@ void mtk_wed_add_hw(struct device_node *np, struct mtk_eth *eth,
 	if (!pdev)
 		goto err_of_node_put;
 
-	get_device(&pdev->dev);
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
 		goto err_put_device;

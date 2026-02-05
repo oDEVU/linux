@@ -1193,6 +1193,14 @@ again:
 			     "required MCSes not supported, disabling EHT\n");
 	}
 
+	if (conn->mode >= IEEE80211_CONN_MODE_EHT &&
+	    channel->band != NL80211_BAND_2GHZ &&
+	    conn->bw_limit == IEEE80211_CONN_BW_LIMIT_40) {
+		conn->mode = IEEE80211_CONN_MODE_HE;
+		link_id_info(sdata, link_id,
+			     "required bandwidth not supported, disabling EHT\n");
+	}
+
 	/* the mode can only decrease, so this must terminate */
 	if (ap_mode != conn->mode) {
 		kfree(elems);
@@ -1218,17 +1226,35 @@ EXPORT_SYMBOL_IF_MAC80211_KUNIT(ieee80211_determine_chan_mode);
 
 static int ieee80211_config_bw(struct ieee80211_link_data *link,
 			       struct ieee802_11_elems *elems,
-			       bool update, u64 *changed,
-			       const char *frame)
+			       bool update, u64 *changed, u16 stype)
 {
 	struct ieee80211_channel *channel = link->conf->chanreq.oper.chan;
 	struct ieee80211_sub_if_data *sdata = link->sdata;
 	struct ieee80211_chan_req chanreq = {};
 	struct cfg80211_chan_def ap_chandef;
 	enum ieee80211_conn_mode ap_mode;
+	const char *frame;
 	u32 vht_cap_info = 0;
 	u16 ht_opmode;
 	int ret;
+
+	switch (stype) {
+	case IEEE80211_STYPE_BEACON:
+		frame = "beacon";
+		break;
+	case IEEE80211_STYPE_ASSOC_RESP:
+		frame = "assoc response";
+		break;
+	case IEEE80211_STYPE_REASSOC_RESP:
+		frame = "reassoc response";
+		break;
+	case IEEE80211_STYPE_ACTION:
+		/* the only action frame that gets here */
+		frame = "ML reconf response";
+		break;
+	default:
+		return -EINVAL;
+	}
 
 	/* don't track any bandwidth changes in legacy/S1G modes */
 	if (link->u.mgd.conn.mode == IEEE80211_CONN_MODE_LEGACY ||
@@ -1278,7 +1304,9 @@ static int ieee80211_config_bw(struct ieee80211_link_data *link,
 			ieee80211_min_bw_limit_from_chandef(&chanreq.oper))
 		ieee80211_chandef_downgrade(&chanreq.oper, NULL);
 
-	if (ap_chandef.chan->band == NL80211_BAND_6GHZ &&
+	/* TPE element is not present in (re)assoc/ML reconfig response */
+	if (stype == IEEE80211_STYPE_BEACON &&
+	    ap_chandef.chan->band == NL80211_BAND_6GHZ &&
 	    link->u.mgd.conn.mode >= IEEE80211_CONN_MODE_HE) {
 		ieee80211_rearrange_tpe(&elems->tpe, &ap_chandef,
 					&chanreq.oper);
@@ -1525,9 +1553,9 @@ static void ieee80211_assoc_add_rates(struct ieee80211_local *local,
 		rates = ~0;
 	}
 
-	ieee80211_put_srates_elem(skb, sband, 0, 0, ~rates,
+	ieee80211_put_srates_elem(skb, sband, 0, ~rates,
 				  WLAN_EID_SUPP_RATES);
-	ieee80211_put_srates_elem(skb, sband, 0, 0, ~rates,
+	ieee80211_put_srates_elem(skb, sband, 0, ~rates,
 				  WLAN_EID_EXT_SUPP_RATES);
 }
 
@@ -2515,7 +2543,8 @@ ieee80211_sta_abort_chanswitch(struct ieee80211_link_data *link)
 	if (!local->ops->abort_channel_switch)
 		return;
 
-	ieee80211_link_unreserve_chanctx(link);
+	if (rcu_access_pointer(link->conf->chanctx_conf))
+		ieee80211_link_unreserve_chanctx(link);
 
 	ieee80211_vif_unblock_queues_csa(sdata);
 
@@ -3383,7 +3412,8 @@ void ieee80211_dynamic_ps_enable_work(struct wiphy *wiphy,
 
 void ieee80211_dynamic_ps_timer(struct timer_list *t)
 {
-	struct ieee80211_local *local = from_timer(local, t, dynamic_ps_timer);
+	struct ieee80211_local *local = timer_container_of(local, t,
+							   dynamic_ps_timer);
 
 	wiphy_work_queue(local->hw.wiphy, &local->dynamic_ps_enable_work);
 }
@@ -3932,6 +3962,9 @@ static void ieee80211_set_disassoc(struct ieee80211_sub_if_data *sdata,
 	};
 
 	lockdep_assert_wiphy(local->hw.wiphy);
+
+	if (frame_buf)
+		memset(frame_buf, 0, IEEE80211_DEAUTH_FRAME_LEN);
 
 	if (WARN_ON(!ap_sta))
 		return;
@@ -4733,6 +4766,7 @@ static void ieee80211_rx_mgmt_auth(struct ieee80211_sub_if_data *sdata,
 	struct ieee80211_prep_tx_info info = {
 		.subtype = IEEE80211_STYPE_AUTH,
 	};
+	bool sae_need_confirm = false;
 
 	lockdep_assert_wiphy(sdata->local->hw.wiphy);
 
@@ -4778,6 +4812,8 @@ static void ieee80211_rx_mgmt_auth(struct ieee80211_sub_if_data *sdata,
 				jiffies + IEEE80211_AUTH_WAIT_SAE_RETRY;
 			ifmgd->auth_data->timeout_started = true;
 			run_again(sdata, ifmgd->auth_data->timeout);
+			if (auth_transaction == 1)
+				sae_need_confirm = true;
 			goto notify_driver;
 		}
 
@@ -4821,6 +4857,9 @@ static void ieee80211_rx_mgmt_auth(struct ieee80211_sub_if_data *sdata,
 		if (!ieee80211_mark_sta_auth(sdata))
 			return; /* ignore frame -- wait for timeout */
 	} else if (ifmgd->auth_data->algorithm == WLAN_AUTH_SAE &&
+		   auth_transaction == 1) {
+		sae_need_confirm = true;
+	} else if (ifmgd->auth_data->algorithm == WLAN_AUTH_SAE &&
 		   auth_transaction == 2) {
 		sdata_info(sdata, "SAE peer confirmed\n");
 		ifmgd->auth_data->peer_confirmed = true;
@@ -4828,7 +4867,8 @@ static void ieee80211_rx_mgmt_auth(struct ieee80211_sub_if_data *sdata,
 
 	cfg80211_rx_mlme_mgmt(sdata->dev, (u8 *)mgmt, len);
 notify_driver:
-	drv_mgd_complete_tx(sdata->local, sdata, &info);
+	if (!sae_need_confirm)
+		drv_mgd_complete_tx(sdata->local, sdata, &info);
 }
 
 #define case_WLAN(type) \
@@ -5290,7 +5330,9 @@ static bool ieee80211_assoc_config_link(struct ieee80211_link_data *link,
 	/* check/update if AP changed anything in assoc response vs. scan */
 	if (ieee80211_config_bw(link, elems,
 				link_id == assoc_data->assoc_link_id,
-				changed, "assoc response")) {
+				changed,
+				le16_to_cpu(mgmt->frame_control) &
+					IEEE80211_FCTL_STYPE)) {
 		ret = false;
 		goto out;
 	}
@@ -7194,6 +7236,7 @@ static void ieee80211_rx_mgmt_beacon(struct ieee80211_link_data *link,
 	struct ieee80211_bss_conf *bss_conf = link->conf;
 	struct ieee80211_vif_cfg *vif_cfg = &sdata->vif.cfg;
 	struct ieee80211_mgmt *mgmt = (void *) hdr;
+	struct ieee80211_ext *ext = NULL;
 	size_t baselen;
 	struct ieee802_11_elems *elems;
 	struct ieee80211_local *local = sdata->local;
@@ -7219,12 +7262,9 @@ static void ieee80211_rx_mgmt_beacon(struct ieee80211_link_data *link,
 	/* Process beacon from the current BSS */
 	bssid = ieee80211_get_bssid(hdr, len, sdata->vif.type);
 	if (ieee80211_is_s1g_beacon(mgmt->frame_control)) {
-		struct ieee80211_ext *ext = (void *) mgmt;
-
-		if (ieee80211_is_s1g_short_beacon(ext->frame_control))
-			variable = ext->u.s1g_short_beacon.variable;
-		else
-			variable = ext->u.s1g_beacon.variable;
+		ext = (void *)mgmt;
+		variable = ext->u.s1g_beacon.variable +
+			   ieee80211_s1g_optional_len(ext->frame_control);
 	}
 
 	baselen = (u8 *) variable - (u8 *) mgmt;
@@ -7409,7 +7449,9 @@ static void ieee80211_rx_mgmt_beacon(struct ieee80211_link_data *link,
 	}
 
 	if ((ncrc == link->u.mgd.beacon_crc && link->u.mgd.beacon_crc_valid) ||
-	    ieee80211_is_s1g_short_beacon(mgmt->frame_control))
+	    (ext && ieee80211_is_s1g_short_beacon(ext->frame_control,
+						  parse_params.start,
+						  parse_params.len)))
 		goto free;
 	link->u.mgd.beacon_crc = ncrc;
 	link->u.mgd.beacon_crc_valid = true;
@@ -7478,7 +7520,8 @@ static void ieee80211_rx_mgmt_beacon(struct ieee80211_link_data *link,
 
 	changed |= ieee80211_recalc_twt_req(sdata, sband, link, link_sta, elems);
 
-	if (ieee80211_config_bw(link, elems, true, &changed, "beacon")) {
+	if (ieee80211_config_bw(link, elems, true, &changed,
+				IEEE80211_STYPE_BEACON)) {
 		ieee80211_set_disassoc(sdata, IEEE80211_STYPE_DEAUTH,
 				       WLAN_REASON_DEAUTH_LEAVING,
 				       true, deauth_buf);
@@ -8082,7 +8125,7 @@ void ieee80211_sta_rx_queued_mgmt(struct ieee80211_sub_if_data *sdata,
 static void ieee80211_sta_timer(struct timer_list *t)
 {
 	struct ieee80211_sub_if_data *sdata =
-		from_timer(sdata, t, u.mgd.timer);
+		timer_container_of(sdata, t, u.mgd.timer);
 
 	wiphy_work_queue(sdata->local->hw.wiphy, &sdata->work);
 }
@@ -8388,7 +8431,7 @@ void ieee80211_sta_work(struct ieee80211_sub_if_data *sdata)
 static void ieee80211_sta_bcn_mon_timer(struct timer_list *t)
 {
 	struct ieee80211_sub_if_data *sdata =
-		from_timer(sdata, t, u.mgd.bcn_mon_timer);
+		timer_container_of(sdata, t, u.mgd.bcn_mon_timer);
 
 	if (WARN_ON(ieee80211_vif_is_mld(&sdata->vif)))
 		return;
@@ -8408,7 +8451,7 @@ static void ieee80211_sta_bcn_mon_timer(struct timer_list *t)
 static void ieee80211_sta_conn_mon_timer(struct timer_list *t)
 {
 	struct ieee80211_sub_if_data *sdata =
-		from_timer(sdata, t, u.mgd.conn_mon_timer);
+		timer_container_of(sdata, t, u.mgd.conn_mon_timer);
 	struct ieee80211_if_managed *ifmgd = &sdata->u.mgd;
 	struct ieee80211_local *local = sdata->local;
 	struct sta_info *sta;
@@ -10701,8 +10744,8 @@ static void ieee80211_ml_epcs(struct ieee80211_sub_if_data *sdata,
 	 */
 	for_each_mle_subelement(sub, (const u8 *)elems->ml_epcs,
 				elems->ml_epcs_len) {
+		struct ieee802_11_elems *link_elems __free(kfree) = NULL;
 		struct ieee80211_link_data *link;
-		struct ieee802_11_elems *link_elems __free(kfree);
 		u8 *pos = (void *)sub->data;
 		u16 control;
 		ssize_t len;

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
  * proactive reclamation: monitor access pattern of a given process, find
- * regiosn that seems not accessed, and proactively page out the regions.
+ * regions that seems not accessed, and proactively page out the regions.
  */
 
 #define pr_fmt(fmt) "damon_sample_prcl: " fmt
@@ -17,14 +17,14 @@ module_param(target_pid, int, 0600);
 static int damon_sample_prcl_enable_store(
 		const char *val, const struct kernel_param *kp);
 
-static const struct kernel_param_ops enable_param_ops = {
+static const struct kernel_param_ops enabled_param_ops = {
 	.set = damon_sample_prcl_enable_store,
 	.get = param_get_bool,
 };
 
-static bool enable __read_mostly;
-module_param_cb(enable, &enable_param_ops, &enable, 0600);
-MODULE_PARM_DESC(enable, "Enable of disable DAMON_SAMPLE_WSSE");
+static bool enabled __read_mostly;
+module_param_cb(enabled, &enabled_param_ops, &enabled, 0600);
+MODULE_PARM_DESC(enabled, "Enable or disable DAMON_SAMPLE_PRCL");
 
 static struct damon_ctx *ctx;
 static struct pid *target_pidp;
@@ -109,27 +109,44 @@ static void damon_sample_prcl_stop(void)
 		put_pid(target_pidp);
 }
 
+static bool init_called;
+
 static int damon_sample_prcl_enable_store(
 		const char *val, const struct kernel_param *kp)
 {
-	bool enabled = enable;
+	bool is_enabled = enabled;
 	int err;
 
-	err = kstrtobool(val, &enable);
+	err = kstrtobool(val, &enabled);
 	if (err)
 		return err;
 
-	if (enable == enabled)
+	if (enabled == is_enabled)
 		return 0;
 
-	if (enable)
-		return damon_sample_prcl_start();
+	if (!init_called)
+		return 0;
+
+	if (enabled) {
+		err = damon_sample_prcl_start();
+		if (err)
+			enabled = false;
+		return err;
+	}
 	damon_sample_prcl_stop();
 	return 0;
 }
 
 static int __init damon_sample_prcl_init(void)
 {
+	int err = 0;
+
+	init_called = true;
+	if (enabled) {
+		err = damon_sample_prcl_start();
+		if (err)
+			enabled = false;
+	}
 	return 0;
 }
 

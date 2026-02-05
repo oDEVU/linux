@@ -87,7 +87,8 @@ static struct msm_ringbuffer *get_next_ring(struct msm_gpu *gpu)
 
 static void a6xx_preempt_timer(struct timer_list *t)
 {
-	struct a6xx_gpu *a6xx_gpu = from_timer(a6xx_gpu, t, preempt_timer);
+	struct a6xx_gpu *a6xx_gpu = timer_container_of(a6xx_gpu, t,
+						       preempt_timer);
 	struct msm_gpu *gpu = &a6xx_gpu->base.base;
 	struct drm_device *dev = gpu->dev;
 
@@ -209,7 +210,7 @@ void a6xx_preempt_hw_init(struct msm_gpu *gpu)
 	gpu_write64(gpu, REG_A6XX_CP_CONTEXT_SWITCH_SMMU_INFO, 0);
 
 	/* Enable the GMEM save/restore feature for preemption */
-	gpu_write(gpu, REG_A6XX_RB_CONTEXT_SWITCH_GMEM_SAVE_RESTORE, 0x1);
+	gpu_write(gpu, REG_A6XX_RB_CONTEXT_SWITCH_GMEM_SAVE_RESTORE_ENABLE, 0x1);
 
 	/* Reset the preemption state */
 	set_preempt_state(a6xx_gpu, PREEMPT_NONE);

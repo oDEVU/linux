@@ -41,6 +41,8 @@
 #define UVC_EXT_GPIO_UNIT		0x7ffe
 #define UVC_EXT_GPIO_UNIT_ID		0x100
 
+#define UVC_INVALID_ENTITY_ID          0xffff
+
 /* ------------------------------------------------------------------------
  * Driver specific constants.
  */
@@ -133,6 +135,8 @@ struct uvc_control_mapping {
 	u32 master_id;
 	s32 master_manual;
 	u32 slave_ids[2];
+
+	bool disabled;
 
 	const struct uvc_control_mapping *(*filter_mapping)
 				(struct uvc_video_chain *chain,
@@ -630,6 +634,7 @@ struct uvc_fh {
 	struct uvc_streaming *stream;
 	enum uvc_handle_state state;
 	unsigned int pending_async_ctrls;
+	bool is_streaming;
 };
 
 /* ------------------------------------------------------------------------
@@ -766,6 +771,10 @@ int uvc_status_resume(struct uvc_device *dev);
 void uvc_status_suspend(struct uvc_device *dev);
 int uvc_status_get(struct uvc_device *dev);
 void uvc_status_put(struct uvc_device *dev);
+
+/* PM */
+int uvc_pm_get(struct uvc_device *dev);
+void uvc_pm_put(struct uvc_device *dev);
 
 /* Controls */
 extern const struct v4l2_subscribed_event_ops uvc_ctrl_sub_ev_ops;

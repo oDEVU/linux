@@ -479,7 +479,7 @@ static int rzg2l_mipi_dsi_start_video(struct rzg2l_mipi_dsi *dsi)
 	u32 status;
 	int ret;
 
-	/* Configuration for Blanking sequence and start video input*/
+	/* Configuration for Blanking sequence and start video input */
 	vich1set0r = VICH1SET0R_HFPNOLP | VICH1SET0R_HBPNOLP |
 		     VICH1SET0R_HSANOLP | VICH1SET0R_VSTART;
 	rzg2l_mipi_dsi_link_write(dsi, VICH1SET0R, vich1set0r);
@@ -523,11 +523,12 @@ err:
  */
 
 static int rzg2l_mipi_dsi_attach(struct drm_bridge *bridge,
+				 struct drm_encoder *encoder,
 				 enum drm_bridge_attach_flags flags)
 {
 	struct rzg2l_mipi_dsi *dsi = bridge_to_rzg2l_mipi_dsi(bridge);
 
-	return drm_bridge_attach(bridge->encoder, dsi->next_bridge, bridge,
+	return drm_bridge_attach(encoder, dsi->next_bridge, bridge,
 				 flags);
 }
 
@@ -583,6 +584,9 @@ rzg2l_mipi_dsi_bridge_mode_valid(struct drm_bridge *bridge,
 {
 	if (mode->clock > 148500)
 		return MODE_CLOCK_HIGH;
+
+	if (mode->clock < 5803)
+		return MODE_CLOCK_LOW;
 
 	return MODE_OK;
 }

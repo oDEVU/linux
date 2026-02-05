@@ -6,6 +6,7 @@
 #include <linux/pci.h>
 #include <linux/rtnetlink.h>
 #include <linux/types.h>
+#include <net/devlink.h>
 
 #include "fbnic.h"
 #include "fbnic_drvinfo.h"
@@ -117,14 +118,12 @@ static void fbnic_service_task_start(struct fbnic_net *fbn)
 	struct fbnic_dev *fbd = fbn->fbd;
 
 	schedule_delayed_work(&fbd->service_task, HZ);
-	phylink_resume(fbn->phylink);
 }
 
 static void fbnic_service_task_stop(struct fbnic_net *fbn)
 {
 	struct fbnic_dev *fbd = fbn->fbd;
 
-	phylink_suspend(fbn->phylink, fbnic_bmc_present(fbd));
 	cancel_delayed_work(&fbd->service_task);
 }
 
@@ -292,6 +291,7 @@ static int fbnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	fbnic_devlink_register(fbd);
 	fbnic_dbg_fbd_init(fbd);
+	spin_lock_init(&fbd->hw_stats_lock);
 
 	/* Capture snapshot of hardware stats so netdev can calculate delta */
 	fbnic_reset_hw_stats(fbd);
@@ -387,7 +387,11 @@ static int fbnic_pm_suspend(struct device *dev)
 	rtnl_unlock();
 
 null_uc_addr:
+	devl_lock(priv_to_devlink(fbd));
+
 	fbnic_fw_free_mbx(fbd);
+
+	devl_unlock(priv_to_devlink(fbd));
 
 	/* Free the IRQs so they aren't trying to occupy sleeping CPUs */
 	fbnic_free_irqs(fbd);
@@ -419,10 +423,14 @@ static int __fbnic_pm_resume(struct device *dev)
 
 	fbd->mac->init_regs(fbd);
 
+	devl_lock(priv_to_devlink(fbd));
+
 	/* Re-enable mailbox */
 	err = fbnic_fw_request_mbx(fbd);
 	if (err)
 		goto err_free_irqs;
+
+	devl_unlock(priv_to_devlink(fbd));
 
 	/* No netdev means there isn't a network interface to bring up */
 	if (fbnic_init_failure(fbd))

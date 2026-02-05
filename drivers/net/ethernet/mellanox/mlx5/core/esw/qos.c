@@ -743,6 +743,7 @@ static u32 mlx5_esw_qos_lag_link_speed_get_locked(struct mlx5_core_dev *mdev)
 		speed = lksettings.base.speed;
 
 out:
+	mlx5_uplink_netdev_put(mdev, slave);
 	return speed;
 }
 
@@ -1076,6 +1077,7 @@ static int esw_qos_vports_node_update_parent(struct mlx5_esw_sched_node *node,
 		return err;
 	}
 	esw_qos_node_set_parent(node, parent);
+	node->bw_share = 0;
 
 	return 0;
 }
