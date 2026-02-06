@@ -5035,61 +5035,6 @@ static int blk_mq_elv_switch_none(struct request_queue *q,
 	return ret;
 }
 
-/*
- * Switch back to the elevator type stored in the xarray.
- */
-static void blk_mq_elv_switch_back(struct request_queue *q,
-		struct xarray *elv_tbl, struct xarray *et_tbl)
-{
-	struct elevator_type *e = xa_load(elv_tbl, q->id);
-	struct elevator_tags *t = xa_load(et_tbl, q->id);
-
-	/* The elv_update_nr_hw_queues unfreezes the queue. */
-	elv_update_nr_hw_queues(q, e, t);
-
-	/* Drop the reference acquired in blk_mq_elv_switch_none. */
-	if (e)
-		elevator_put(e);
-}
-
-/*
- * Stores elevator type in xarray and set current elevator to none. It uses
- * q->id as an index to store the elevator type into the xarray.
- */
-static int blk_mq_elv_switch_none(struct request_queue *q,
-		struct xarray *elv_tbl)
-{
-	int ret = 0;
-
-	lockdep_assert_held_write(&q->tag_set->update_nr_hwq_lock);
-
-	/*
-	 * Accessing q->elevator without holding q->elevator_lock is safe here
-	 * because we're called from nr_hw_queue update which is protected by
-	 * set->update_nr_hwq_lock in the writer context. So, scheduler update/
-	 * switch code (which acquires the same lock in the reader context)
-	 * can't run concurrently.
-	 */
-	if (q->elevator) {
-
-		ret = xa_insert(elv_tbl, q->id, q->elevator->type, GFP_KERNEL);
-		if (WARN_ON_ONCE(ret))
-			return ret;
-
-		/*
-		 * Before we switch elevator to 'none', take a reference to
-		 * the elevator module so that while nr_hw_queue update is
-		 * running, no one can remove elevator module. We'd put the
-		 * reference to elevator module later when we switch back
-		 * elevator.
-		 */
-		__elevator_get(q->elevator->type);
-
-		elevator_set_none(q);
-	}
-	return ret;
-}
-
 static void __blk_mq_update_nr_hw_queues(struct blk_mq_tag_set *set,
 							int nr_hw_queues)
 {

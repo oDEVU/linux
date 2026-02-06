@@ -41,6 +41,22 @@
 #define UFS_ICE_SYNC_RST_SEL	BIT(3)
 #define UFS_ICE_SYNC_RST_SW	BIT(4)
 
+/* Re-implementation of broken RMW helper for Alioth */
+static int qcom_dme_rmw(struct ufs_hba *hba, u32 attr_id, u32 mask, u32 val)
+{
+    int ret;
+    u32 tmp;
+
+    ret = ufshcd_dme_get(hba, attr_id, &tmp);
+    if (ret)
+        return ret;
+
+    tmp &= ~mask;
+    tmp |= val;
+
+    return ufshcd_dme_set(hba, attr_id, tmp);
+}
+
 enum {
 	TSTBUS_UAWM,
 	TSTBUS_UARM,
@@ -571,17 +587,17 @@ static void ufs_qcom_enable_hw_clk_gating(struct ufs_hba *hba)
 	ufshcd_readl(hba, REG_UFS_CFG2);
 
 	/* Enable Unipro internal clock gating */
-	err = ufshcd_dme_rmw(hba, DL_VS_CLK_CFG_MASK,
+	err = qcom_dme_rmw(hba, DL_VS_CLK_CFG_MASK,
 			     DL_VS_CLK_CFG_MASK, DL_VS_CLK_CFG);
 	if (err)
 		goto out;
 
-	err = ufshcd_dme_rmw(hba, PA_VS_CLK_CFG_REG_MASK,
+	err = qcom_dme_rmw(hba, PA_VS_CLK_CFG_REG_MASK,
 			     PA_VS_CLK_CFG_REG_MASK, PA_VS_CLK_CFG_REG);
 	if (err)
 		goto out;
 
-	err = ufshcd_dme_rmw(hba, DME_VS_CORE_CLK_CTRL_DME_HW_CGC_EN,
+	err = qcom_dme_rmw(hba, DME_VS_CORE_CLK_CTRL_DME_HW_CGC_EN,
 			     DME_VS_CORE_CLK_CTRL_DME_HW_CGC_EN,
 			     DME_VS_CORE_CLK_CTRL);
 out:

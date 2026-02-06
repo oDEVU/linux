@@ -210,8 +210,7 @@ static const struct drm_display_mode alioth_modes[] = {
 		.vtotal = 2400 + 300 + 16 + 280,
 		.type = DRM_MODE_TYPE_DRIVER,
 	},
-// 60hz mode causes screen flickering
-#if 0
+// 60hz mode causes screen flickering, enabled it anyway to test if this will fix flicker for NYTE.
 	{
 		.clock = (1080 + 16 + 8 + 8) * (2400 + 600 + 32 + 560) * 60 / 1000,
 		.hdisplay = 1080,
@@ -224,7 +223,6 @@ static const struct drm_display_mode alioth_modes[] = {
 		.vtotal = 2400 + 600 + 32 + 560,
 		.type = DRM_MODE_TYPE_DRIVER,
 	},
-#endif
 };
 
 static struct drm_dsc_config alioth_dsc_config = {

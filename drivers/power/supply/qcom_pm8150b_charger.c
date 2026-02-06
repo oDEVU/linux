@@ -4,7 +4,7 @@
  *
  * This driver is for the switch-mode battery charger power delivery
  * and boost hardware found in pm8150b and related PMICs.
- * This work based on pmi8998 charger driver by 
+ * This work based on pmi8998 charger driver by
  * Caleb Connolly <caleb.connolly@linaro.org>
  * Should be merged with the existing charger driver in the future.
  */
@@ -443,7 +443,7 @@ static inline int smb5_get_current_limit(struct smb5_chip *chip,
 	int rc = regmap_read(chip->regmap, chip->base + AICL_STATUS, val);
 
 	if (rc >= 0)
-		*val *= CURRENT_SCALE_FACTOR;	
+		*val *= CURRENT_SCALE_FACTOR;
 	return rc;
 }
 
@@ -856,7 +856,7 @@ static int smb5_probe(struct platform_device *pdev)
 		return rc;
 
 	supply_config.drv_data = chip;
-	supply_config.of_node = pdev->dev.of_node;
+	supply_config.fwnode = dev_fwnode(&pdev->dev);
 
 	desc = devm_kzalloc(chip->dev, sizeof(smb5_psy_desc), GFP_KERNEL);
 	if (!desc)

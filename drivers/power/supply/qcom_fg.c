@@ -214,7 +214,7 @@ static bool qcom_fg_sram_check_access(struct qcom_fg_chip *chip)
 
 /**
  * @brief qcom_fg_sram_request_access() - Request access to SRAM and wait for it
- * 
+ *
  * @param chip Pointer to chip
  * @return int 0 on success, negative errno on error
  */
@@ -1201,7 +1201,7 @@ static int qcom_fg_probe(struct platform_device *pdev)
 	}
 
 	supply_config.drv_data = chip;
-	supply_config.of_node = pdev->dev.of_node;
+	supply_config.fwnode = dev_fwnode(&pdev->dev);
 
 	chip->batt_psy = devm_power_supply_register(chip->dev,
 			&batt_psy_desc, &supply_config);
@@ -1304,7 +1304,7 @@ static int qcom_fg_probe(struct platform_device *pdev)
 	}
 
 	/* Optional: Get charger power supply for status checking */
-	chip->chg_psy = power_supply_get_by_phandle(chip->dev->of_node,
+	chip->chg_psy = devm_power_supply_get_by_reference(chip->dev,
 							"power-supplies");
 	if (IS_ERR(chip->chg_psy)) {
 		ret = PTR_ERR(chip->chg_psy);
