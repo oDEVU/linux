@@ -478,4 +478,22 @@ void mipi_dsi_driver_unregister(struct mipi_dsi_driver *driver);
 	module_driver(__mipi_dsi_driver, mipi_dsi_driver_register, \
 			mipi_dsi_driver_unregister)
 
+/**
+ * mipi_dsi_dcs_write_seq - transmit a DCS command with payload
+ *
+ * This macro will print errors for you and will RETURN FROM THE CALLING
+ * FUNCTION (yes this is non-intuitive) upon error.
+ *
+ * Because of the non-intuitive return behavior, THIS MACRO IS DEPRECATED.
+ * Please replace calls of it with mipi_dsi_dcs_write_seq_multi().
+ *
+ * @dsi: DSI peripheral device
+ * @cmd: Command
+ * @seq: buffer containing data to be transmitted
+ */
+#define mipi_dsi_dcs_write_seq(dsi, cmd, seq...) do { \
+        static const u8 d[] = { cmd, seq }; \
+        mipi_dsi_dcs_write(dsi, cmd, d + 1, ARRAY_SIZE(d) - 1); \
+} while (0)
+
 #endif /* __DRM_MIPI_DSI__ */
