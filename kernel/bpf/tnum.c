@@ -43,6 +43,7 @@ struct tnum tnum_rshift(struct tnum a, u8 shift)
 {
 	return TNUM(a.value >> shift, a.mask >> shift);
 }
+EXPORT_SYMBOL_GPL(tnum_rshift);
 
 struct tnum tnum_arshift(struct tnum a, u8 min_shift, u8 insn_bitness)
 {
@@ -157,14 +158,6 @@ struct tnum tnum_mul(struct tnum a, struct tnum b)
 		b = tnum_lshift(b, 1);
 	}
 	return acc;
-}
-
-bool tnum_overlap(struct tnum a, struct tnum b)
-{
-	u64 mu;
-
-	mu = ~a.mask & ~b.mask;
-	return (a.value & mu) == (b.value & mu);
 }
 
 bool tnum_overlap(struct tnum a, struct tnum b)

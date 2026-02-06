@@ -185,13 +185,6 @@ static inline bool anon_ns_root(const struct mount *m)
 	return !IS_ERR_OR_NULL(ns) && is_anon_ns(ns) && m == ns->root;
 }
 
-static inline bool anon_ns_root(const struct mount *m)
-{
-	struct mnt_namespace *ns = READ_ONCE(m->mnt_ns);
-
-	return !IS_ERR_OR_NULL(ns) && is_anon_ns(ns) && m == ns->root;
-}
-
 static inline bool mnt_ns_attached(const struct mount *mnt)
 {
 	return !RB_EMPTY_NODE(&mnt->mnt_node);

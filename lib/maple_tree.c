@@ -5233,17 +5233,6 @@ static void mas_may_activate(struct ma_state *mas)
 	}
 }
 
-static void mas_may_activate(struct ma_state *mas)
-{
-	if (!mas->node) {
-		mas->status = ma_start;
-	} else if (mas->index > mas->max || mas->index < mas->min) {
-		mas->status = ma_start;
-	} else {
-		mas->status = ma_active;
-	}
-}
-
 static bool mas_next_setup(struct ma_state *mas, unsigned long max,
 		void **entry)
 {

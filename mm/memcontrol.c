@@ -5041,19 +5041,6 @@ void mem_cgroup_sk_inherit(const struct sock *sk, struct sock *newsk)
 	newsk->sk_memcg = sk->sk_memcg;
 }
 
-void mem_cgroup_sk_inherit(const struct sock *sk, struct sock *newsk)
-{
-	if (sk->sk_memcg == newsk->sk_memcg)
-		return;
-
-	mem_cgroup_sk_free(newsk);
-
-	if (sk->sk_memcg)
-		css_get(&sk->sk_memcg->css);
-
-	newsk->sk_memcg = sk->sk_memcg;
-}
-
 /**
  * mem_cgroup_sk_charge - charge socket memory
  * @sk: socket in memcg to charge

@@ -46,16 +46,6 @@ struct drm_wedge_task_info {
 };
 
 /**
- * struct drm_wedge_task_info - information about the guilty task of a wedge dev
- */
-struct drm_wedge_task_info {
-	/** @pid: pid of the task */
-	pid_t pid;
-	/** @comm: command name of the task */
-	char comm[TASK_COMM_LEN];
-};
-
-/**
  * enum switch_power_state - power state of drm device
  */
 
