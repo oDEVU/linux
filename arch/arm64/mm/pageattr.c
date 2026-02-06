@@ -149,7 +149,6 @@ static int change_memory_common(unsigned long addr, int numpages,
 	unsigned long end = start + size;
 	struct vm_struct *area;
 	int ret;
-	int i;
 
 	if (!PAGE_ALIGNED(addr)) {
 		start &= PAGE_MASK;
