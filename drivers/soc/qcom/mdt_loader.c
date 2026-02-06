@@ -483,8 +483,8 @@ int qcom_mdt_load_no_init(struct device *dev, const struct firmware *fw,
 			  void *mem_region, phys_addr_t mem_phys,
 			  size_t mem_size, phys_addr_t *reloc_base)
 {
-	return __qcom_mdt_load(dev, fw, firmware, pas_id, mem_region, mem_phys,
-			       mem_size, reloc_base, false);
+	return __qcom_mdt_load(dev, fw, firmware, mem_region, mem_phys,
+                       mem_size, reloc_base, false);
 }
 EXPORT_SYMBOL_GPL(qcom_mdt_load_no_init);
 
