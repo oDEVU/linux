@@ -250,10 +250,9 @@ struct ftrace_likely_data {
 /*
  * GCC does not warn about unused static inline functions for -Wunused-function.
  * Suppress the warning in clang as well by using __maybe_unused, but enable it
- * for W=1 build. This will allow clang to find unused functions. Remove the
- * __inline_maybe_unused entirely after fixing most of -Wunused-function warnings.
+ * for W=2 build. This will allow clang to find unused functions.
  */
-#ifdef KBUILD_EXTRA_WARN1
+#ifdef KBUILD_EXTRA_WARN2
 #define __inline_maybe_unused
 #else
 #define __inline_maybe_unused __maybe_unused
@@ -422,6 +421,10 @@ struct ftrace_likely_data {
 # define __no_randomize_layout
 # define randomized_struct_fields_start
 # define randomized_struct_fields_end
+#endif
+
+#ifndef __no_kstack_erase
+# define __no_kstack_erase
 #endif
 
 #ifndef __noscs

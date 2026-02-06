@@ -108,6 +108,8 @@ struct inet_bind2_bucket {
 	struct hlist_node	bhash_node;
 	/* List of sockets hashed to this bucket */
 	struct hlist_head	owners;
+	signed char		fastreuse;
+	signed char		fastreuseport;
 };
 
 static inline struct net *ib_net(const struct inet_bind_bucket *ib)
@@ -201,12 +203,6 @@ static inline spinlock_t *inet_ehash_lockp(
 }
 
 int inet_ehash_locks_alloc(struct inet_hashinfo *hashinfo);
-
-static inline void inet_hashinfo2_free_mod(struct inet_hashinfo *h)
-{
-	kfree(h->lhash2);
-	h->lhash2 = NULL;
-}
 
 static inline void inet_ehash_locks_free(struct inet_hashinfo *hashinfo)
 {
@@ -487,7 +483,7 @@ static inline struct sock *__inet_lookup_skb(struct inet_hashinfo *hashinfo,
 					     const int sdif,
 					     bool *refcounted)
 {
-	struct net *net = dev_net_rcu(skb_dst(skb)->dev);
+	struct net *net = skb_dst_dev_net_rcu(skb);
 	const struct iphdr *iph = ip_hdr(skb);
 	struct sock *sk;
 

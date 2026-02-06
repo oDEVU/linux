@@ -826,6 +826,13 @@ static void amd_pstate_init_prefcore(struct amd_cpudata *cpudata)
 	if (!amd_pstate_prefcore)
 		return;
 
+	/* should use amd-hfi instead */
+	if (cpu_feature_enabled(X86_FEATURE_AMD_WORKLOAD_CLASS) &&
+	    IS_ENABLED(CONFIG_AMD_HFI)) {
+		amd_pstate_prefcore = false;
+		return;
+	}
+
 	cpudata->hw_prefcore = true;
 
 	/* Priorities must be initialized before ITMT support can be toggled on. */
@@ -1607,7 +1614,11 @@ static int amd_pstate_cpu_offline(struct cpufreq_policy *policy)
 	 * min_perf value across kexec reboots. If this CPU is just onlined normally after this, the
 	 * limits, epp and desired perf will get reset to the cached values in cpudata struct
 	 */
-	return amd_pstate_update_perf(policy, perf.bios_min_perf, 0U, 0U, 0U, false);
+	return amd_pstate_update_perf(policy, perf.bios_min_perf,
+				     FIELD_GET(AMD_CPPC_DES_PERF_MASK, cpudata->cppc_req_cached),
+				     FIELD_GET(AMD_CPPC_MAX_PERF_MASK, cpudata->cppc_req_cached),
+				     FIELD_GET(AMD_CPPC_EPP_PERF_MASK, cpudata->cppc_req_cached),
+				     false);
 }
 
 static int amd_pstate_suspend(struct cpufreq_policy *policy)

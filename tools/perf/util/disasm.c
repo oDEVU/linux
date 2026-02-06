@@ -390,13 +390,16 @@ static int jump__parse(struct arch *arch, struct ins_operands *ops, struct map_s
 	 * skip over possible up to 2 operands to get to address, e.g.:
 	 * tbnz	 w0, #26, ffff0000083cd190 <security_file_permission+0xd0>
 	 */
-	if (c++ != NULL) {
+	if (c != NULL) {
+		c++;
 		ops->target.addr = strtoull(c, NULL, 16);
 		if (!ops->target.addr) {
 			c = strchr(c, ',');
 			c = validate_comma(c, ops);
-			if (c++ != NULL)
+			if (c != NULL) {
+				c++;
 				ops->target.addr = strtoull(c, NULL, 16);
+			}
 		}
 	} else {
 		ops->target.addr = strtoull(ops->raw, NULL, 16);
@@ -1218,7 +1221,7 @@ int symbol__strerror_disassemble(struct map_symbol *ms, int errnum, char *buf, s
 		char *build_id_msg = NULL;
 
 		if (dso__has_build_id(dso)) {
-			build_id__sprintf(dso__bid(dso), bf + 15);
+			build_id__snprintf(dso__bid(dso), bf + 15, sizeof(bf) - 15);
 			build_id_msg = bf;
 		}
 		scnprintf(buf, buflen,
@@ -2282,6 +2285,13 @@ int symbol__disassemble(struct symbol *sym, struct annotate_args *args)
 			if (err == 0)
 				goto out_remove_tmp;
 		}
+	}
+
+	/* FIXME: LLVM and CAPSTONE should support source code */
+	if (options->annotate_src && !options->hide_src_code) {
+		err = symbol__disassemble_objdump(symfs_filename, sym, args);
+		if (err == 0)
+			goto out_remove_tmp;
 	}
 
 	err = -1;

@@ -80,6 +80,8 @@ static struct pci_device_id idxd_pci_tbl[] = {
 	{ PCI_DEVICE_DATA(INTEL, IAA_DMR, &idxd_driver_data[IDXD_TYPE_IAX]) },
 	/* IAA PTL platforms */
 	{ PCI_DEVICE_DATA(INTEL, IAA_PTL, &idxd_driver_data[IDXD_TYPE_IAX]) },
+	/* IAA WCL platforms */
+	{ PCI_DEVICE_DATA(INTEL, IAA_WCL, &idxd_driver_data[IDXD_TYPE_IAX]) },
 	{ 0, }
 };
 MODULE_DEVICE_TABLE(pci, idxd_pci_tbl);
@@ -1037,7 +1039,6 @@ static void idxd_reset_prepare(struct pci_dev *pdev)
 	const char *idxd_name;
 	int rc;
 
-	dev = &idxd->pdev->dev;
 	idxd_name = dev_name(idxd_confdev(idxd));
 
 	struct idxd_saved_states *idxd_saved __free(kfree) =

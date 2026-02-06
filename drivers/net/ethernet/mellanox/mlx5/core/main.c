@@ -1102,6 +1102,7 @@ static int mlx5_init_once(struct mlx5_core_dev *dev)
 	}
 
 	dev->dm = mlx5_dm_create(dev);
+	dev->st = mlx5_st_create(dev);
 	dev->tracer = mlx5_fw_tracer_create(dev);
 	dev->hv_vhca = mlx5_hv_vhca_create(dev);
 	dev->rsc_dump = mlx5_rsc_dump_create(dev);
@@ -1150,6 +1151,7 @@ static void mlx5_cleanup_once(struct mlx5_core_dev *dev)
 	mlx5_rsc_dump_destroy(dev);
 	mlx5_hv_vhca_destroy(dev->hv_vhca);
 	mlx5_fw_tracer_destroy(dev->tracer);
+	mlx5_st_destroy(dev);
 	mlx5_dm_cleanup(dev);
 	mlx5_fs_core_free(dev);
 	mlx5_sf_table_cleanup(dev);
@@ -1338,10 +1340,9 @@ static int mlx5_load(struct mlx5_core_dev *dev)
 {
 	int err;
 
-	dev->priv.uar = mlx5_get_uars_page(dev);
-	if (IS_ERR(dev->priv.uar)) {
-		mlx5_core_err(dev, "Failed allocating uar, aborting\n");
-		err = PTR_ERR(dev->priv.uar);
+	err = mlx5_alloc_bfreg(dev, &dev->priv.bfreg, false, false);
+	if (err) {
+		mlx5_core_err(dev, "Failed allocating bfreg, %d\n", err);
 		return err;
 	}
 
@@ -1452,7 +1453,7 @@ err_eq_table:
 err_irq_table:
 	mlx5_pagealloc_stop(dev);
 	mlx5_events_stop(dev);
-	mlx5_put_uars_page(dev, dev->priv.uar);
+	mlx5_free_bfreg(dev, &dev->priv.bfreg);
 	return err;
 }
 
@@ -1477,7 +1478,7 @@ static void mlx5_unload(struct mlx5_core_dev *dev)
 	mlx5_irq_table_destroy(dev);
 	mlx5_pagealloc_stop(dev);
 	mlx5_events_stop(dev);
-	mlx5_put_uars_page(dev, dev->priv.uar);
+	mlx5_free_bfreg(dev, &dev->priv.bfreg);
 }
 
 int mlx5_init_one_devl_locked(struct mlx5_core_dev *dev)

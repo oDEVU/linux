@@ -708,6 +708,8 @@ static int pci_pm_prepare(struct device *dev)
 	struct pci_dev *pci_dev = to_pci_dev(dev);
 	const struct dev_pm_ops *pm = dev->driver ? dev->driver->pm : NULL;
 
+	dev_pm_set_strict_midlayer(dev, true);
+
 	if (pm && pm->prepare) {
 		int error = pm->prepare(dev);
 		if (error < 0)
@@ -749,6 +751,8 @@ static void pci_pm_complete(struct device *dev)
 		if (pci_dev->current_state < pre_sleep_state)
 			pm_request_resume(dev);
 	}
+
+	dev_pm_set_strict_midlayer(dev, false);
 }
 
 #else /* !CONFIG_PM_SLEEP */
@@ -1578,7 +1582,7 @@ static int pci_uevent(const struct device *dev, struct kobj_uevent_env *env)
 	return 0;
 }
 
-#if defined(CONFIG_PCIEAER) || defined(CONFIG_EEH)
+#if defined(CONFIG_PCIEAER) || defined(CONFIG_EEH) || defined(CONFIG_S390)
 /**
  * pci_uevent_ers - emit a uevent during recovery path of PCI device
  * @pdev: PCI device undergoing error recovery
@@ -1592,6 +1596,7 @@ void pci_uevent_ers(struct pci_dev *pdev, enum pci_ers_result err_type)
 	switch (err_type) {
 	case PCI_ERS_RESULT_NONE:
 	case PCI_ERS_RESULT_CAN_RECOVER:
+	case PCI_ERS_RESULT_NEED_RESET:
 		envp[idx++] = "ERROR_EVENT=BEGIN_RECOVERY";
 		envp[idx++] = "DEVICE_ONLINE=0";
 		break;

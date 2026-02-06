@@ -152,6 +152,20 @@ struct idle_workqueue {
 	bool running;
 };
 
+/**
+ * struct vupdate_offload_work - Work data for offloading task from vupdate handler
+ * @work: Kernel work data for the work event
+ * @adev: amdgpu_device back pointer
+ * @stream: DC stream associated with the crtc
+ * @adjust: DC CRTC timing adjust to be applied to the crtc
+ */
+struct vupdate_offload_work {
+	struct work_struct work;
+	struct amdgpu_device *adev;
+	struct dc_stream_state *stream;
+	struct dc_crtc_timing_adjust *adjust;
+};
+
 #define MAX_LUMINANCE_DATA_POINTS 99
 
 /**
@@ -643,8 +657,9 @@ struct amdgpu_display_manager {
 	 * @bb_from_dmub:
 	 *
 	 * Bounding box data read from dmub during early initialization for DCN4+
+	 * Data is stored as a byte array that should be casted to the appropriate bb struct
 	 */
-	struct dml2_soc_bb *bb_from_dmub;
+	void *bb_from_dmub;
 
 	/**
 	 * @oem_i2c:
@@ -782,6 +797,7 @@ struct amdgpu_dm_connector {
 
 	bool fake_enable;
 	bool force_yuv420_output;
+	bool force_yuv422_output;
 	struct dsc_preferred_settings dsc_settings;
 	union dp_downstream_port_present mst_downstream_port_present;
 	/* Cached display modes */
@@ -1029,6 +1045,8 @@ void amdgpu_dm_init_color_mod(void);
 int amdgpu_dm_create_color_properties(struct amdgpu_device *adev);
 int amdgpu_dm_verify_lut_sizes(const struct drm_crtc_state *crtc_state);
 int amdgpu_dm_update_crtc_color_mgmt(struct dm_crtc_state *crtc);
+int amdgpu_dm_check_crtc_color_mgmt(struct dm_crtc_state *crtc,
+				    bool check_only);
 int amdgpu_dm_update_plane_color_mgmt(struct dm_crtc_state *crtc,
 				      struct drm_plane_state *plane_state,
 				      struct dc_plane_state *dc_plane_state);

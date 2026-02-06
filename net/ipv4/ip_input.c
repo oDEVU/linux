@@ -226,6 +226,12 @@ resubmit:
 
 static int ip_local_deliver_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
 {
+	if (unlikely(skb_orphan_frags_rx(skb, GFP_ATOMIC))) {
+		__IP_INC_STATS(net, IPSTATS_MIB_INDISCARDS);
+		kfree_skb_reason(skb, SKB_DROP_REASON_NOMEM);
+		return 0;
+	}
+
 	skb_clear_delivery_time(skb);
 	__skb_pull(skb, skb_network_header_len(skb));
 
@@ -581,9 +587,13 @@ static void ip_sublist_rcv_finish(struct list_head *head)
 }
 
 static struct sk_buff *ip_extract_route_hint(const struct net *net,
-					     struct sk_buff *skb, int rt_type)
+					     struct sk_buff *skb)
 {
-	if (fib4_has_custom_rules(net) || rt_type == RTN_BROADCAST ||
+	const struct iphdr *iph = ip_hdr(skb);
+
+	if (fib4_has_custom_rules(net) ||
+	    ipv4_is_lbcast(iph->daddr) ||
+	    ipv4_is_zeronet(iph->daddr) ||
 	    IPCB(skb)->flags & IPSKB_MULTIPATH)
 		return NULL;
 
@@ -612,8 +622,7 @@ static void ip_list_rcv_finish(struct net *net, struct list_head *head)
 
 		dst = skb_dst(skb);
 		if (curr_dst != dst) {
-			hint = ip_extract_route_hint(net, skb,
-						     dst_rtable(dst)->rt_type);
+			hint = ip_extract_route_hint(net, skb);
 
 			/* dispatch old sublist */
 			if (!list_empty(&sublist))

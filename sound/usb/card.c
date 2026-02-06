@@ -616,9 +616,10 @@ static void usb_audio_make_shortname(struct usb_device *dev,
 	    usb_string(dev, dev->descriptor.iProduct,
 		       card->shortname, sizeof(card->shortname)) <= 0) {
 		/* no name available from anywhere, so use ID */
-		sprintf(card->shortname, "USB Device %#04x:%#04x",
-			USB_ID_VENDOR(chip->usb_id),
-			USB_ID_PRODUCT(chip->usb_id));
+		scnprintf(card->shortname, sizeof(card->shortname),
+			  "USB Device %#04x:%#04x",
+			  USB_ID_VENDOR(chip->usb_id),
+			  USB_ID_PRODUCT(chip->usb_id));
 	}
 
 	strim(card->shortname);
@@ -756,9 +757,9 @@ static int snd_usb_audio_create(struct usb_interface *intf,
 
 	card->private_free = snd_usb_audio_free;
 
-	strcpy(card->driver, "USB-Audio");
-	sprintf(component, "USB%04x:%04x",
-		USB_ID_VENDOR(chip->usb_id), USB_ID_PRODUCT(chip->usb_id));
+	strscpy(card->driver, "USB-Audio");
+	scnprintf(component, sizeof(component), "USB%04x:%04x",
+		  USB_ID_VENDOR(chip->usb_id), USB_ID_PRODUCT(chip->usb_id));
 	snd_component_add(card, component);
 
 	usb_audio_make_shortname(dev, chip, quirk);
@@ -849,10 +850,16 @@ get_alias_quirk(struct usb_device *dev, unsigned int id)
  */
 static int try_to_register_card(struct snd_usb_audio *chip, int ifnum)
 {
+	struct usb_interface *iface;
+
 	if (check_delayed_register_option(chip) == ifnum ||
-	    chip->last_iface == ifnum ||
-	    usb_interface_claimed(usb_ifnum_to_if(chip->dev, chip->last_iface)))
+	    chip->last_iface == ifnum)
 		return snd_card_register(chip->card);
+
+	iface = usb_ifnum_to_if(chip->dev, chip->last_iface);
+	if (iface && usb_interface_claimed(iface))
+		return snd_card_register(chip->card);
+
 	return 0;
 }
 

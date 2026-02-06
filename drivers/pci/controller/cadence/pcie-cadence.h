@@ -250,26 +250,6 @@ struct cdns_pcie_rp_ib_bar {
 
 struct cdns_pcie;
 
-enum cdns_pcie_msg_routing {
-	/* Route to Root Complex */
-	MSG_ROUTING_TO_RC,
-
-	/* Use Address Routing */
-	MSG_ROUTING_BY_ADDR,
-
-	/* Use ID Routing */
-	MSG_ROUTING_BY_ID,
-
-	/* Route as Broadcast Message from Root Complex */
-	MSG_ROUTING_BCAST,
-
-	/* Local message; terminate at receiver (INTx messages) */
-	MSG_ROUTING_LOCAL,
-
-	/* Gather & route to Root Complex (PME_TO_Ack message) */
-	MSG_ROUTING_GATHER,
-};
-
 struct cdns_pcie_ops {
 	int	(*start_link)(struct cdns_pcie *pcie);
 	void	(*stop_link)(struct cdns_pcie *pcie);
@@ -488,7 +468,7 @@ static inline u32 cdns_pcie_ep_fn_readl(struct cdns_pcie *pcie, u8 fn, u32 reg)
 
 static inline int cdns_pcie_start_link(struct cdns_pcie *pcie)
 {
-	if (pcie->ops->start_link)
+	if (pcie->ops && pcie->ops->start_link)
 		return pcie->ops->start_link(pcie);
 
 	return 0;
@@ -496,13 +476,13 @@ static inline int cdns_pcie_start_link(struct cdns_pcie *pcie)
 
 static inline void cdns_pcie_stop_link(struct cdns_pcie *pcie)
 {
-	if (pcie->ops->stop_link)
+	if (pcie->ops && pcie->ops->stop_link)
 		pcie->ops->stop_link(pcie);
 }
 
 static inline bool cdns_pcie_link_up(struct cdns_pcie *pcie)
 {
-	if (pcie->ops->link_up)
+	if (pcie->ops && pcie->ops->link_up)
 		return pcie->ops->link_up(pcie);
 
 	return true;

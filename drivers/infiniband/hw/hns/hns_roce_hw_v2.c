@@ -144,7 +144,7 @@ static void set_frmr_seg(struct hns_roce_v2_rc_send_wqe *rc_sq_wqe,
 	u64 pbl_ba;
 
 	/* use ib_access_flags */
-	hr_reg_write_bool(fseg, FRMR_BIND_EN, wr->access & IB_ACCESS_MW_BIND);
+	hr_reg_write_bool(fseg, FRMR_BIND_EN, 0);
 	hr_reg_write_bool(fseg, FRMR_ATOMIC,
 			  wr->access & IB_ACCESS_REMOTE_ATOMIC);
 	hr_reg_write_bool(fseg, FRMR_RR, wr->access & IB_ACCESS_REMOTE_READ);
@@ -165,6 +165,8 @@ static void set_frmr_seg(struct hns_roce_v2_rc_send_wqe *rc_sq_wqe,
 	hr_reg_write(fseg, FRMR_PBL_BUF_PG_SZ,
 		     to_hr_hw_page_shift(mr->pbl_mtr.hem_cfg.buf_pg_shift));
 	hr_reg_clear(fseg, FRMR_BLK_MODE);
+	hr_reg_clear(fseg, FRMR_BLOCK_SIZE);
+	hr_reg_clear(fseg, FRMR_ZBVA);
 }
 
 static void set_atomic_seg(const struct ib_send_wr *wr,
@@ -338,9 +340,6 @@ static int set_rwqe_data_seg(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 	struct hns_roce_qp *qp = to_hr_qp(ibqp);
 	int j = 0;
 	int i;
-
-	hr_reg_write(rc_sq_wqe, RC_SEND_WQE_MSG_START_SGE_IDX,
-		     (*sge_ind) & (qp->sge.sge_cnt - 1));
 
 	hr_reg_write(rc_sq_wqe, RC_SEND_WQE_INLINE,
 		     !!(wr->send_flags & IB_SEND_INLINE));
@@ -586,6 +585,9 @@ static inline int set_rc_wqe(struct hns_roce_qp *qp,
 	hr_reg_write(rc_sq_wqe, RC_SEND_WQE_CQE,
 		     (wr->send_flags & IB_SEND_SIGNALED) ? 1 : 0);
 
+	hr_reg_write(rc_sq_wqe, RC_SEND_WQE_MSG_START_SGE_IDX,
+		     curr_idx & (qp->sge.sge_cnt - 1));
+
 	if (wr->opcode == IB_WR_ATOMIC_CMP_AND_SWP ||
 	    wr->opcode == IB_WR_ATOMIC_FETCH_AND_ADD) {
 		if (msg_len != ATOMIC_WR_LEN)
@@ -733,6 +735,9 @@ static int hns_roce_v2_post_send(struct ib_qp *ibqp,
 		qp->sq.wrid[wqe_idx] = wr->wr_id;
 		owner_bit =
 		       ~(((qp->sq.head + nreq) >> ilog2(qp->sq.wqe_cnt)) & 0x1);
+
+		/* RC and UD share the same DirectWQE field layout */
+		((struct hns_roce_v2_rc_send_wqe *)wqe)->byte_4 = 0;
 
 		/* Corresponding to the QP type, wqe process separately */
 		if (ibqp->qp_type == IB_QPT_RC)
@@ -2635,7 +2640,7 @@ static struct ib_pd *free_mr_init_pd(struct hns_roce_dev *hr_dev)
 	struct ib_pd *pd;
 
 	hr_pd = kzalloc(sizeof(*hr_pd), GFP_KERNEL);
-	if (ZERO_OR_NULL_PTR(hr_pd))
+	if (!hr_pd)
 		return NULL;
 	pd = &hr_pd->ibpd;
 	pd->device = ibdev;
@@ -2666,7 +2671,7 @@ static struct ib_cq *free_mr_init_cq(struct hns_roce_dev *hr_dev)
 	cq_init_attr.cqe = HNS_ROCE_FREE_MR_USED_CQE_NUM;
 
 	hr_cq = kzalloc(sizeof(*hr_cq), GFP_KERNEL);
-	if (ZERO_OR_NULL_PTR(hr_cq))
+	if (!hr_cq)
 		return NULL;
 
 	cq = &hr_cq->ib_cq;
@@ -2699,7 +2704,7 @@ static int free_mr_init_qp(struct hns_roce_dev *hr_dev, struct ib_cq *cq,
 	int ret;
 
 	hr_qp = kzalloc(sizeof(*hr_qp), GFP_KERNEL);
-	if (ZERO_OR_NULL_PTR(hr_qp))
+	if (!hr_qp)
 		return -ENOMEM;
 
 	qp = &hr_qp->ibqp;
@@ -3334,8 +3339,6 @@ static int hns_roce_v2_write_mtpt(struct hns_roce_dev *hr_dev,
 	hr_reg_write(mpt_entry, MPT_ST, V2_MPT_ST_VALID);
 	hr_reg_write(mpt_entry, MPT_PD, mr->pd);
 
-	hr_reg_write_bool(mpt_entry, MPT_BIND_EN,
-			  mr->access & IB_ACCESS_MW_BIND);
 	hr_reg_write_bool(mpt_entry, MPT_ATOMIC_EN,
 			  mr->access & IB_ACCESS_REMOTE_ATOMIC);
 	hr_reg_write_bool(mpt_entry, MPT_RR_EN,
@@ -3379,8 +3382,6 @@ static int hns_roce_v2_rereg_write_mtpt(struct hns_roce_dev *hr_dev,
 	hr_reg_write(mpt_entry, MPT_PD, mr->pd);
 
 	if (flags & IB_MR_REREG_ACCESS) {
-		hr_reg_write(mpt_entry, MPT_BIND_EN,
-			     (mr_access_flags & IB_ACCESS_MW_BIND ? 1 : 0));
 		hr_reg_write(mpt_entry, MPT_ATOMIC_EN,
 			     mr_access_flags & IB_ACCESS_REMOTE_ATOMIC ? 1 : 0);
 		hr_reg_write(mpt_entry, MPT_RR_EN,
@@ -3418,7 +3419,6 @@ static int hns_roce_v2_frmr_write_mtpt(void *mb_buf, struct hns_roce_mr *mr)
 	hr_reg_enable(mpt_entry, MPT_R_INV_EN);
 
 	hr_reg_enable(mpt_entry, MPT_FRE);
-	hr_reg_clear(mpt_entry, MPT_MR_MW);
 	hr_reg_enable(mpt_entry, MPT_BPD);
 	hr_reg_clear(mpt_entry, MPT_PA);
 
@@ -3434,38 +3434,6 @@ static int hns_roce_v2_frmr_write_mtpt(void *mb_buf, struct hns_roce_mr *mr)
 							MPT_PBL_BA_ADDR_S));
 	hr_reg_write(mpt_entry, MPT_PBL_BA_H,
 		     upper_32_bits(pbl_ba >> MPT_PBL_BA_ADDR_S));
-
-	return 0;
-}
-
-static int hns_roce_v2_mw_write_mtpt(void *mb_buf, struct hns_roce_mw *mw)
-{
-	struct hns_roce_v2_mpt_entry *mpt_entry;
-
-	mpt_entry = mb_buf;
-	memset(mpt_entry, 0, sizeof(*mpt_entry));
-
-	hr_reg_write(mpt_entry, MPT_ST, V2_MPT_ST_FREE);
-	hr_reg_write(mpt_entry, MPT_PD, mw->pdn);
-
-	hr_reg_enable(mpt_entry, MPT_R_INV_EN);
-	hr_reg_enable(mpt_entry, MPT_LW_EN);
-
-	hr_reg_enable(mpt_entry, MPT_MR_MW);
-	hr_reg_enable(mpt_entry, MPT_BPD);
-	hr_reg_clear(mpt_entry, MPT_PA);
-	hr_reg_write(mpt_entry, MPT_BQP,
-		     mw->ibmw.type == IB_MW_TYPE_1 ? 0 : 1);
-
-	mpt_entry->lkey = cpu_to_le32(mw->rkey);
-
-	hr_reg_write(mpt_entry, MPT_PBL_HOP_NUM,
-		     mw->pbl_hop_num == HNS_ROCE_HOP_NUM_0 ? 0 :
-							     mw->pbl_hop_num);
-	hr_reg_write(mpt_entry, MPT_PBL_BA_PG_SZ,
-		     mw->pbl_ba_pg_sz + PG_SHIFT_OFFSET);
-	hr_reg_write(mpt_entry, MPT_PBL_BUF_PG_SZ,
-		     mw->pbl_buf_pg_sz + PG_SHIFT_OFFSET);
 
 	return 0;
 }
@@ -3870,7 +3838,6 @@ static const u32 wc_send_op_map[] = {
 	HR_WC_OP_MAP(ATOM_MSK_CMP_AND_SWAP,	MASKED_COMP_SWAP),
 	HR_WC_OP_MAP(ATOM_MSK_FETCH_AND_ADD,	MASKED_FETCH_ADD),
 	HR_WC_OP_MAP(FAST_REG_PMR,		REG_MR),
-	HR_WC_OP_MAP(BIND_MW,			REG_MR),
 };
 
 static int to_ib_wc_send_op(u32 hr_opcode)
@@ -6991,7 +6958,6 @@ static const struct hns_roce_hw hns_roce_hw_v2 = {
 	.write_mtpt = hns_roce_v2_write_mtpt,
 	.rereg_write_mtpt = hns_roce_v2_rereg_write_mtpt,
 	.frmr_write_mtpt = hns_roce_v2_frmr_write_mtpt,
-	.mw_write_mtpt = hns_roce_v2_mw_write_mtpt,
 	.write_cqc = hns_roce_v2_write_cqc,
 	.set_hem = hns_roce_v2_set_hem,
 	.clear_hem = hns_roce_v2_clear_hem,

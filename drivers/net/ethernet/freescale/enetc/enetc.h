@@ -67,7 +67,7 @@ struct enetc_lso_t {
 #define ENETC_LSO_MAX_DATA_LEN		SZ_256K
 
 #define ENETC_RX_MAXFRM_SIZE	ENETC_MAC_MAXFRM_SIZE
-#define ENETC_RXB_TRUESIZE	2048 /* PAGE_SIZE >> 1 */
+#define ENETC_RXB_TRUESIZE	(PAGE_SIZE >> 1)
 #define ENETC_RXB_PAD		NET_SKB_PAD /* add extra space if needed */
 #define ENETC_RXB_DMA_SIZE	\
 	(SKB_WITH_OVERHEAD(ENETC_RXB_TRUESIZE) - ENETC_RXB_PAD)
@@ -96,17 +96,17 @@ struct enetc_rx_swbd {
 #define ENETC_TXBDS_MAX_NEEDED(x)	ENETC_TXBDS_NEEDED((x) + 1)
 
 struct enetc_ring_stats {
-	unsigned int packets;
-	unsigned int bytes;
-	unsigned int rx_alloc_errs;
-	unsigned int xdp_drops;
-	unsigned int xdp_tx;
-	unsigned int xdp_tx_drops;
-	unsigned int xdp_redirect;
-	unsigned int xdp_redirect_failures;
-	unsigned int recycles;
-	unsigned int recycle_failures;
-	unsigned int win_drop;
+	unsigned long packets;
+	unsigned long bytes;
+	unsigned long rx_alloc_errs;
+	unsigned long xdp_drops;
+	unsigned long xdp_tx;
+	unsigned long xdp_tx_drops;
+	unsigned long xdp_redirect;
+	unsigned long xdp_redirect_failures;
+	unsigned long recycles;
+	unsigned long recycle_failures;
+	unsigned long win_drop;
 };
 
 struct enetc_xdp_data {

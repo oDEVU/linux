@@ -962,7 +962,6 @@ static void cs42l43_boot_work(struct work_struct *work)
 		goto err;
 	}
 
-	pm_runtime_mark_last_busy(cs42l43->dev);
 	pm_runtime_put_autosuspend(cs42l43->dev);
 
 	return;
@@ -1152,6 +1151,8 @@ static int cs42l43_suspend(struct device *dev)
 		return ret;
 	}
 
+	disable_irq(cs42l43->irq);
+
 	ret = pm_runtime_force_suspend(dev);
 	if (ret) {
 		dev_err(cs42l43->dev, "Failed to force suspend: %d\n", ret);
@@ -1164,8 +1165,6 @@ static int cs42l43_suspend(struct device *dev)
 	ret = cs42l43_power_down(cs42l43);
 	if (ret)
 		return ret;
-
-	disable_irq(cs42l43->irq);
 
 	return 0;
 }
@@ -1197,13 +1196,13 @@ static int cs42l43_resume(struct device *dev)
 	if (ret)
 		return ret;
 
-	enable_irq(cs42l43->irq);
-
 	ret = pm_runtime_force_resume(dev);
 	if (ret) {
 		dev_err(cs42l43->dev, "Failed to force resume: %d\n", ret);
 		return ret;
 	}
+
+	enable_irq(cs42l43->irq);
 
 	return 0;
 }

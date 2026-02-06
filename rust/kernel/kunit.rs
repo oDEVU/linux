@@ -7,7 +7,10 @@
 //! Reference: <https://docs.kernel.org/dev-tools/kunit/index.html>
 
 use crate::prelude::*;
-use core::{ffi::c_void, fmt};
+use core::fmt;
+
+#[cfg(CONFIG_PRINTK)]
+use crate::c_str;
 
 /// Prints a KUnit error-level message.
 ///
@@ -19,8 +22,8 @@ pub fn err(args: fmt::Arguments<'_>) {
     #[cfg(CONFIG_PRINTK)]
     unsafe {
         bindings::_printk(
-            c"\x013%pA".as_ptr() as _,
-            &args as *const _ as *const c_void,
+            c_str!("\x013%pA").as_char_ptr(),
+            core::ptr::from_ref(&args).cast::<c_void>(),
         );
     }
 }
@@ -35,8 +38,8 @@ pub fn info(args: fmt::Arguments<'_>) {
     #[cfg(CONFIG_PRINTK)]
     unsafe {
         bindings::_printk(
-            c"\x016%pA".as_ptr() as _,
-            &args as *const _ as *const c_void,
+            c_str!("\x016%pA").as_char_ptr(),
+            core::ptr::from_ref(&args).cast::<c_void>(),
         );
     }
 }
@@ -353,5 +356,12 @@ mod tests {
     #[test]
     fn rust_test_kunit_in_kunit_test() {
         assert!(in_kunit_test());
+    }
+
+    #[test]
+    #[cfg(not(all()))]
+    fn rust_test_kunit_always_disabled_test() {
+        // This test should never run because of the `cfg`.
+        assert!(false);
     }
 }

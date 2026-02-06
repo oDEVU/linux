@@ -459,7 +459,9 @@ bool dc_stream_adjust_vmin_vmax(struct dc *dc,
 	 * avoid conflicting with firmware updates.
 	 */
 	if (dc->ctx->dce_version > DCE_VERSION_MAX) {
-		if (dc->optimized_required || dc->wm_optimized_required) {
+		if ((dc->optimized_required || dc->wm_optimized_required) &&
+			(stream->adjust.v_total_max != adjust->v_total_max ||
+			stream->adjust.v_total_min != adjust->v_total_min)) {
 			stream->adjust.timing_adjust_pending = true;
 			return false;
 		}
@@ -989,6 +991,8 @@ static bool dc_construct_ctx(struct dc *dc,
 	dc_ctx = kzalloc(sizeof(*dc_ctx), GFP_KERNEL);
 	if (!dc_ctx)
 		return false;
+
+	dc_stream_init_rmcm_3dlut(dc);
 
 	dc_ctx->cgs_device = init_params->cgs_device;
 	dc_ctx->driver_context = init_params->driver;
@@ -2395,7 +2399,7 @@ enum dc_status dc_commit_streams(struct dc *dc, struct dc_commit_streams_params 
 
 	context->power_source = params->power_source;
 
-	res = dc_validate_with_context(dc, set, params->stream_count, context, false);
+	res = dc_validate_with_context(dc, set, params->stream_count, context, DC_VALIDATE_MODE_AND_PROGRAMMING);
 
 	/*
 	 * Only update link encoder to stream assignment after bandwidth validation passed.
@@ -2407,6 +2411,18 @@ enum dc_status dc_commit_streams(struct dc *dc, struct dc_commit_streams_params 
 	if (res != DC_OK) {
 		BREAK_TO_DEBUGGER();
 		goto fail;
+	}
+
+	/*
+	 * If not already seamless, make transition seamless by inserting intermediate minimal transition
+	 */
+	if (dc->hwss.is_pipe_topology_transition_seamless &&
+			!dc->hwss.is_pipe_topology_transition_seamless(dc, dc->current_state, context)) {
+		res = commit_minimal_transition_state(dc, context);
+		if (res != DC_OK) {
+			BREAK_TO_DEBUGGER();
+			goto fail;
+		}
 	}
 
 	res = dc_commit_state_no_check(dc, context);
@@ -3291,6 +3307,9 @@ static void copy_stream_update_to_stream(struct dc *dc,
 	if (update->adaptive_sync_infopacket)
 		stream->adaptive_sync_infopacket = *update->adaptive_sync_infopacket;
 
+	if (update->avi_infopacket)
+		stream->avi_infopacket = *update->avi_infopacket;
+
 	if (update->dither_option)
 		stream->dither_option = *update->dither_option;
 
@@ -3318,7 +3337,8 @@ static void copy_stream_update_to_stream(struct dc *dc,
 		if (dsc_validate_context) {
 			stream->timing.dsc_cfg = *update->dsc_config;
 			stream->timing.flags.DSC = enable_dsc;
-			if (dc->res_pool->funcs->validate_bandwidth(dc, dsc_validate_context, true) != DC_OK) {
+			if (dc->res_pool->funcs->validate_bandwidth(dc, dsc_validate_context,
+				DC_VALIDATE_MODE_ONLY) != DC_OK) {
 				stream->timing.dsc_cfg = old_dsc_cfg;
 				stream->timing.flags.DSC = old_dsc_enabled;
 				update->dsc_config = NULL;
@@ -3387,7 +3407,7 @@ static void update_seamless_boot_flags(struct dc *dc,
 		int surface_count,
 		struct dc_stream_state *stream)
 {
-	if (get_seamless_boot_stream_count(context) > 0 && surface_count > 0) {
+	if (get_seamless_boot_stream_count(context) > 0 && (surface_count > 0 || stream->dpms_off)) {
 		/* Optimize seamless boot flag keeps clocks and watermarks high until
 		 * first flip. After first flip, optimization is required to lower
 		 * bandwidth. Important to note that it is expected UEFI will
@@ -3540,7 +3560,7 @@ static bool update_planes_and_stream_state(struct dc *dc,
 	}
 
 	if (update_type == UPDATE_TYPE_FULL) {
-		if (dc->res_pool->funcs->validate_bandwidth(dc, context, false) != DC_OK) {
+		if (dc->res_pool->funcs->validate_bandwidth(dc, context, DC_VALIDATE_MODE_AND_PROGRAMMING) != DC_OK) {
 			BREAK_TO_DEBUGGER();
 			goto fail;
 		}
@@ -3584,7 +3604,8 @@ static void commit_planes_do_stream_update(struct dc *dc,
 					stream_update->vsp_infopacket ||
 					stream_update->hfvsif_infopacket ||
 					stream_update->adaptive_sync_infopacket ||
-					stream_update->vtem_infopacket) {
+					stream_update->vtem_infopacket ||
+					stream_update->avi_infopacket) {
 				resource_build_info_frame(pipe_ctx);
 				dc->hwss.update_info_frame(pipe_ctx);
 
@@ -4146,7 +4167,7 @@ static void commit_planes_for_stream(struct dc *dc,
 	}
 
 	if (dc->hwseq->funcs.wait_for_pipe_update_if_needed)
-		dc->hwseq->funcs.wait_for_pipe_update_if_needed(dc, top_pipe_to_program, update_type == UPDATE_TYPE_FAST);
+		dc->hwseq->funcs.wait_for_pipe_update_if_needed(dc, top_pipe_to_program, update_type < UPDATE_TYPE_FULL);
 
 	if (should_lock_all_pipes && dc->hwss.interdependent_update_lock) {
 		if (dc->hwss.subvp_pipe_control_lock)
@@ -4646,7 +4667,8 @@ static struct dc_state *create_minimal_transition_state(struct dc *dc,
 
 	backup_and_set_minimal_pipe_split_policy(dc, base_context, policy);
 	/* commit minimal state */
-	if (dc->res_pool->funcs->validate_bandwidth(dc, minimal_transition_context, false) == DC_OK) {
+	if (dc->res_pool->funcs->validate_bandwidth(dc, minimal_transition_context,
+		DC_VALIDATE_MODE_AND_PROGRAMMING) == DC_OK) {
 		/* prevent underflow and corruption when reconfiguring pipes */
 		force_vsync_flip_in_minimal_transition_context(minimal_transition_context);
 	} else {
@@ -5055,6 +5077,7 @@ static bool full_update_required(struct dc *dc,
 			stream_update->hfvsif_infopacket ||
 			stream_update->vtem_infopacket ||
 			stream_update->adaptive_sync_infopacket ||
+			stream_update->avi_infopacket ||
 			stream_update->dpms_off ||
 			stream_update->allow_freesync ||
 			stream_update->vrr_active_variable ||
@@ -5169,7 +5192,7 @@ static bool update_planes_and_stream_v1(struct dc *dc,
 	copy_stream_update_to_stream(dc, context, stream, stream_update);
 
 	if (update_type >= UPDATE_TYPE_FULL) {
-		if (dc->res_pool->funcs->validate_bandwidth(dc, context, false) != DC_OK) {
+		if (dc->res_pool->funcs->validate_bandwidth(dc, context, DC_VALIDATE_MODE_AND_PROGRAMMING) != DC_OK) {
 			DC_ERROR("Mode validation failed for stream update!\n");
 			dc_state_release(context);
 			return false;
@@ -5556,6 +5579,15 @@ void dc_set_power_state(struct dc *dc, enum dc_acpi_cm_power_state power_state)
 		if (dc->hwss.init_sys_ctx != NULL &&
 			dc->vm_pa_config.valid) {
 			dc->hwss.init_sys_ctx(dc->hwseq, dc, &dc->vm_pa_config);
+		}
+		break;
+	case DC_ACPI_CM_POWER_STATE_D3:
+		if (dc->caps.ips_support)
+			dc_dmub_srv_notify_fw_dc_power_state(dc->ctx->dmub_srv, DC_ACPI_CM_POWER_STATE_D3);
+
+		if (dc->caps.ips_v2_support) {
+			if (dc->clk_mgr->funcs->set_low_power_state)
+				dc->clk_mgr->funcs->set_low_power_state(dc->clk_mgr);
 		}
 		break;
 	default:
@@ -6355,13 +6387,14 @@ void dc_set_edp_power(const struct dc *dc, struct dc_link *edp_link,
 	edp_link->dc->link_srv->edp_set_panel_power(edp_link, powerOn);
 }
 
-/*
- *****************************************************************************
+/**
  * dc_get_power_profile_for_dc_state() - extracts power profile from dc state
  *
  * Called when DM wants to make power policy decisions based on dc_state
  *
- *****************************************************************************
+ * @context: Pointer to the dc_state from which the power profile is extracted.
+ *
+ * Return: The power profile structure containing the power level information.
  */
 struct dc_power_profile dc_get_power_profile_for_dc_state(const struct dc_state *context)
 {
@@ -6377,13 +6410,14 @@ struct dc_power_profile dc_get_power_profile_for_dc_state(const struct dc_state 
 	return profile;
 }
 
-/*
- **********************************************************************************
+/**
  * dc_get_det_buffer_size_from_state() - extracts detile buffer size from dc state
  *
- * Called when DM wants to log detile buffer size from dc_state
+ * This function is called to log the detile buffer size from the dc_state.
  *
- **********************************************************************************
+ * @context: a pointer to the dc_state from which the detile buffer size is extracted.
+ *
+ * Return: the size of the detile buffer, or 0 if not available.
  */
 unsigned int dc_get_det_buffer_size_from_state(const struct dc_state *context)
 {
@@ -6394,18 +6428,17 @@ unsigned int dc_get_det_buffer_size_from_state(const struct dc_state *context)
 	else
 		return 0;
 }
+
 /**
- ***********************************************************************************************
  * dc_get_host_router_index: Get index of host router from a dpia link
  *
  * This function return a host router index of the target link. If the target link is dpia link.
  *
- * @param [in] link: target link
- * @param [out] host_router_index: host router index of the target link
+ * @link: Pointer to the target link (input)
+ * @host_router_index: Pointer to store the host router index of the target link (output).
  *
- * @return: true if the host router index is found and valid.
+ * Return: true if the host router index is found and valid.
  *
- ***********************************************************************************************
  */
 bool dc_get_host_router_index(const struct dc_link *link, unsigned int *host_router_index)
 {
