@@ -25,4 +25,6 @@
 
 void amdgpu_dpm_get_display_cfg(struct amdgpu_device *adev);
 
+void amdgpu_dpm_get_display_cfg(struct amdgpu_device *adev);
+
 #endif

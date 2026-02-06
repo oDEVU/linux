@@ -23,4 +23,8 @@ TEST_FILES := \
 	ethtool-common.sh
 # end of TEST_FILES
 
+TEST_FILES := \
+	ethtool-common.sh
+# end of TEST_FILES
+
 include ../../../lib.mk

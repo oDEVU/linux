@@ -201,6 +201,16 @@ void rtw89_mcc_gc_detect_beacon_work(struct wiphy *wiphy, struct wiphy_work *wor
 bool rtw89_mcc_detect_go_bcn(struct rtw89_dev *rtwdev,
 			     struct rtw89_vif_link *rtwvif_link);
 
+struct rtw89_mcc_links_info {
+	struct rtw89_vif_link *links[NUM_OF_RTW89_MCC_ROLES];
+};
+
+void rtw89_mcc_get_links(struct rtw89_dev *rtwdev, struct rtw89_mcc_links_info *info);
+void rtw89_mcc_prepare_done_work(struct wiphy *wiphy, struct wiphy_work *work);
+void rtw89_mcc_gc_detect_beacon_work(struct wiphy *wiphy, struct wiphy_work *work);
+bool rtw89_mcc_detect_go_bcn(struct rtw89_dev *rtwdev,
+			     struct rtw89_vif_link *rtwvif_link);
+
 int rtw89_chanctx_ops_add(struct rtw89_dev *rtwdev,
 			  struct ieee80211_chanctx_conf *ctx);
 void rtw89_chanctx_ops_remove(struct rtw89_dev *rtwdev,

@@ -25,5 +25,8 @@ void intel_bo_frontbuffer_put(struct intel_frontbuffer *front);
 void intel_bo_frontbuffer_flush_for_display(struct intel_frontbuffer *front);
 
 void intel_bo_describe(struct seq_file *m, struct drm_gem_object *obj);
+struct intel_framebuffer *intel_bo_alloc_framebuffer(void);
+int intel_bo_panic_setup(struct drm_scanout_buffer *sb);
+void intel_bo_panic_finish(struct intel_framebuffer *fb);
 
 #endif /* __INTEL_BO__ */

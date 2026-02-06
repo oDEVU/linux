@@ -43,6 +43,7 @@ struct tnum tnum_rshift(struct tnum a, u8 shift)
 {
 	return TNUM(a.value >> shift, a.mask >> shift);
 }
+EXPORT_SYMBOL_GPL(tnum_rshift);
 
 struct tnum tnum_arshift(struct tnum a, u8 min_shift, u8 insn_bitness)
 {

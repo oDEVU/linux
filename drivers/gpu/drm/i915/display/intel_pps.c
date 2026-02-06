@@ -8,6 +8,8 @@
 
 #include <drm/drm_print.h>
 
+#include <drm/drm_print.h>
+
 #include "g4x_dp.h"
 #include "i915_reg.h"
 #include "intel_de.h"

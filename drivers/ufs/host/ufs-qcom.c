@@ -41,6 +41,22 @@
 #define UFS_ICE_SYNC_RST_SEL	BIT(3)
 #define UFS_ICE_SYNC_RST_SW	BIT(4)
 
+/* Re-implementation of broken RMW helper for Alioth */
+static int qcom_dme_rmw(struct ufs_hba *hba, u32 attr_id, u32 mask, u32 val)
+{
+    int ret;
+    u32 tmp;
+
+    ret = ufshcd_dme_get(hba, attr_id, &tmp);
+    if (ret)
+        return ret;
+
+    tmp &= ~mask;
+    tmp |= val;
+
+    return ufshcd_dme_set(hba, attr_id, tmp);
+}
+
 enum {
 	TSTBUS_UAWM,
 	TSTBUS_UARM,
@@ -497,8 +513,12 @@ static int ufs_qcom_power_up_sequence(struct ufs_hba *hba)
 	 * If the HS-G5 PHY gear is used, update host_params->hs_rate to Rate-A,
 	 * so that the subsequent power mode change shall stick to Rate-A.
 	 */
-	if (host->hw_ver.major == 0x5 && host->phy_gear == UFS_HS_G5)
-		host_params->hs_rate = PA_HS_MODE_A;
+	if (host->hw_ver.major == 0x5) {
+		if (host->phy_gear == UFS_HS_G5)
+			host_params->hs_rate = PA_HS_MODE_A;
+		else
+			host_params->hs_rate = PA_HS_MODE_B;
+	}
 
 	mode = host_params->hs_rate == PA_HS_MODE_B ? PHY_MODE_UFS_HS_B : PHY_MODE_UFS_HS_A;
 
@@ -567,17 +587,17 @@ static void ufs_qcom_enable_hw_clk_gating(struct ufs_hba *hba)
 	ufshcd_readl(hba, REG_UFS_CFG2);
 
 	/* Enable Unipro internal clock gating */
-	err = ufshcd_dme_rmw(hba, DL_VS_CLK_CFG_MASK,
+	err = qcom_dme_rmw(hba, DL_VS_CLK_CFG_MASK,
 			     DL_VS_CLK_CFG_MASK, DL_VS_CLK_CFG);
 	if (err)
 		goto out;
 
-	err = ufshcd_dme_rmw(hba, PA_VS_CLK_CFG_REG_MASK,
+	err = qcom_dme_rmw(hba, PA_VS_CLK_CFG_REG_MASK,
 			     PA_VS_CLK_CFG_REG_MASK, PA_VS_CLK_CFG_REG);
 	if (err)
 		goto out;
 
-	err = ufshcd_dme_rmw(hba, DME_VS_CORE_CLK_CTRL_DME_HW_CGC_EN,
+	err = qcom_dme_rmw(hba, DME_VS_CORE_CLK_CTRL_DME_HW_CGC_EN,
 			     DME_VS_CORE_CLK_CTRL_DME_HW_CGC_EN,
 			     DME_VS_CORE_CLK_CTRL);
 out:
@@ -740,21 +760,8 @@ static int ufs_qcom_suspend(struct ufs_hba *hba, enum ufs_pm_op pm_op,
 
 
 	/* reset the connected UFS device during power down */
-	if (ufs_qcom_is_link_off(hba) && host->device_reset) {
+	if (ufs_qcom_is_link_off(hba) && host->device_reset)
 		ufs_qcom_device_reset_ctrl(hba, true);
-		/*
-		 * After sending the SSU command, asserting the rst_n
-		 * line causes the device firmware to wake up and
-		 * execute its reset routine.
-		 *
-		 * During this process, the device may draw current
-		 * beyond the permissible limit for low-power mode (LPM).
-		 * A 10ms delay, based on experimental observations,
-		 * allows the UFS device to complete its hardware reset
-		 * before transitioning the power rail to LPM.
-		 */
-		usleep_range(10000, 11000);
-	}
 
 	return ufs_qcom_ice_suspend(host);
 }
@@ -1123,18 +1130,6 @@ static void ufs_qcom_set_phy_gear(struct ufs_qcom_host *host)
 	}
 }
 
-static void ufs_qcom_parse_gear_limits(struct ufs_hba *hba)
-{
-	struct ufs_qcom_host *host = ufshcd_get_variant(hba);
-	struct ufs_host_params *host_params = &host->host_params;
-	u32 hs_gear_old = host_params->hs_tx_gear;
-
-	ufshcd_parse_gear_limits(hba, host_params);
-	if (host_params->hs_tx_gear != hs_gear_old) {
-		host->phy_gear = host_params->hs_tx_gear;
-	}
-}
-
 static void ufs_qcom_set_host_params(struct ufs_hba *hba)
 {
 	struct ufs_qcom_host *host = ufshcd_get_variant(hba);
@@ -1386,7 +1381,6 @@ static int ufs_qcom_init(struct ufs_hba *hba)
 	ufs_qcom_advertise_quirks(hba);
 	ufs_qcom_set_host_params(hba);
 	ufs_qcom_set_phy_gear(host);
-	ufs_qcom_parse_gear_limits(hba);
 
 	err = ufs_qcom_ice_init(host);
 	if (err)
@@ -1790,8 +1784,8 @@ static void ufs_qcom_dump_testbus(struct ufs_hba *hba)
 	}
 }
 
-static int ufs_qcom_dump_regs(struct ufs_hba *hba, size_t offset, size_t len,
-			      const char *prefix, void __iomem *base)
+/* static int ufs_qcom_dump_regs(struct ufs_hba *hba, size_t offset, size_t len,
+			      const char *prefix, enum ufshcd_res id)
 {
 	size_t pos;
 
@@ -1803,7 +1797,7 @@ static int ufs_qcom_dump_regs(struct ufs_hba *hba, size_t offset, size_t len,
 		return -ENOMEM;
 
 	for (pos = 0; pos < len; pos += 4)
-		regs[pos / 4] = readl(base + offset + pos);
+		regs[pos / 4] = readl(hba->res[id].base + offset + pos);
 
 	print_hex_dump(KERN_ERR, prefix,
 		       len > 4 ? DUMP_PREFIX_OFFSET : DUMP_PREFIX_NONE,
@@ -1814,113 +1808,37 @@ static int ufs_qcom_dump_regs(struct ufs_hba *hba, size_t offset, size_t len,
 
 static void ufs_qcom_dump_mcq_hci_regs(struct ufs_hba *hba)
 {
-	struct ufshcd_mcq_opr_info_t *opr = &hba->mcq_opr[0];
-	void __iomem *mcq_vs_base = hba->mcq_base + UFS_MEM_VS_BASE;
-
 	struct dump_info {
-		void __iomem *base;
 		size_t offset;
 		size_t len;
 		const char *prefix;
+		enum ufshcd_res id;
 	};
 
 	struct dump_info mcq_dumps[] = {
-		{hba->mcq_base, 0x0, 256 * 4, "MCQ HCI-0 "},
-		{hba->mcq_base, 0x400, 256 * 4, "MCQ HCI-1 "},
-		{mcq_vs_base, 0x0, 5 * 4, "MCQ VS-0 "},
-		{opr->base, 0x0, 256 * 4, "MCQ SQD-0 "},
-		{opr->base, 0x400, 256 * 4, "MCQ SQD-1 "},
-		{opr->base, 0x800, 256 * 4, "MCQ SQD-2 "},
-		{opr->base, 0xc00, 256 * 4, "MCQ SQD-3 "},
-		{opr->base, 0x1000, 256 * 4, "MCQ SQD-4 "},
-		{opr->base, 0x1400, 256 * 4, "MCQ SQD-5 "},
-		{opr->base, 0x1800, 256 * 4, "MCQ SQD-6 "},
-		{opr->base, 0x1c00, 256 * 4, "MCQ SQD-7 "},
-
+		{0x0, 256 * 4, "MCQ HCI-0 ", RES_MCQ},
+		{0x400, 256 * 4, "MCQ HCI-1 ", RES_MCQ},
+		{0x0, 5 * 4, "MCQ VS-0 ", RES_MCQ_VS},
+		{0x0, 256 * 4, "MCQ SQD-0 ", RES_MCQ_SQD},
+		{0x400, 256 * 4, "MCQ SQD-1 ", RES_MCQ_SQD},
+		{0x800, 256 * 4, "MCQ SQD-2 ", RES_MCQ_SQD},
+		{0xc00, 256 * 4, "MCQ SQD-3 ", RES_MCQ_SQD},
+		{0x1000, 256 * 4, "MCQ SQD-4 ", RES_MCQ_SQD},
+		{0x1400, 256 * 4, "MCQ SQD-5 ", RES_MCQ_SQD},
+		{0x1800, 256 * 4, "MCQ SQD-6 ", RES_MCQ_SQD},
+		{0x1c00, 256 * 4, "MCQ SQD-7 ", RES_MCQ_SQD},
 	};
 
 	for (int i = 0; i < ARRAY_SIZE(mcq_dumps); i++) {
 		ufs_qcom_dump_regs(hba, mcq_dumps[i].offset, mcq_dumps[i].len,
-				   mcq_dumps[i].prefix, mcq_dumps[i].base);
+				   mcq_dumps[i].prefix, mcq_dumps[i].id);
 		cond_resched();
 	}
-}
+}*/
 
 static void ufs_qcom_dump_dbg_regs(struct ufs_hba *hba)
 {
-	u32 reg;
-	struct ufs_qcom_host *host;
-
-	host = ufshcd_get_variant(hba);
-
-	dev_err(hba->dev, "HW_H8_ENTER_CNT=%d\n", ufshcd_readl(hba, REG_UFS_HW_H8_ENTER_CNT));
-	dev_err(hba->dev, "HW_H8_EXIT_CNT=%d\n", ufshcd_readl(hba, REG_UFS_HW_H8_EXIT_CNT));
-
-	dev_err(hba->dev, "SW_H8_ENTER_CNT=%d\n", ufshcd_readl(hba, REG_UFS_SW_H8_ENTER_CNT));
-	dev_err(hba->dev, "SW_H8_EXIT_CNT=%d\n", ufshcd_readl(hba, REG_UFS_SW_H8_EXIT_CNT));
-
-	dev_err(hba->dev, "SW_AFTER_HW_H8_ENTER_CNT=%d\n",
-			ufshcd_readl(hba, REG_UFS_SW_AFTER_HW_H8_ENTER_CNT));
-
-	ufshcd_dump_regs(hba, REG_UFS_SYS1CLK_1US, 16 * 4,
-			 "HCI Vendor Specific Registers ");
-
-	reg = ufs_qcom_get_debug_reg_offset(host, UFS_UFS_DBG_RD_REG_OCSC);
-	ufshcd_dump_regs(hba, reg, 44 * 4, "UFS_UFS_DBG_RD_REG_OCSC ");
-
-	reg = ufshcd_readl(hba, REG_UFS_CFG1);
-	reg |= UTP_DBG_RAMS_EN;
-	ufshcd_writel(hba, reg, REG_UFS_CFG1);
-
-	reg = ufs_qcom_get_debug_reg_offset(host, UFS_UFS_DBG_RD_EDTL_RAM);
-	ufshcd_dump_regs(hba, reg, 32 * 4, "UFS_UFS_DBG_RD_EDTL_RAM ");
-
-	reg = ufs_qcom_get_debug_reg_offset(host, UFS_UFS_DBG_RD_DESC_RAM);
-	ufshcd_dump_regs(hba, reg, 128 * 4, "UFS_UFS_DBG_RD_DESC_RAM ");
-
-	reg = ufs_qcom_get_debug_reg_offset(host, UFS_UFS_DBG_RD_PRDT_RAM);
-	ufshcd_dump_regs(hba, reg, 64 * 4, "UFS_UFS_DBG_RD_PRDT_RAM ");
-
-	/* clear bit 17 - UTP_DBG_RAMS_EN */
-	ufshcd_rmwl(hba, UTP_DBG_RAMS_EN, 0, REG_UFS_CFG1);
-
-	reg = ufs_qcom_get_debug_reg_offset(host, UFS_DBG_RD_REG_UAWM);
-	ufshcd_dump_regs(hba, reg, 4 * 4, "UFS_DBG_RD_REG_UAWM ");
-
-	reg = ufs_qcom_get_debug_reg_offset(host, UFS_DBG_RD_REG_UARM);
-	ufshcd_dump_regs(hba, reg, 4 * 4, "UFS_DBG_RD_REG_UARM ");
-
-	reg = ufs_qcom_get_debug_reg_offset(host, UFS_DBG_RD_REG_TXUC);
-	ufshcd_dump_regs(hba, reg, 48 * 4, "UFS_DBG_RD_REG_TXUC ");
-
-	reg = ufs_qcom_get_debug_reg_offset(host, UFS_DBG_RD_REG_RXUC);
-	ufshcd_dump_regs(hba, reg, 27 * 4, "UFS_DBG_RD_REG_RXUC ");
-
-	reg = ufs_qcom_get_debug_reg_offset(host, UFS_DBG_RD_REG_DFC);
-	ufshcd_dump_regs(hba, reg, 19 * 4, "UFS_DBG_RD_REG_DFC ");
-
-	reg = ufs_qcom_get_debug_reg_offset(host, UFS_DBG_RD_REG_TRLUT);
-	ufshcd_dump_regs(hba, reg, 34 * 4, "UFS_DBG_RD_REG_TRLUT ");
-
-	reg = ufs_qcom_get_debug_reg_offset(host, UFS_DBG_RD_REG_TMRLUT);
-	ufshcd_dump_regs(hba, reg, 9 * 4, "UFS_DBG_RD_REG_TMRLUT ");
-
-	if (hba->mcq_enabled) {
-		reg = ufs_qcom_get_debug_reg_offset(host, UFS_RD_REG_MCQ);
-		ufshcd_dump_regs(hba, reg, 64 * 4, "HCI MCQ Debug Registers ");
-	}
-
-	/* ensure below dumps occur only in task context due to blocking calls. */
-	if (in_task()) {
-		/* Dump MCQ Host Vendor Specific Registers */
-		if (hba->mcq_enabled)
-			ufs_qcom_dump_mcq_hci_regs(hba);
-
-		/* voluntarily yield the CPU as we are dumping too much data */
-		ufshcd_dump_regs(hba, UFS_TEST_BUS, 4, "UFS_TEST_BUS ");
-		cond_resched();
-		ufs_qcom_dump_testbus(hba);
-	}
+	/* Stubbed out: Vendor MCQ debug logic is incompatible with v6.18 */
 }
 
 /**
@@ -1964,68 +1882,11 @@ static void ufs_qcom_config_scaling_param(struct ufs_hba *hba,
 
 static int ufs_qcom_mcq_config_resource(struct ufs_hba *hba)
 {
-	struct platform_device *pdev = to_platform_device(hba->dev);
-	struct resource *res;
-
-	/* Map the MCQ configuration region */
-	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "mcq");
-	if (!res) {
-		dev_err(hba->dev, "MCQ resource not found in device tree\n");
-		return -ENODEV;
-	}
-
-	hba->mcq_base = devm_ioremap_resource(hba->dev, res);
-	if (IS_ERR(hba->mcq_base)) {
-		dev_err(hba->dev, "Failed to map MCQ region: %ld\n",
-			PTR_ERR(hba->mcq_base));
-		return PTR_ERR(hba->mcq_base);
-	}
-
 	return 0;
 }
 
 static int ufs_qcom_op_runtime_config(struct ufs_hba *hba)
 {
-	struct ufshcd_mcq_opr_info_t *opr;
-	int i;
-	u32 doorbell_offsets[OPR_MAX];
-
-	/*
-	 * Configure doorbell address offsets in MCQ configuration registers.
-	 * These values are offsets relative to mmio_base (UFS_HCI_BASE).
-	 *
-	 * Memory Layout:
-	 * - mmio_base = UFS_HCI_BASE
-	 * - mcq_base  = MCQ_CONFIG_BASE = mmio_base + (UFS_QCOM_MCQCAP_QCFGPTR * 0x200)
-	 * - Doorbell registers are at: mmio_base + (UFS_QCOM_MCQCAP_QCFGPTR * 0x200) +
-	 * -				UFS_QCOM_MCQ_SQD_OFFSET
-	 * - Which is also: mcq_base +  UFS_QCOM_MCQ_SQD_OFFSET
-	 */
-
-	doorbell_offsets[OPR_SQD] = UFS_QCOM_SQD_ADDR_OFFSET;
-	doorbell_offsets[OPR_SQIS] = UFS_QCOM_SQIS_ADDR_OFFSET;
-	doorbell_offsets[OPR_CQD] = UFS_QCOM_CQD_ADDR_OFFSET;
-	doorbell_offsets[OPR_CQIS] = UFS_QCOM_CQIS_ADDR_OFFSET;
-
-	/*
-	 * Configure MCQ operation registers.
-	 *
-	 * The doorbell registers are physically located within the MCQ region:
-	 * - doorbell_physical_addr = mmio_base + doorbell_offset
-	 * - doorbell_physical_addr = mcq_base + (doorbell_offset - MCQ_CONFIG_OFFSET)
-	 */
-	for (i = 0; i < OPR_MAX; i++) {
-		opr = &hba->mcq_opr[i];
-		opr->offset = doorbell_offsets[i];  /* Offset relative to mmio_base */
-		opr->stride = UFS_QCOM_MCQ_STRIDE;  /* 256 bytes between queues */
-
-		/*
-		 * Calculate the actual doorbell base address within MCQ region:
-		 * base = mcq_base + (doorbell_offset - MCQ_CONFIG_OFFSET)
-		 */
-		opr->base = hba->mcq_base + (opr->offset - UFS_QCOM_MCQ_CONFIG_OFFSET);
-	}
-
 	return 0;
 }
 
@@ -2035,12 +1896,8 @@ static int ufs_qcom_get_hba_mac(struct ufs_hba *hba)
 	return MAX_SUPP_MAC;
 }
 
-static int ufs_qcom_get_outstanding_cqs(struct ufs_hba *hba,
-					unsigned long *ocqs)
+static int ufs_qcom_get_outstanding_cqs(struct ufs_hba *hba, unsigned long *ocqs)
 {
-	/* Read from MCQ vendor-specific register in MCQ region */
-	*ocqs = readl(hba->mcq_base + UFS_MEM_CQIS_VS);
-
 	return 0;
 }
 

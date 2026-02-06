@@ -2715,6 +2715,11 @@ fallback_missing_features:
 					  end_cpu_map_idx);
 		goto out;
 	}
+	if (evsel__is_drm(evsel)) {
+		return evsel__drm_pmu_open(evsel, threads,
+					   start_cpu_map_idx,
+					   end_cpu_map_idx);
+	}
 
 	for (idx = start_cpu_map_idx; idx < end_cpu_map_idx; idx++) {
 		cpu = perf_cpu_map__cpu(cpus, idx);

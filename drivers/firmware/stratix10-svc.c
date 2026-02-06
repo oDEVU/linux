@@ -307,6 +307,12 @@ static LIST_HEAD(svc_data_mem);
 static DEFINE_MUTEX(svc_mem_lock);
 
 /**
+ * svc_mem_lock protects access to the svc_data_mem list for
+ * concurrent multi-client operations
+ */
+static DEFINE_MUTEX(svc_mem_lock);
+
+/**
  * svc_pa_to_va() - translate physical address to virtual address
  * @addr: to be translated physical address
  *

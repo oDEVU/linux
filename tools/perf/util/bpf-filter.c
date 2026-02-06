@@ -444,6 +444,10 @@ err:
 	return -1;
 }
 
+#define LIBBPF_CURRENT_VERSION_GEQ(major, minor)			\
+	(LIBBPF_MAJOR_VERSION > (major) ||				\
+	 (LIBBPF_MAJOR_VERSION == (major) && LIBBPF_MINOR_VERSION >= (minor)))
+
 int perf_bpf_filter__prepare(struct evsel *evsel, struct target *target)
 {
 	int i, x, y, fd, ret;

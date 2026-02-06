@@ -53,7 +53,7 @@ void kvm_vgic_early_init(struct kvm *kvm)
 {
 	struct vgic_dist *dist = &kvm->arch.vgic;
 
-	xa_init_flags(&dist->lpi_xa, XA_FLAGS_LOCK_IRQ);
+	xa_init(&dist->lpi_xa);
 }
 
 /* CREATION */
@@ -175,6 +175,9 @@ int kvm_vgic_create(struct kvm *kvm, u32 type)
 
 	kvm_set_vm_id_reg(kvm, SYS_ID_AA64PFR0_EL1, aa64pfr0);
 	kvm_set_vm_id_reg(kvm, SYS_ID_PFR1_EL1, pfr1);
+
+	if (type == KVM_DEV_TYPE_ARM_VGIC_V3)
+		kvm->arch.vgic.nassgicap = system_supports_direct_sgis();
 
 	if (type == KVM_DEV_TYPE_ARM_VGIC_V3)
 		kvm->arch.vgic.nassgicap = system_supports_direct_sgis();

@@ -697,6 +697,7 @@ cleanup_deferred:
 release_screen_buffer:
 	vfree(info->screen_buffer);
 release_framebuf:
+	fb_deferred_io_cleanup(info);
 	framebuffer_release(info);
 	return NULL;
 }

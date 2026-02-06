@@ -184,3 +184,7 @@ sphinx_*/
 
 # Rust analyzer configuration
 /rust-project.json
+browse_conflicts.sh
+important.txt
+kernel_config
+sm8250-xiaomi-alioth.txt

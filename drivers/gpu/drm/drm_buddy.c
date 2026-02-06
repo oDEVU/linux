@@ -19,6 +19,12 @@ enum drm_buddy_free_tree {
 	DRM_BUDDY_MAX_FREE_TREES,
 };
 
+enum drm_buddy_free_tree {
+	DRM_BUDDY_CLEAR_TREE = 0,
+	DRM_BUDDY_DIRTY_TREE,
+	DRM_BUDDY_MAX_FREE_TREES,
+};
+
 static struct kmem_cache *slab_blocks;
 
 #define for_each_free_tree(tree) \

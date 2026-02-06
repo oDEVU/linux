@@ -1127,6 +1127,8 @@ static int cs42l43_suspend(struct device *dev)
 
 	disable_irq(cs42l43->irq);
 
+	disable_irq(cs42l43->irq);
+
 	ret = pm_runtime_force_suspend(dev);
 	if (ret) {
 		dev_err(cs42l43->dev, "Failed to force suspend: %d\n", ret);

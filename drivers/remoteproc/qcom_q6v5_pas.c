@@ -226,10 +226,13 @@ static int qcom_pas_load(struct rproc *rproc, const struct firmware *fw)
 	/* Store firmware handle to be used in qcom_pas_start() */
 	pas->firmware = fw;
 
-	if (pas->lite_pas_id)
-		qcom_scm_pas_shutdown(pas->lite_pas_id);
-	if (pas->lite_dtb_pas_id)
-		qcom_scm_pas_shutdown(pas->lite_dtb_pas_id);
+	if (pas->lite_pas_id) {
+    		ret = qcom_scm_pas_shutdown(pas->lite_pas_id);
+      		if (ret)
+        	return ret;
+	}
+	//if (pas->lite_dtb_pas_id)
+	//	qcom_scm_pas_shutdown(pas->lite_dtb_pas_id);
 
 	if (pas->dtb_pas_id) {
 		ret = request_firmware(&pas->dtb_firmware, pas->dtb_firmware_name, pas->dev);

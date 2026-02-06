@@ -720,7 +720,7 @@ static void wm_adsp_release_firmware_files(struct wm_adsp *dsp,
 static int wm_adsp_request_firmware_file(struct wm_adsp *dsp,
 					 const struct firmware **firmware, char **filename,
 					 const char *dir, const char *system_name,
-					 const char *asoc_component_prefix,
+					 const char *prefix,
 					 const char *filetype)
 {
 	struct cs_dsp *cs_dsp = &dsp->cs_dsp;
@@ -733,13 +733,17 @@ static int wm_adsp_request_firmware_file(struct wm_adsp *dsp,
 	else
 		fwf = dsp->cs_dsp.name;
 
-	if (system_name && asoc_component_prefix)
+	if (system_name && prefix)
 		*filename = kasprintf(GFP_KERNEL, "%s%s-%s-%s-%s-%s.%s", dir, dsp->part,
 				      fwf, wm_adsp_fw[dsp->fw].file, system_name,
-				      asoc_component_prefix, filetype);
+				      dsp->component->name_prefix, filetype);
 	else if (system_name)
 		*filename = kasprintf(GFP_KERNEL, "%s%s-%s-%s-%s.%s", dir, dsp->part,
 				      fwf, wm_adsp_fw[dsp->fw].file, system_name,
+				      filetype);
+	else if (prefix)
+		*filename = kasprintf(GFP_KERNEL, "%s%s-%s-%s-%s.%s", dir, dsp->part,
+				      fwf, wm_adsp_fw[dsp->fw].file, prefix,
 				      filetype);
 	else
 		*filename = kasprintf(GFP_KERNEL, "%s%s-%s-%s.%s", dir, dsp->part, fwf,
@@ -813,6 +817,16 @@ static int wm_adsp_request_firmware_files(struct wm_adsp *dsp,
 				wm_adsp_request_firmware_file(dsp, coeff_firmware, coeff_filename,
 							      cirrus_dir, system_name,
 							      NULL, "bin");
+			return 0;
+		}
+	} else if (dsp->component->name_prefix) {
+		if (!wm_adsp_request_firmware_file(dsp, wmfw_firmware, wmfw_filename,
+						   cirrus_dir, NULL,
+						   NULL, "wmfw")) {
+			adsp_dbg(dsp, "Found '%s'\n", *wmfw_filename);
+			wm_adsp_request_firmware_file(dsp, coeff_firmware, coeff_filename,
+							      cirrus_dir, NULL,
+							      dsp->component->name_prefix, "bin");
 			return 0;
 		}
 	}

@@ -2570,6 +2570,11 @@ restore:
 			pci_release_resource(dev, i);
 		}
 
+		if (res->parent) {
+			release_child_resources(res);
+			pci_release_resource(bridge, i);
+		}
+
 		restore_dev_resource(dev_res);
 
 		if (pci_claim_resource(dev, i))

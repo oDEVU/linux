@@ -641,6 +641,8 @@ static int axis_fifo_probe(struct platform_device *pdev)
 
 	axis_fifo_debugfs_init(fifo);
 
+	axis_fifo_debugfs_init(fifo);
+
 	return 0;
 }
 

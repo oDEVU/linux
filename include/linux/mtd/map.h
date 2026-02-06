@@ -14,7 +14,9 @@
 #include <linux/string.h>
 #include <linux/types.h>
 #include <linux/unaligned.h>
-#include <asm/barrier.h>
+
+struct device_node;
+struct module;
 
 struct device_node;
 struct module;

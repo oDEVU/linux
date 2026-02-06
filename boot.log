@@ -1,0 +1,855 @@
+Sep 17 02:00:00 fedora kernel: Booting Linux on physical CPU 0x0000000000 [0x51df805e]
+Sep 17 02:00:00 fedora kernel: Linux version 6.18.8-sm8250+ (devu@fedora-pc) (aarch64-linux-gnu-gcc (GCC) 15.2.1 20250808 (Red Hat Cross 15.2.1-1), GNU ld version 2.45-1.fc43) #12 SMP PREEMPT Fri Feb  6 10:18:45 CET 2026
+Sep 17 02:00:00 fedora kernel: Machine model: Xiaomi POCO F3
+Sep 17 02:00:00 fedora kernel: efi: EFI v2.7 by Project Silicium
+Sep 17 02:00:00 fedora kernel: efi: SMBIOS=0x9a6f7000 SMBIOS 3.0=0x9a6f3000 ACPI 2.0=0x988c3fd8 MEMATTR=0x97f98118 INITRD=0x94956ff0 RNG=0x94954fd8 MEMRESERVE=0x94952ff0 
+Sep 17 02:00:00 fedora kernel: random: crng init done
+Sep 17 02:00:00 fedora kernel: OF: reserved mem: 0x0000000080000000..0x00000000805fffff (6144 KiB) nomap non-reusable memory@80000000
+Sep 17 02:00:00 fedora kernel: OF: reserved mem: 0x0000000080860000..0x000000008087ffff (128 KiB) nomap non-reusable memory@80860000
+Sep 17 02:00:00 fedora kernel: OF: reserved mem: 0x0000000080900000..0x0000000080afffff (2048 KiB) nomap non-reusable memory@80900000
+Sep 17 02:00:00 fedora kernel: OF: reserved mem: 0x0000000080b00000..0x0000000085dfffff (84992 KiB) nomap non-reusable memory@80b00000
+Sep 17 02:00:00 fedora kernel: OF: reserved mem: 0x0000000086200000..0x00000000866fffff (5120 KiB) nomap non-reusable memory@86200000
+Sep 17 02:00:00 fedora kernel: OF: reserved mem: 0x0000000086700000..0x00000000867fffff (1024 KiB) nomap non-reusable memory@86700000
+Sep 17 02:00:00 fedora kernel: OF: reserved mem: 0x0000000086800000..0x000000008680ffff (64 KiB) nomap non-reusable memory@86800000
+Sep 17 02:00:00 fedora kernel: OF: reserved mem: 0x0000000086810000..0x0000000086819fff (40 KiB) nomap non-reusable memory@86810000
+Sep 17 02:00:00 fedora kernel: OF: reserved mem: 0x000000008681a000..0x000000008681bfff (8 KiB) nomap non-reusable memory@8681a000
+Sep 17 02:00:00 fedora kernel: OF: reserved mem: 0x0000000086900000..0x0000000086dfffff (5120 KiB) nomap non-reusable memory@86900000
+Sep 17 02:00:00 fedora kernel: OF: reserved mem: 0x0000000086e00000..0x00000000872fffff (5120 KiB) nomap non-reusable memory@86e00000
+Sep 17 02:00:00 fedora kernel: OF: reserved mem: 0x0000000087300000..0x00000000877fffff (5120 KiB) nomap non-reusable memory@87300000
+Sep 17 02:00:00 fedora kernel: OF: reserved mem: 0x0000000087800000..0x0000000088bfffff (20480 KiB) nomap non-reusable memory@87800000
+Sep 17 02:00:00 fedora kernel: OF: reserved mem: 0x0000000080600000..0x000000008085ffff (2432 KiB) nomap non-reusable xbl-aop@80700000
+Sep 17 02:00:00 fedora kernel: OF: reserved mem: 0x0000000088c00000..0x000000008bafffff (48128 KiB) nomap non-reusable slpi@88c00000
+Sep 17 02:00:00 fedora kernel: OF: reserved mem: 0x000000008bb00000..0x000000008dffffff (37888 KiB) nomap non-reusable adsp@8bb00000
+Sep 17 02:00:00 fedora kernel: OF: reserved mem: 0x000000008e000000..0x000000008e0fffff (1024 KiB) nomap non-reusable spss@8e000000
+Sep 17 02:00:00 fedora kernel: OF: reserved mem: 0x000000008e100000..0x00000000926fffff (71680 KiB) nomap non-reusable cdsp-secure-heap@8e100000
+Sep 17 02:00:00 fedora kernel: NUMA: Faking a node at [mem 0x0000000080000000-0x000000027fffffff]
+Sep 17 02:00:00 fedora kernel: NODE_DATA(0) allocated [mem 0x27f009180-0x27f00bf7f]
+Sep 17 02:00:00 fedora kernel: Zone ranges:
+Sep 17 02:00:00 fedora kernel:   DMA      [mem 0x0000000080000000-0x00000000ffffffff]
+Sep 17 02:00:00 fedora kernel:   DMA32    empty
+Sep 17 02:00:00 fedora kernel:   Normal   [mem 0x0000000100000000-0x000000027fffffff]
+Sep 17 02:00:00 fedora kernel: Movable zone start for each node
+Sep 17 02:00:00 fedora kernel: Early memory node ranges
+Sep 17 02:00:00 fedora kernel:   node   0: [mem 0x0000000080000000-0x000000008085ffff]
+Sep 17 02:00:00 fedora kernel:   node   0: [mem 0x0000000080880000-0x0000000080883fff]
+Sep 17 02:00:00 fedora kernel:   node   0: [mem 0x0000000080884000-0x0000000080893fff]
+Sep 17 02:00:00 fedora kernel:   node   0: [mem 0x0000000080894000-0x00000000808fffff]
+Sep 17 02:00:00 fedora kernel:   node   0: [mem 0x0000000085e00000-0x0000000085ffffff]
+Sep 17 02:00:00 fedora kernel:   node   0: [mem 0x0000000093200000-0x00000000945fffff]
+Sep 17 02:00:00 fedora kernel:   node   0: [mem 0x0000000094600000-0x0000000098192fff]
+Sep 17 02:00:00 fedora kernel:   node   0: [mem 0x0000000098193000-0x00000000981f3fff]
+Sep 17 02:00:00 fedora kernel:   node   0: [mem 0x00000000981f4000-0x0000000098968fff]
+Sep 17 02:00:00 fedora kernel:   node   0: [mem 0x0000000098969000-0x0000000098a5cfff]
+Sep 17 02:00:00 fedora kernel:   node   0: [mem 0x0000000098a5d000-0x0000000098a78fff]
+Sep 17 02:00:00 fedora kernel:   node   0: [mem 0x0000000098a79000-0x0000000098adafff]
+Sep 17 02:00:00 fedora kernel:   node   0: [mem 0x0000000098adb000-0x0000000099000fff]
+Sep 17 02:00:00 fedora kernel:   node   0: [mem 0x0000000099001000-0x000000009901efff]
+Sep 17 02:00:00 fedora kernel:   node   0: [mem 0x000000009901f000-0x0000000099094fff]
+Sep 17 02:00:00 fedora kernel:   node   0: [mem 0x0000000099095000-0x0000000099147fff]
+Sep 17 02:00:00 fedora kernel:   node   0: [mem 0x0000000099148000-0x000000009a5cdfff]
+Sep 17 02:00:00 fedora kernel:   node   0: [mem 0x000000009a5ce000-0x000000009a78ffff]
+Sep 17 02:00:00 fedora kernel:   node   0: [mem 0x000000009a790000-0x000000009bffffff]
+Sep 17 02:00:00 fedora kernel:   node   0: [mem 0x000000009c000000-0x000000009e3fffff]
+Sep 17 02:00:00 fedora kernel:   node   0: [mem 0x000000009f300000-0x000000009fff6fff]
+Sep 17 02:00:00 fedora kernel:   node   0: [mem 0x000000009fff7000-0x000000009fffffff]
+Sep 17 02:00:00 fedora kernel:   node   0: [mem 0x00000000a0000000-0x00000000bbafffff]
+Sep 17 02:00:00 fedora kernel:   node   0: [mem 0x00000000c0000000-0x000000027fffffff]
+Sep 17 02:00:00 fedora kernel: Initmem setup node 0 [mem 0x0000000080000000-0x000000027fffffff]
+Sep 17 02:00:00 fedora kernel: On node 0, zone DMA: 32 pages in unavailable ranges
+Sep 17 02:00:00 fedora kernel: On node 0, zone DMA: 21760 pages in unavailable ranges
+Sep 17 02:00:00 fedora kernel: On node 0, zone DMA: 20992 pages in unavailable ranges
+Sep 17 02:00:00 fedora kernel: On node 0, zone DMA: 3840 pages in unavailable ranges
+Sep 17 02:00:00 fedora kernel: On node 0, zone DMA: 17664 pages in unavailable ranges
+Sep 17 02:00:00 fedora kernel: cma: Reserved 256 MiB at 0x00000000f0000000
+Sep 17 02:00:00 fedora kernel: psci: probing for conduit method from DT.
+Sep 17 02:00:00 fedora kernel: psci: PSCIv1.1 detected in firmware.
+Sep 17 02:00:00 fedora kernel: psci: Using standard PSCI v0.2 function IDs
+Sep 17 02:00:00 fedora kernel: psci: MIGRATE_INFO_TYPE not supported.
+Sep 17 02:00:00 fedora kernel: psci: SMC Calling Convention v1.1
+Sep 17 02:00:00 fedora kernel: psci: OSI mode supported.
+Sep 17 02:00:00 fedora kernel: psci: [Firmware Bug]: failed to set PC mode: -3
+Sep 17 02:00:00 fedora kernel: percpu: Embedded 25 pages/cpu s61784 r8192 d32424 u102400
+Sep 17 02:00:00 fedora kernel: pcpu-alloc: s61784 r8192 d32424 u102400 alloc=25*4096
+Sep 17 02:00:00 fedora kernel: pcpu-alloc: [0] 0 [0] 1 [0] 2 [0] 3 [0] 4 [0] 5 [0] 6 [0] 7 
+Sep 17 02:00:00 fedora kernel: Detected VIPT I-cache on CPU0
+Sep 17 02:00:00 fedora kernel: CPU features: detected: GICv3 CPU interface
+Sep 17 02:00:00 fedora kernel: CPU features: detected: ARM errata 1165522, 1319367, or 1530923
+Sep 17 02:00:00 fedora kernel: alternatives: applying boot alternatives
+Sep 17 02:00:00 fedora kernel: Kernel command line: rw root=UUID=9a466b26-6149-41e7-986d-84227cab0f3d dtb=\sm8250-xiaomi-alioth.dtb console=tty0 loglevel=7 systemd.show_status=true initrd=\initramfs-linux.img
+Sep 17 02:00:00 fedora kernel: Unknown kernel command line parameters "dtb=\sm8250-xiaomi-alioth.dtb", will be passed to user space.
+Sep 17 02:00:00 fedora kernel: printk: log buffer data + meta data: 131072 + 458752 = 589824 bytes
+Sep 17 02:00:00 fedora kernel: Dentry cache hash table entries: 1048576 (order: 11, 8388608 bytes, linear)
+Sep 17 02:00:00 fedora kernel: Inode-cache hash table entries: 524288 (order: 10, 4194304 bytes, linear)
+Sep 17 02:00:00 fedora kernel: software IO TLB: area num 8.
+Sep 17 02:00:00 fedora kernel: software IO TLB: mapped [mem 0x00000000ec000000-0x00000000f0000000] (64MB)
+Sep 17 02:00:00 fedora kernel: Fallback order for Node 0: 0 
+Sep 17 02:00:00 fedora kernel: Built 1 zonelists, mobility grouping on.  Total pages: 2000096
+Sep 17 02:00:00 fedora kernel: Policy zone: Normal
+Sep 17 02:00:00 fedora kernel: mem auto-init: stack:all(zero), heap alloc:off, heap free:off
+Sep 17 02:00:00 fedora kernel: SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=8, Nodes=1
+Sep 17 02:00:00 fedora kernel: rcu: Preemptible hierarchical RCU implementation.
+Sep 17 02:00:00 fedora kernel: rcu:         RCU event tracing is enabled.
+Sep 17 02:00:00 fedora kernel:         Trampoline variant of Tasks RCU enabled.
+Sep 17 02:00:00 fedora kernel:         Tracing variant of Tasks RCU enabled.
+Sep 17 02:00:00 fedora kernel: rcu: RCU calculated value of scheduler-enlistment delay is 100 jiffies.
+Sep 17 02:00:00 fedora kernel: RCU Tasks: Setting shift to 3 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=8.
+Sep 17 02:00:00 fedora kernel: RCU Tasks Trace: Setting shift to 3 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=8.
+Sep 17 02:00:00 fedora kernel: NR_IRQS: 64, nr_irqs: 64, preallocated irqs: 0
+Sep 17 02:00:00 fedora kernel: GICv3: 928 SPIs implemented
+Sep 17 02:00:00 fedora kernel: GICv3: 0 Extended SPIs implemented
+Sep 17 02:00:00 fedora kernel: Root IRQ handler: gic_handle_irq
+Sep 17 02:00:00 fedora kernel: GICv3: GICv3 features: 16 PPIs
+Sep 17 02:00:00 fedora kernel: GICv3: GICD_CTLR.DS=0, SCR_EL3.FIQ=1
+Sep 17 02:00:00 fedora kernel: GICv3: CPU0: found redistributor 0 region 0:0x0000000017a60000
+Sep 17 02:00:00 fedora kernel: ITS: No ITS available, not enabling LPIs
+Sep 17 02:00:00 fedora kernel: rcu: srcu_init: Setting srcu_struct sizes based on contention.
+Sep 17 02:00:00 fedora kernel: arch_timer: cp15 timer running at 19.20MHz (virt).
+Sep 17 02:00:00 fedora kernel: clocksource: arch_sys_counter: mask: 0xffffffffffffff max_cycles: 0x46d987e47, max_idle_ns: 440795202767 ns
+Sep 17 02:00:00 fedora kernel: sched_clock: 56 bits at 19MHz, resolution 52ns, wraps every 4398046511078ns
+Sep 17 02:00:00 fedora kernel: Console: colour dummy device 80x25
+Sep 17 02:00:00 fedora kernel: printk: legacy console [tty0] enabled
+Sep 17 02:00:00 fedora kernel: Calibrating delay loop (skipped), value calculated using timer frequency.. 38.40 BogoMIPS (lpj=19200)
+Sep 17 02:00:00 fedora kernel: pid_max: default: 32768 minimum: 301
+Sep 17 02:00:00 fedora kernel: LSM: initializing lsm=capability
+Sep 17 02:00:00 fedora kernel: Mount-cache hash table entries: 16384 (order: 5, 131072 bytes, linear)
+Sep 17 02:00:00 fedora kernel: Mountpoint-cache hash table entries: 16384 (order: 5, 131072 bytes, linear)
+Sep 17 02:00:00 fedora kernel: rcu: Hierarchical SRCU implementation.
+Sep 17 02:00:00 fedora kernel: rcu:         Max phase no-delay instances is 400.
+Sep 17 02:00:00 fedora kernel: Timer migration: 1 hierarchy levels; 8 children per group; 1 crossnode level
+Sep 17 02:00:00 fedora kernel: Remapping and enabling EFI services.
+Sep 17 02:00:00 fedora kernel: smp: Bringing up secondary CPUs ...
+Sep 17 02:00:00 fedora kernel: Detected VIPT I-cache on CPU1
+Sep 17 02:00:00 fedora kernel: GICv3: CPU1: found redistributor 100 region 0:0x0000000017a80000
+Sep 17 02:00:00 fedora kernel: CPU1: Booted secondary processor 0x0000000100 [0x51df805e]
+Sep 17 02:00:00 fedora kernel: Detected VIPT I-cache on CPU2
+Sep 17 02:00:00 fedora kernel: GICv3: CPU2: found redistributor 200 region 0:0x0000000017aa0000
+Sep 17 02:00:00 fedora kernel: CPU2: Booted secondary processor 0x0000000200 [0x51df805e]
+Sep 17 02:00:00 fedora kernel: Detected VIPT I-cache on CPU3
+Sep 17 02:00:00 fedora kernel: GICv3: CPU3: found redistributor 300 region 0:0x0000000017ac0000
+Sep 17 02:00:00 fedora kernel: CPU3: Booted secondary processor 0x0000000300 [0x51df805e]
+Sep 17 02:00:00 fedora kernel: CPU features: detected: Spectre-v4
+Sep 17 02:00:00 fedora kernel: CPU features: detected: Spectre-BHB
+Sep 17 02:00:00 fedora kernel: CPU features: detected: ARM erratum 1508412 (kernel portion)
+Sep 17 02:00:00 fedora kernel: CPU features: detected: SSBS not fully self-synchronizing
+Sep 17 02:00:00 fedora kernel: Detected PIPT I-cache on CPU4
+Sep 17 02:00:00 fedora kernel: GICv3: CPU4: found redistributor 400 region 0:0x0000000017ae0000
+Sep 17 02:00:00 fedora kernel: CPU4: Booted secondary processor 0x0000000400 [0x411fd0d0]
+Sep 17 02:00:00 fedora kernel: Detected PIPT I-cache on CPU5
+Sep 17 02:00:00 fedora kernel: GICv3: CPU5: found redistributor 500 region 0:0x0000000017b00000
+Sep 17 02:00:00 fedora kernel: CPU5: Booted secondary processor 0x0000000500 [0x411fd0d0]
+Sep 17 02:00:00 fedora kernel: Detected PIPT I-cache on CPU6
+Sep 17 02:00:00 fedora kernel: GICv3: CPU6: found redistributor 600 region 0:0x0000000017b20000
+Sep 17 02:00:00 fedora kernel: CPU6: Booted secondary processor 0x0000000600 [0x411fd0d0]
+Sep 17 02:00:00 fedora kernel: Detected PIPT I-cache on CPU7
+Sep 17 02:00:00 fedora kernel: GICv3: CPU7: found redistributor 700 region 0:0x0000000017b40000
+Sep 17 02:00:00 fedora kernel: CPU7: Booted secondary processor 0x0000000700 [0x411fd0d0]
+Sep 17 02:00:00 fedora kernel: smp: Brought up 1 node, 8 CPUs
+Sep 17 02:00:00 fedora kernel: SMP: Total of 8 processors activated.
+Sep 17 02:00:00 fedora kernel: CPU: All CPU(s) started at EL1
+Sep 17 02:00:00 fedora kernel: CPU features: detected: 32-bit EL0 Support
+Sep 17 02:00:00 fedora kernel: CPU features: detected: Data cache clean to the PoU not required for I/D coherence
+Sep 17 02:00:00 fedora kernel: CPU features: detected: Common not Private translations
+Sep 17 02:00:00 fedora kernel: CPU features: detected: CRC32 instructions
+Sep 17 02:00:00 fedora kernel: CPU features: detected: RCpc load-acquire (LDAPR)
+Sep 17 02:00:00 fedora kernel: CPU features: detected: LSE atomic instructions
+Sep 17 02:00:00 fedora kernel: CPU features: detected: Privileged Access Never
+Sep 17 02:00:00 fedora kernel: CPU features: detected: PMUv3
+Sep 17 02:00:00 fedora kernel: CPU features: detected: RAS Extension Support
+Sep 17 02:00:00 fedora kernel: CPU features: detected: Speculative Store Bypassing Safe (SSBS)
+Sep 17 02:00:00 fedora kernel: alternatives: applying system-wide alternatives
+Sep 17 02:00:00 fedora kernel: CPU features: detected: Hardware dirty bit management on CPU4-7
+Sep 17 02:00:00 fedora kernel: Memory: 7398800K/8000384K available (17536K kernel code, 3258K rwdata, 8444K rodata, 1920K init, 437K bss, 335124K reserved, 262144K cma-reserved)
+Sep 17 02:00:00 fedora kernel: devtmpfs: initialized
+Sep 17 02:00:00 fedora kernel: clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1911260446275000 ns
+Sep 17 02:00:00 fedora kernel: posixtimers hash table entries: 4096 (order: 4, 65536 bytes, linear)
+Sep 17 02:00:00 fedora kernel: futex hash table entries: 2048 (131072 bytes on 1 NUMA nodes, total 128 KiB, linear).
+Sep 17 02:00:00 fedora kernel: 24816 pages in range for non-PLT usage
+Sep 17 02:00:00 fedora kernel: 516336 pages in range for PLT usage
+Sep 17 02:00:00 fedora kernel: pinctrl core: initialized pinctrl subsystem
+Sep 17 02:00:00 fedora kernel: SMBIOS 3.3.0 present.
+Sep 17 02:00:00 fedora kernel: DMI: Xiaomi Inc Poco F3/Poco F3, BIOS 3.0.8 Jun 27 2025
+Sep 17 02:00:00 fedora kernel: DMI: Memory slots populated: 1/1
+Sep 17 02:00:00 fedora kernel: NET: Registered PF_NETLINK/PF_ROUTE protocol family
+Sep 17 02:00:00 fedora kernel: DMA: preallocated 1024 KiB GFP_KERNEL pool for atomic allocations
+Sep 17 02:00:00 fedora kernel: DMA: preallocated 1024 KiB GFP_KERNEL|GFP_DMA pool for atomic allocations
+Sep 17 02:00:00 fedora kernel: DMA: preallocated 1024 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
+Sep 17 02:00:00 fedora kernel: audit: initializing netlink subsys (disabled)
+Sep 17 02:00:00 fedora kernel: audit: type=2000 audit(0.019:1): state=initialized audit_enabled=0 res=1
+Sep 17 02:00:00 fedora kernel: thermal_sys: Registered thermal governor 'step_wise'
+Sep 17 02:00:00 fedora kernel: thermal_sys: Registered thermal governor 'power_allocator'
+Sep 17 02:00:00 fedora kernel: cpuidle: using governor menu
+Sep 17 02:00:00 fedora kernel: hw-breakpoint: found 6 breakpoint and 4 watchpoint registers.
+Sep 17 02:00:00 fedora kernel: ASID allocator initialised with 65536 entries
+Sep 17 02:00:00 fedora kernel: Serial: AMBA PL011 UART driver
+Sep 17 02:00:00 fedora kernel: CPUidle PSCI: Initialized CPU PM domain topology using OSI mode
+Sep 17 02:00:00 fedora kernel: /soc@0/geniqup@8c0000/i2c@884000/typec-mux@42: Fixed dependency cycle(s) with /soc@0/spmi@c440000/pmic@2/typec@1500/connector
+Sep 17 02:00:00 fedora kernel: /soc@0/ufshc@1d84000: Fixed dependency cycle(s) with /soc@0/phy@1d87000
+Sep 17 02:00:00 fedora kernel: /soc@0/phy@1d87000: Fixed dependency cycle(s) with /soc@0/ufshc@1d84000
+Sep 17 02:00:00 fedora kernel: /soc@0/stm@6002000: Fixed dependency cycle(s) with /soc@0/funnel@6041000
+Sep 17 02:00:00 fedora kernel: /soc@0/tpda@6004000: Fixed dependency cycle(s) with /soc@0/tpdm@684c000
+Sep 17 02:00:00 fedora kernel: /soc@0/tpda@6004000: Fixed dependency cycle(s) with /soc@0/funnel@6c2d000
+Sep 17 02:00:00 fedora kernel: /soc@0/tpda@6004000: Fixed dependency cycle(s) with /soc@0/funnel@6005000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6005000: Fixed dependency cycle(s) with /soc@0/tpda@6004000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6005000: Fixed dependency cycle(s) with /soc@0/funnel@6041000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6041000: Fixed dependency cycle(s) with /soc@0/stm@6002000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6041000: Fixed dependency cycle(s) with /soc@0/funnel@6005000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6041000: Fixed dependency cycle(s) with /soc@0/funnel@6045000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6042000: Fixed dependency cycle(s) with /soc@0/funnel@7810000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6042000: Fixed dependency cycle(s) with /soc@0/funnel@6045000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6045000: Fixed dependency cycle(s) with /soc@0/funnel@6042000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6045000: Fixed dependency cycle(s) with /soc@0/funnel@6041000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6045000: Fixed dependency cycle(s) with /soc@0/funnel@6b04000
+Sep 17 02:00:00 fedora kernel: /soc@0/replicator@6046000: Fixed dependency cycle(s) with /soc@0/replicator@6b06000
+Sep 17 02:00:00 fedora kernel: /soc@0/replicator@6046000: Fixed dependency cycle(s) with /soc@0/etr@6048000
+Sep 17 02:00:00 fedora kernel: /soc@0/etr@6048000: Fixed dependency cycle(s) with /soc@0/replicator@6046000
+Sep 17 02:00:00 fedora kernel: /soc@0/tpdm@684c000: Fixed dependency cycle(s) with /soc@0/tpda@6004000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6b04000: Fixed dependency cycle(s) with /soc@0/funnel@6045000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6b04000: Fixed dependency cycle(s) with /soc@0/etf@6b05000
+Sep 17 02:00:00 fedora kernel: /soc@0/etf@6b05000: Fixed dependency cycle(s) with /soc@0/funnel@6b04000
+Sep 17 02:00:00 fedora kernel: /soc@0/etf@6b05000: Fixed dependency cycle(s) with /soc@0/replicator@6b06000
+Sep 17 02:00:00 fedora kernel: /soc@0/replicator@6b06000: Fixed dependency cycle(s) with /soc@0/etf@6b05000
+Sep 17 02:00:00 fedora kernel: /soc@0/replicator@6b06000: Fixed dependency cycle(s) with /soc@0/replicator@6046000
+Sep 17 02:00:00 fedora kernel: /soc@0/tpdm@6c08000: Fixed dependency cycle(s) with /soc@0/funnel@6c0b000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6c0b000: Fixed dependency cycle(s) with /soc@0/tpdm@6c08000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6c0b000: Fixed dependency cycle(s) with /soc@0/funnel@6c2d000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6c2d000: Fixed dependency cycle(s) with /soc@0/funnel@6c0b000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6c2d000: Fixed dependency cycle(s) with /soc@0/tpda@6004000
+Sep 17 02:00:00 fedora kernel: /soc@0/etm@7040000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/etm@7140000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/etm@7240000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/etm@7340000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/etm@7440000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/etm@7540000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/etm@7640000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/etm@7740000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@7800000: Fixed dependency cycle(s) with /soc@0/etm@7740000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@7800000: Fixed dependency cycle(s) with /soc@0/etm@7640000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@7800000: Fixed dependency cycle(s) with /soc@0/etm@7540000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@7800000: Fixed dependency cycle(s) with /soc@0/etm@7440000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@7800000: Fixed dependency cycle(s) with /soc@0/etm@7340000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@7800000: Fixed dependency cycle(s) with /soc@0/etm@7240000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@7800000: Fixed dependency cycle(s) with /soc@0/etm@7140000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@7800000: Fixed dependency cycle(s) with /soc@0/etm@7040000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@7800000: Fixed dependency cycle(s) with /soc@0/funnel@7810000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@7810000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@7810000: Fixed dependency cycle(s) with /soc@0/funnel@6042000
+Sep 17 02:00:00 fedora kernel: /soc@0/usb@a6f8800/usb@a600000: Fixed dependency cycle(s) with /soc@0/spmi@c440000/pmic@2/typec@1500/connector
+Sep 17 02:00:00 fedora kernel: /soc@0/cci@ac4f000/i2c-bus@0/imx582@10: Fixed dependency cycle(s) with /soc@0/camss@ac6a000
+Sep 17 02:00:00 fedora kernel: /soc@0/cci@ac4f000/i2c-bus@1/s5k5e9@2d: Fixed dependency cycle(s) with /soc@0/camss@ac6a000
+Sep 17 02:00:00 fedora kernel: /soc@0/cci@ac50000/i2c-bus@0/imx355@1a: Fixed dependency cycle(s) with /soc@0/camss@ac6a000
+Sep 17 02:00:00 fedora kernel: /soc@0/camss@ac6a000: Fixed dependency cycle(s) with /soc@0/cci@ac50000/i2c-bus@0/imx355@1a
+Sep 17 02:00:00 fedora kernel: /soc@0/camss@ac6a000: Fixed dependency cycle(s) with /soc@0/cci@ac4f000/i2c-bus@0/imx582@10
+Sep 17 02:00:00 fedora kernel: /soc@0/camss@ac6a000: Fixed dependency cycle(s) with /soc@0/cci@ac4f000/i2c-bus@1/s5k5e9@2d
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/display-controller@ae01000: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/dsi@ae94000
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/dsi@ae94000: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/dsi@ae94000/panel@0
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/dsi@ae94000: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/display-controller@ae01000
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/dsi@ae94000/panel@0: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/dsi@ae94000
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/phy@ae94400: Fixed dependency cycle(s) with /soc@0/clock-controller@af00000
+Sep 17 02:00:00 fedora kernel: /soc@0/clock-controller@af00000: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/phy@ae94400
+Sep 17 02:00:00 fedora kernel: /soc@0/spmi@c440000/pmic@2/typec@1500/connector: Fixed dependency cycle(s) with /soc@0/geniqup@8c0000/i2c@884000/typec-mux@42
+Sep 17 02:00:00 fedora kernel: /soc@0/spmi@c440000/pmic@2/typec@1500/connector: Fixed dependency cycle(s) with /soc@0/usb@a6f8800/usb@a600000
+Sep 17 02:00:00 fedora kernel: /soc@0/interrupt-controller@17a00000: Fixed dependency cycle(s) with /soc@0/interrupt-controller@17a00000
+Sep 17 02:00:00 fedora kernel: /soc@0/geniqup@8c0000/i2c@884000/typec-mux@42: Fixed dependency cycle(s) with /soc@0/spmi@c440000/pmic@2/typec@1500/connector
+Sep 17 02:00:00 fedora kernel: /soc@0/ufshc@1d84000: Fixed dependency cycle(s) with /soc@0/phy@1d87000
+Sep 17 02:00:00 fedora kernel: /soc@0/ufshc@1d84000: Fixed dependency cycle(s) with /soc@0/phy@1d87000
+Sep 17 02:00:00 fedora kernel: /soc@0/phy@1d87000: Fixed dependency cycle(s) with /soc@0/ufshc@1d84000
+Sep 17 02:00:00 fedora kernel: /soc@0/stm@6002000: Fixed dependency cycle(s) with /soc@0/funnel@6041000
+Sep 17 02:00:00 fedora kernel: /soc@0/tpda@6004000: Fixed dependency cycle(s) with /soc@0/tpdm@684c000
+Sep 17 02:00:00 fedora kernel: /soc@0/tpda@6004000: Fixed dependency cycle(s) with /soc@0/funnel@6c2d000
+Sep 17 02:00:00 fedora kernel: /soc@0/tpda@6004000: Fixed dependency cycle(s) with /soc@0/funnel@6005000
+Sep 17 02:00:00 fedora kernel: /soc@0/tpda@6004000: Fixed dependency cycle(s) with /soc@0/funnel@6005000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6005000: Fixed dependency cycle(s) with /soc@0/tpda@6004000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6005000: Fixed dependency cycle(s) with /soc@0/funnel@6041000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6005000: Fixed dependency cycle(s) with /soc@0/funnel@6041000
+Sep 17 02:00:00 fedora kernel: /soc@0/stm@6002000: Fixed dependency cycle(s) with /soc@0/funnel@6041000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6041000: Fixed dependency cycle(s) with /soc@0/stm@6002000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6041000: Fixed dependency cycle(s) with /soc@0/funnel@6005000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6041000: Fixed dependency cycle(s) with /soc@0/funnel@6045000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6042000: Fixed dependency cycle(s) with /soc@0/funnel@7810000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6042000: Fixed dependency cycle(s) with /soc@0/funnel@6045000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6042000: Fixed dependency cycle(s) with /soc@0/funnel@6045000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6041000: Fixed dependency cycle(s) with /soc@0/funnel@6045000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6045000: Fixed dependency cycle(s) with /soc@0/funnel@6042000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6045000: Fixed dependency cycle(s) with /soc@0/funnel@6041000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6045000: Fixed dependency cycle(s) with /soc@0/funnel@6b04000
+Sep 17 02:00:00 fedora kernel: /soc@0/replicator@6046000: Fixed dependency cycle(s) with /soc@0/replicator@6b06000
+Sep 17 02:00:00 fedora kernel: /soc@0/replicator@6046000: Fixed dependency cycle(s) with /soc@0/etr@6048000
+Sep 17 02:00:00 fedora kernel: /soc@0/replicator@6046000: Fixed dependency cycle(s) with /soc@0/etr@6048000
+Sep 17 02:00:00 fedora kernel: /soc@0/etr@6048000: Fixed dependency cycle(s) with /soc@0/replicator@6046000
+Sep 17 02:00:00 fedora kernel: /soc@0/tpda@6004000: Fixed dependency cycle(s) with /soc@0/tpdm@684c000
+Sep 17 02:00:00 fedora kernel: /soc@0/tpdm@684c000: Fixed dependency cycle(s) with /soc@0/tpda@6004000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6045000: Fixed dependency cycle(s) with /soc@0/funnel@6b04000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6b04000: Fixed dependency cycle(s) with /soc@0/funnel@6045000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6b04000: Fixed dependency cycle(s) with /soc@0/etf@6b05000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6b04000: Fixed dependency cycle(s) with /soc@0/etf@6b05000
+Sep 17 02:00:00 fedora kernel: /soc@0/etf@6b05000: Fixed dependency cycle(s) with /soc@0/funnel@6b04000
+Sep 17 02:00:00 fedora kernel: /soc@0/etf@6b05000: Fixed dependency cycle(s) with /soc@0/replicator@6b06000
+Sep 17 02:00:00 fedora kernel: /soc@0/etf@6b05000: Fixed dependency cycle(s) with /soc@0/replicator@6b06000
+Sep 17 02:00:00 fedora kernel: /soc@0/replicator@6046000: Fixed dependency cycle(s) with /soc@0/replicator@6b06000
+Sep 17 02:00:00 fedora kernel: /soc@0/replicator@6b06000: Fixed dependency cycle(s) with /soc@0/etf@6b05000
+Sep 17 02:00:00 fedora kernel: /soc@0/replicator@6b06000: Fixed dependency cycle(s) with /soc@0/replicator@6046000
+Sep 17 02:00:00 fedora kernel: /soc@0/tpdm@6c08000: Fixed dependency cycle(s) with /soc@0/funnel@6c0b000
+Sep 17 02:00:00 fedora kernel: /soc@0/tpdm@6c08000: Fixed dependency cycle(s) with /soc@0/funnel@6c0b000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6c0b000: Fixed dependency cycle(s) with /soc@0/tpdm@6c08000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6c0b000: Fixed dependency cycle(s) with /soc@0/funnel@6c2d000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6c0b000: Fixed dependency cycle(s) with /soc@0/funnel@6c2d000
+Sep 17 02:00:00 fedora kernel: /soc@0/tpda@6004000: Fixed dependency cycle(s) with /soc@0/funnel@6c2d000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6c2d000: Fixed dependency cycle(s) with /soc@0/funnel@6c0b000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6c2d000: Fixed dependency cycle(s) with /soc@0/tpda@6004000
+Sep 17 02:00:00 fedora kernel: /soc@0/etm@7040000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/etm@7140000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/etm@7240000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/etm@7340000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/etm@7440000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/etm@7540000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/etm@7640000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/etm@7740000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/etm@7740000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/etm@7640000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/etm@7540000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/etm@7440000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/etm@7340000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/etm@7240000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/etm@7140000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/etm@7040000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@7800000: Fixed dependency cycle(s) with /soc@0/etm@7740000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@7800000: Fixed dependency cycle(s) with /soc@0/etm@7640000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@7800000: Fixed dependency cycle(s) with /soc@0/etm@7540000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@7800000: Fixed dependency cycle(s) with /soc@0/etm@7440000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@7800000: Fixed dependency cycle(s) with /soc@0/etm@7340000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@7800000: Fixed dependency cycle(s) with /soc@0/etm@7240000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@7800000: Fixed dependency cycle(s) with /soc@0/etm@7140000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@7800000: Fixed dependency cycle(s) with /soc@0/etm@7040000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@7800000: Fixed dependency cycle(s) with /soc@0/funnel@7810000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@7800000: Fixed dependency cycle(s) with /soc@0/funnel@7810000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@6042000: Fixed dependency cycle(s) with /soc@0/funnel@7810000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@7810000: Fixed dependency cycle(s) with /soc@0/funnel@7800000
+Sep 17 02:00:00 fedora kernel: /soc@0/funnel@7810000: Fixed dependency cycle(s) with /soc@0/funnel@6042000
+Sep 17 02:00:00 fedora kernel: /soc@0/usb@a6f8800/usb@a600000: Fixed dependency cycle(s) with /soc@0/spmi@c440000/pmic@2/typec@1500/connector
+Sep 17 02:00:00 fedora kernel: /soc@0/cci@ac4f000/i2c-bus@0/imx582@10: Fixed dependency cycle(s) with /soc@0/camss@ac6a000
+Sep 17 02:00:00 fedora kernel: /soc@0/cci@ac4f000/i2c-bus@1/s5k5e9@2d: Fixed dependency cycle(s) with /soc@0/camss@ac6a000
+Sep 17 02:00:00 fedora kernel: /soc@0/cci@ac50000/i2c-bus@0/imx355@1a: Fixed dependency cycle(s) with /soc@0/camss@ac6a000
+Sep 17 02:00:00 fedora kernel: /soc@0/cci@ac50000/i2c-bus@0/imx355@1a: Fixed dependency cycle(s) with /soc@0/camss@ac6a000
+Sep 17 02:00:00 fedora kernel: /soc@0/cci@ac4f000/i2c-bus@1/s5k5e9@2d: Fixed dependency cycle(s) with /soc@0/camss@ac6a000
+Sep 17 02:00:00 fedora kernel: /soc@0/cci@ac4f000/i2c-bus@0/imx582@10: Fixed dependency cycle(s) with /soc@0/camss@ac6a000
+Sep 17 02:00:00 fedora kernel: /soc@0/camss@ac6a000: Fixed dependency cycle(s) with /soc@0/cci@ac50000/i2c-bus@0/imx355@1a
+Sep 17 02:00:00 fedora kernel: /soc@0/camss@ac6a000: Fixed dependency cycle(s) with /soc@0/cci@ac4f000/i2c-bus@0/imx582@10
+Sep 17 02:00:00 fedora kernel: /soc@0/camss@ac6a000: Fixed dependency cycle(s) with /soc@0/cci@ac4f000/i2c-bus@1/s5k5e9@2d
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000: Fixed dependency cycle(s) with /soc@0/clock-controller@af00000
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/display-controller@ae01000: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/dsi@ae94000
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/dsi@ae94000: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/dsi@ae94000/panel@0
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/dsi@ae94000: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/display-controller@ae01000
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/dsi@ae94000/panel@0: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/dsi@ae94000
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/phy@ae94400: Fixed dependency cycle(s) with /soc@0/clock-controller@af00000
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/phy@ae94400: Fixed dependency cycle(s) with /soc@0/clock-controller@af00000
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000: Fixed dependency cycle(s) with /soc@0/clock-controller@af00000
+Sep 17 02:00:00 fedora kernel: /soc@0/clock-controller@af00000: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/phy@ae94400
+Sep 17 02:00:00 fedora kernel: /soc@0/spmi@c440000/pmic@2/typec@1500/connector: Fixed dependency cycle(s) with /soc@0/geniqup@8c0000/i2c@884000/typec-mux@42
+Sep 17 02:00:00 fedora kernel: /soc@0/spmi@c440000/pmic@2/typec@1500/connector: Fixed dependency cycle(s) with /soc@0/usb@a6f8800/usb@a600000
+Sep 17 02:00:00 fedora kernel: /soc@0/rsc@18200000/pm8150-rpmh-regulators: Fixed dependency cycle(s) with /soc@0/rsc@18200000/pm8150-rpmh-regulators/smps5
+Sep 17 02:00:00 fedora kernel: /soc@0/rsc@18200000/pm8150-rpmh-regulators: Fixed dependency cycle(s) with /soc@0/rsc@18200000/pm8150-rpmh-regulators/smps6
+Sep 17 02:00:00 fedora kernel: /soc@0/rsc@18200000/pm8150l-rpmh-regulators: Fixed dependency cycle(s) with /soc@0/rsc@18200000/pm8150l-rpmh-regulators/bob
+Sep 17 02:00:00 fedora kernel: /soc@0/rsc@18200000/pm8150l-rpmh-regulators: Fixed dependency cycle(s) with /soc@0/rsc@18200000/pm8150l-rpmh-regulators/smps8
+Sep 17 02:00:00 fedora kernel: /soc@0/rsc@18200000/pm8150l-rpmh-regulators: Fixed dependency cycle(s) with /soc@0/rsc@18200000/pm8150-rpmh-regulators/smps4
+Sep 17 02:00:00 fedora kernel: HugeTLB: registered 1.00 GiB page size, pre-allocated 0 pages
+Sep 17 02:00:00 fedora kernel: HugeTLB: 0 KiB vmemmap can be freed for a 1.00 GiB page
+Sep 17 02:00:00 fedora kernel: HugeTLB: registered 32.0 MiB page size, pre-allocated 0 pages
+Sep 17 02:00:00 fedora kernel: HugeTLB: 0 KiB vmemmap can be freed for a 32.0 MiB page
+Sep 17 02:00:00 fedora kernel: HugeTLB: registered 2.00 MiB page size, pre-allocated 0 pages
+Sep 17 02:00:00 fedora kernel: HugeTLB: 0 KiB vmemmap can be freed for a 2.00 MiB page
+Sep 17 02:00:00 fedora kernel: HugeTLB: registered 64.0 KiB page size, pre-allocated 0 pages
+Sep 17 02:00:00 fedora kernel: HugeTLB: 0 KiB vmemmap can be freed for a 64.0 KiB page
+Sep 17 02:00:00 fedora kernel: raid6: neonx8   gen() 13275 MB/s
+Sep 17 02:00:00 fedora kernel: raid6: neonx4   gen() 13274 MB/s
+Sep 17 02:00:00 fedora kernel: raid6: neonx2   gen() 12312 MB/s
+Sep 17 02:00:00 fedora kernel: raid6: neonx1   gen() 10722 MB/s
+Sep 17 02:00:00 fedora kernel: raid6: int64x8  gen()  6978 MB/s
+Sep 17 02:00:00 fedora kernel: raid6: int64x4  gen()  7514 MB/s
+Sep 17 02:00:00 fedora kernel: raid6: int64x2  gen()  5925 MB/s
+Sep 17 02:00:00 fedora kernel: raid6: int64x1  gen()  4879 MB/s
+Sep 17 02:00:00 fedora kernel: raid6: using algorithm neonx8 gen() 13275 MB/s
+Sep 17 02:00:00 fedora kernel: raid6: .... xor() 10283 MB/s, rmw enabled
+Sep 17 02:00:00 fedora kernel: raid6: using neon recovery algorithm
+Sep 17 02:00:00 fedora kernel: ACPI: Interpreter disabled.
+Sep 17 02:00:00 fedora kernel: iommu: Default domain type: Translated
+Sep 17 02:00:00 fedora kernel: iommu: DMA domain TLB invalidation policy: strict mode
+Sep 17 02:00:00 fedora kernel: SCSI subsystem initialized
+Sep 17 02:00:00 fedora kernel: usbcore: registered new interface driver usbfs
+Sep 17 02:00:00 fedora kernel: usbcore: registered new interface driver hub
+Sep 17 02:00:00 fedora kernel: usbcore: registered new device driver usb
+Sep 17 02:00:00 fedora kernel: pps_core: LinuxPPS API ver. 1 registered
+Sep 17 02:00:00 fedora kernel: pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+Sep 17 02:00:00 fedora kernel: PTP clock support registered
+Sep 17 02:00:00 fedora kernel: EDAC MC: Ver: 3.0.0
+Sep 17 02:00:00 fedora kernel: scmi_core: SCMI protocol bus registered
+Sep 17 02:00:00 fedora kernel: efivars: Registered efivars operations
+Sep 17 02:00:00 fedora kernel: qcom_scm: convention: smc arm 64
+Sep 17 02:00:00 fedora kernel: qcom_scm firmware:scm: qseecom: found qseecom with version 0x1402000
+Sep 17 02:00:00 fedora kernel: qcom_scm firmware:scm: qseecom: untested machine, skipping
+Sep 17 02:00:00 fedora kernel: Advanced Linux Sound Architecture Driver Initialized.
+Sep 17 02:00:00 fedora kernel: vgaarb: loaded
+Sep 17 02:00:00 fedora kernel: clocksource: Switched to clocksource arch_sys_counter
+Sep 17 02:00:00 fedora kernel: VFS: Disk quotas dquot_6.6.0
+Sep 17 02:00:00 fedora kernel: VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
+Sep 17 02:00:00 fedora kernel: pnp: PnP ACPI: disabled
+Sep 17 02:00:00 fedora kernel: NET: Registered PF_INET protocol family
+Sep 17 02:00:00 fedora kernel: IP idents hash table entries: 131072 (order: 8, 1048576 bytes, linear)
+Sep 17 02:00:00 fedora kernel: tcp_listen_portaddr_hash hash table entries: 4096 (order: 4, 65536 bytes, linear)
+Sep 17 02:00:00 fedora kernel: Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
+Sep 17 02:00:00 fedora kernel: TCP established hash table entries: 65536 (order: 7, 524288 bytes, linear)
+Sep 17 02:00:00 fedora kernel: TCP bind hash table entries: 65536 (order: 9, 2097152 bytes, linear)
+Sep 17 02:00:00 fedora kernel: TCP: Hash tables configured (established 65536 bind 65536)
+Sep 17 02:00:00 fedora kernel: UDP hash table entries: 4096 (order: 6, 262144 bytes, linear)
+Sep 17 02:00:00 fedora kernel: UDP-Lite hash table entries: 4096 (order: 6, 262144 bytes, linear)
+Sep 17 02:00:00 fedora kernel: NET: Registered PF_UNIX/PF_LOCAL protocol family
+Sep 17 02:00:00 fedora kernel: RPC: Registered named UNIX socket transport module.
+Sep 17 02:00:00 fedora kernel: RPC: Registered udp transport module.
+Sep 17 02:00:00 fedora kernel: RPC: Registered tcp transport module.
+Sep 17 02:00:00 fedora kernel: RPC: Registered tcp-with-tls transport module.
+Sep 17 02:00:00 fedora kernel: RPC: Registered tcp NFSv4.1 backchannel transport module.
+Sep 17 02:00:00 fedora kernel: PCI: CLS 0 bytes, default 64
+Sep 17 02:00:00 fedora kernel: kvm [1]: HYP mode not available
+Sep 17 02:00:00 fedora kernel: Trying to unpack rootfs image as initramfs...
+Sep 17 02:00:00 fedora kernel: Initialise system trusted keyrings
+Sep 17 02:00:00 fedora kernel: workingset: timestamp_bits=42 max_order=21 bucket_order=0
+Sep 17 02:00:00 fedora kernel: squashfs: version 4.0 (2009/01/31) Phillip Lougher
+Sep 17 02:00:00 fedora kernel: NFS: Registering the id_resolver key type
+Sep 17 02:00:00 fedora kernel: Key type id_resolver registered
+Sep 17 02:00:00 fedora kernel: Key type id_legacy registered
+Sep 17 02:00:00 fedora kernel: nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+Sep 17 02:00:00 fedora kernel: nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+Sep 17 02:00:00 fedora kernel: Key type cifs.idmap registered
+Sep 17 02:00:00 fedora kernel: NET: Registered PF_ALG protocol family
+Sep 17 02:00:00 fedora kernel: xor: measuring software checksum speed
+Sep 17 02:00:00 fedora kernel:    8regs           : 21346 MB/sec
+Sep 17 02:00:00 fedora kernel:    32regs          : 21812 MB/sec
+Sep 17 02:00:00 fedora kernel:    arm64_neon      : 30154 MB/sec
+Sep 17 02:00:00 fedora kernel: xor: using function: arm64_neon (30154 MB/sec)
+Sep 17 02:00:00 fedora kernel: Key type asymmetric registered
+Sep 17 02:00:00 fedora kernel: Asymmetric key parser 'x509' registered
+Sep 17 02:00:00 fedora kernel: Asymmetric key parser 'pkcs8' registered
+Sep 17 02:00:00 fedora kernel: Block layer SCSI generic (bsg) driver version 0.4 loaded (major 242)
+Sep 17 02:00:00 fedora kernel: io scheduler mq-deadline registered
+Sep 17 02:00:00 fedora kernel: io scheduler kyber registered
+Sep 17 02:00:00 fedora kernel: io scheduler bfq registered
+Sep 17 02:00:00 fedora kernel: ledtrig-cpu: registered to indicate activity on CPUs
+Sep 17 02:00:00 fedora kernel: vreg_bob: Setting 3008000-3960000uV
+Sep 17 02:00:00 fedora kernel: vreg_s7c_0p35: Setting 348000-1000000uV
+Sep 17 02:00:00 fedora kernel: vreg_s8c_1p35: Setting 1200000-1400000uV
+Sep 17 02:00:00 fedora kernel: vreg_l1c_1p8: Setting 1800000-1800000uV
+Sep 17 02:00:00 fedora kernel: vreg_l2c_1p8: Setting 1200000-1304000uV
+Sep 17 02:00:00 fedora kernel: Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
+Sep 17 02:00:00 fedora kernel: vreg_l3c_1p2: Setting 800000-1200000uV
+Sep 17 02:00:00 fedora kernel: vreg_l5c_1p8: Setting 1800000-2800000uV
+Sep 17 02:00:00 fedora kernel: msm_serial: driver initialized
+Sep 17 02:00:00 fedora kernel: vreg_l6c_2p9: Setting 1800000-2960000uV
+Sep 17 02:00:00 fedora kernel: arm-smmu 3da0000.iommu: probing hardware configuration...
+Sep 17 02:00:00 fedora kernel: arm-smmu 3da0000.iommu: SMMUv2 with:
+Sep 17 02:00:00 fedora kernel: arm-smmu 3da0000.iommu:         stage 1 translation
+Sep 17 02:00:00 fedora kernel: arm-smmu 3da0000.iommu:         coherent table walk
+Sep 17 02:00:00 fedora kernel: arm-smmu 3da0000.iommu:         stream matching with 6 register groups
+Sep 17 02:00:00 fedora kernel: arm-smmu 3da0000.iommu:         5 context banks (0 stage-2 only)
+Sep 17 02:00:00 fedora kernel: arm-smmu 3da0000.iommu:         Supported page sizes: 0x61311000
+Sep 17 02:00:00 fedora kernel: arm-smmu 3da0000.iommu:         Stage-1: 48-bit VA -> 36-bit IPA
+Sep 17 02:00:00 fedora kernel: arm-smmu 3da0000.iommu:         preserved 0 boot mappings
+Sep 17 02:00:00 fedora kernel: vreg_l7c_2p85: Setting 2856000-3104000uV
+Sep 17 02:00:00 fedora kernel: vreg_l8c_1p8: Setting 1800000-1800000uV
+Sep 17 02:00:00 fedora kernel: platform 3d00000.gpu: Adding to iommu group 0
+Sep 17 02:00:00 fedora kernel: platform 3d6a000.gmu: Adding to iommu group 1
+Sep 17 02:00:00 fedora kernel: vreg_l9c_2p9: Setting 2704000-2960000uV
+Sep 17 02:00:00 fedora kernel: vreg_l10c_303: Setting 3000000-3312000uV
+Sep 17 02:00:00 fedora kernel: vreg_l11c_3p0: Setting 3000000-3000000uV
+Sep 17 02:00:00 fedora kernel: arm-smmu 15000000.iommu: probing hardware configuration...
+Sep 17 02:00:00 fedora kernel: arm-smmu 15000000.iommu: SMMUv2 with:
+Sep 17 02:00:00 fedora kernel: arm-smmu 15000000.iommu:         stage 1 translation
+Sep 17 02:00:00 fedora kernel: arm-smmu 15000000.iommu:         coherent table walk
+Sep 17 02:00:00 fedora kernel: arm-smmu 15000000.iommu:         stream matching with 87 register groups
+Sep 17 02:00:00 fedora kernel: arm-smmu 15000000.iommu:         74 context banks (0 stage-2 only)
+Sep 17 02:00:00 fedora kernel: arm-smmu 15000000.iommu:         Supported page sizes: 0x61311000
+Sep 17 02:00:00 fedora kernel: arm-smmu 15000000.iommu:         Stage-1: 36-bit VA -> 36-bit IPA
+Sep 17 02:00:00 fedora kernel: arm-smmu 15000000.iommu:         preserved 0 boot mappings
+Sep 17 02:00:00 fedora kernel: platform 800000.dma-controller: Adding to iommu group 2
+Sep 17 02:00:00 fedora kernel: platform 8c0000.geniqup: Adding to iommu group 3
+Sep 17 02:00:00 fedora kernel: platform 900000.dma-controller: Adding to iommu group 4
+Sep 17 02:00:00 fedora kernel: platform 9c0000.geniqup: Adding to iommu group 5
+Sep 17 02:00:00 fedora kernel: platform a00000.dma-controller: Adding to iommu group 6
+Sep 17 02:00:00 fedora kernel: platform ac0000.geniqup: Adding to iommu group 7
+Sep 17 02:00:00 fedora kernel: platform 1d84000.ufshc: Adding to iommu group 8
+Sep 17 02:00:00 fedora kernel: platform 1dc4000.dma-controller: Adding to iommu group 9
+Sep 17 02:00:00 fedora kernel: platform 1dfa000.crypto: Adding to iommu group 9
+Sep 17 02:00:00 fedora kernel: platform aa00000.video-codec: Adding to iommu group 10
+Sep 17 02:00:00 fedora kernel: platform ac6a000.camss: Adding to iommu group 11
+Sep 17 02:00:00 fedora kernel: platform ae00000.display-subsystem: Adding to iommu group 12
+Sep 17 02:00:00 fedora kernel: brd: module loaded
+Sep 17 02:00:00 fedora kernel: loop: module loaded
+Sep 17 02:00:00 fedora kernel: spmi_pmic_arb c440000.spmi: PMIC arbiter version v5 (0x50010000)
+Sep 17 02:00:00 fedora kernel: /soc@0/spmi@c440000/pmic@2/typec@1500/connector: Fixed dependency cycle(s) with /soc@0/geniqup@8c0000/i2c@884000/typec-mux@42
+Sep 17 02:00:00 fedora kernel: /soc@0/spmi@c440000/pmic@2/typec@1500/connector: Fixed dependency cycle(s) with /soc@0/usb@a6f8800/usb@a600000
+Sep 17 02:00:00 fedora kernel: /soc@0/spmi@c440000/pmic@2/typec@1500/connector: Fixed dependency cycle(s) with /soc@0/geniqup@8c0000/i2c@884000/typec-mux@42
+Sep 17 02:00:00 fedora kernel: /soc@0/spmi@c440000/pmic@2/typec@1500/connector: Fixed dependency cycle(s) with /soc@0/usb@a6f8800/usb@a600000
+Sep 17 02:00:00 fedora kernel: tun: Universal TUN/TAP device driver, 1.6
+Sep 17 02:00:00 fedora kernel: thunder_xcv, ver 1.0
+Sep 17 02:00:00 fedora kernel: thunder_bgx, ver 1.0
+Sep 17 02:00:00 fedora kernel: nicpf, ver 1.0
+Sep 17 02:00:00 fedora kernel: e1000: Intel(R) PRO/1000 Network Driver
+Sep 17 02:00:00 fedora kernel: e1000: Copyright (c) 1999-2006 Intel Corporation.
+Sep 17 02:00:00 fedora kernel: e1000e: Intel(R) PRO/1000 Network Driver
+Sep 17 02:00:00 fedora kernel: e1000e: Copyright(c) 1999 - 2015 Intel Corporation.
+Sep 17 02:00:00 fedora kernel: sky2: driver version 1.30
+Sep 17 02:00:00 fedora kernel: usbcore: registered new interface driver cdc_ether
+Sep 17 02:00:00 fedora kernel: usbcore: registered new interface driver cdc_ncm
+Sep 17 02:00:00 fedora kernel: VFIO - User Level meta-driver version: 0.3
+Sep 17 02:00:00 fedora kernel: usbcore: registered new interface driver usb-storage
+Sep 17 02:00:00 fedora kernel: rtc-efi rtc-efi.0: registered as rtc0
+Sep 17 02:00:00 fedora kernel: rtc-efi rtc-efi.0: hctosys: unable to read the hardware clock
+Sep 17 02:00:00 fedora kernel: i2c_dev: i2c /dev entries driver
+Sep 17 02:00:00 fedora kernel: input: pm8941_pwrkey as /devices/platform/soc@0/c440000.spmi/spmi-0/0-00/c440000.spmi:pmic@0:pon@800/c440000.spmi:pmic@0:pon@800:pwrkey/input/input0
+Sep 17 02:00:00 fedora kernel: input: pm8941_resin as /devices/platform/soc@0/c440000.spmi/spmi-0/0-00/c440000.spmi:pmic@0:pon@800/c440000.spmi:pmic@0:pon@800:resin/input/input1
+Sep 17 02:00:00 fedora kernel: device-mapper: ioctl: 4.50.0-ioctl (2025-04-28) initialised: dm-devel@lists.linux.dev
+Sep 17 02:00:00 fedora kernel: sdhci: Secure Digital Host Controller Interface driver
+Sep 17 02:00:00 fedora kernel: sdhci: Copyright(c) Pierre Ossman
+Sep 17 02:00:00 fedora kernel: Synopsys Designware Multimedia Card Interface Driver
+Sep 17 02:00:00 fedora kernel: sdhci-pltfm: SDHCI platform and OF driver helper
+Sep 17 02:00:00 fedora kernel: pstore: Using crash dump compression: deflate
+Sep 17 02:00:00 fedora kernel: pstore: Registered efi_pstore as persistent store backend
+Sep 17 02:00:00 fedora kernel: clocksource: arch_mmio_counter: mask: 0xffffffffffffff max_cycles: 0x46d987e47, max_idle_ns: 440795202767 ns
+Sep 17 02:00:00 fedora kernel: arch-timer-mmio 17c20000.timer: mmio timer running at 19.20MHz (virt)
+Sep 17 02:00:00 fedora kernel: hid: raw HID events driver (C) Jiri Kosina
+Sep 17 02:00:00 fedora kernel: hw perfevents: enabled with armv8_pmuv3 PMU driver, 7 (0,8000003f) counters available
+Sep 17 02:00:00 fedora kernel: NET: Registered PF_PACKET protocol family
+Sep 17 02:00:00 fedora kernel: Key type dns_resolver registered
+Sep 17 02:00:00 fedora kernel: registered taskstats version 1
+Sep 17 02:00:00 fedora kernel: Loading compiled-in X.509 certificates
+Sep 17 02:00:00 fedora kernel: Demotion targets for Node 0: null
+Sep 17 02:00:00 fedora kernel: Key type .fscrypt registered
+Sep 17 02:00:00 fedora kernel: Key type fscrypt-provisioning registered
+Sep 17 02:00:00 fedora kernel: Btrfs loaded, zoned=no, fsverity=no
+Sep 17 02:00:00 fedora kernel: /soc@0/geniqup@8c0000/i2c@884000/typec-mux@42: Fixed dependency cycle(s) with /soc@0/spmi@c440000/pmic@2/typec@1500/connector
+Sep 17 02:00:00 fedora kernel: /soc@0/spmi@c440000/pmic@2/typec@1500/connector: Fixed dependency cycle(s) with /soc@0/geniqup@8c0000/i2c@884000/typec-mux@42
+Sep 17 02:00:00 fedora kernel: /soc@0/geniqup@8c0000/i2c@884000/typec-mux@42: Fixed dependency cycle(s) with /soc@0/spmi@c440000/pmic@2/typec@1500/connector
+Sep 17 02:00:00 fedora kernel: geni_i2c 888000.i2c: Bus frequency not specified, default to 100kHz.
+Sep 17 02:00:00 fedora kernel: vreg_l1p: Bringing 1200000uV into 1056000-1056000uV
+Sep 17 02:00:00 fedora kernel: vreg_l2p: Bringing 1200000uV into 1104000-1104000uV
+Sep 17 02:00:00 fedora kernel: vreg_l3p: Bringing 2800000uV into 2704000-2704000uV
+Sep 17 02:00:00 fedora kernel: vreg_l5p: Bringing 1800000uV into 2800000-2800000uV
+Sep 17 02:00:00 fedora kernel: vreg_l6p: Bringing 2800000uV into 1800000-1800000uV
+Sep 17 02:00:00 fedora kernel: Freeing initrd memory: 7384K
+Sep 17 02:00:00 fedora kernel: 998000.serial: ttyHS0 at MMIO 0x998000 (irq = 173, base_baud = 0) is a MSM
+Sep 17 02:00:00 fedora kernel: serial serial0: tty port ttyHS0 registered
+Sep 17 02:00:00 fedora kernel: vreg_s4a_1p8: Setting 1800000-1920000uV
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/display-controller@ae01000: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/dsi@ae94000
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/display-controller@ae01000: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/dsi@ae94000
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/dsi@ae94000: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/dsi@ae94000/panel@0
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/dsi@ae94000: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/display-controller@ae01000
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/dsi@ae94000/panel@0: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/dsi@ae94000
+Sep 17 02:00:00 fedora kernel: vreg_s5a_1p9: Setting 1824000-2040000uV
+Sep 17 02:00:00 fedora kernel: vreg_s6a_0p95: Setting 600000-1128000uV
+Sep 17 02:00:00 fedora kernel: vreg_l2a_3p1: Setting 3072000-3072000uV
+Sep 17 02:00:00 fedora kernel: vreg_l3a_0p9: Setting 928000-932000uV
+Sep 17 02:00:00 fedora kernel: vreg_l5a_0p88: Setting 880000-880000uV
+Sep 17 02:00:00 fedora kernel: vreg_l6a_1p2: Setting 1200000-1200000uV
+Sep 17 02:00:00 fedora kernel: vreg_l9a_1p2: Setting 1200000-1200000uV
+Sep 17 02:00:00 fedora kernel: vreg_l12a_1p8: Setting 1800000-1800000uV
+Sep 17 02:00:00 fedora kernel: vreg_l13a_3p3: Setting 3304000-3304000uV
+Sep 17 02:00:00 fedora kernel: vreg_l14a_1p88: Setting 1800000-1880000uV
+Sep 17 02:00:00 fedora kernel: vreg_l16a_3p3: Setting 3024000-3304000uV
+Sep 17 02:00:00 fedora kernel: vreg_l17a_3p0: Setting 2496000-3008000uV
+Sep 17 02:00:00 fedora kernel: vreg_l18a_0p9: Setting 800000-920000uV
+Sep 17 02:00:00 fedora kernel: platform a600000.usb: Adding to iommu group 13
+Sep 17 02:00:00 fedora kernel: /soc@0/spmi@c440000/pmic@2/typec@1500/connector: Fixed dependency cycle(s) with /soc@0/usb@a6f8800/usb@a600000
+Sep 17 02:00:00 fedora kernel: /soc@0/usb@a6f8800/usb@a600000: Fixed dependency cycle(s) with /soc@0/spmi@c440000/pmic@2/typec@1500/connector
+Sep 17 02:00:00 fedora kernel: ufshcd-qcom 1d84000.ufshc: freq-table-hz property not specified
+Sep 17 02:00:00 fedora kernel: ufshcd-qcom 1d84000.ufshc: ufshcd_populate_vreg: Unable to find vdd-hba-supply regulator, assuming enabled
+Sep 17 02:00:00 fedora kernel: qcom-pcie 1c00000.pcie: supply vdda not found, using dummy regulator
+Sep 17 02:00:00 fedora kernel: qcom-pcie 1c00000.pcie: supply vddpe-3v3 not found, using dummy regulator
+Sep 17 02:00:00 fedora kernel: qcom-pcie 1c00000.pcie: host bridge /soc@0/pcie@1c00000 ranges:
+Sep 17 02:00:00 fedora kernel: qcom-pcie 1c00000.pcie:       IO 0x0060200000..0x00602fffff -> 0x0000000000
+Sep 17 02:00:00 fedora kernel: qcom-pcie 1c00000.pcie:      MEM 0x0060300000..0x0063ffffff -> 0x0060300000
+Sep 17 02:00:00 fedora kernel: ufshcd-qcom 1d84000.ufshc: freq-table-hz property not specified
+Sep 17 02:00:00 fedora kernel: ufshcd-qcom 1d84000.ufshc: ufshcd_populate_vreg: Unable to find vdd-hba-supply regulator, assuming enabled
+Sep 17 02:00:00 fedora kernel: ufshcd-qcom 1d84000.ufshc: dme-get: attr-id 0x0 failed 0 retries
+Sep 17 02:00:00 fedora kernel: ufshcd-qcom 1d84000.ufshc: hw clk gating enabled failed
+Sep 17 02:00:00 fedora kernel: qcom-pcie 1c00000.pcie: iATU: unroll T, 8 ob, 8 ib, align 4K, limit 1024G
+Sep 17 02:00:00 fedora kernel: qcom-pcie 1c00000.pcie: PCI host bridge to bus 0000:00
+Sep 17 02:00:00 fedora kernel: pci_bus 0000:00: root bus resource [bus 00-ff]
+Sep 17 02:00:00 fedora kernel: pci_bus 0000:00: root bus resource [io  0x0000-0xfffff]
+Sep 17 02:00:00 fedora kernel: pci_bus 0000:00: root bus resource [mem 0x60300000-0x63ffffff]
+Sep 17 02:00:00 fedora kernel: pci 0000:00:00.0: [17cb:010b] type 01 class 0x060400 PCIe Root Port
+Sep 17 02:00:00 fedora kernel: pci 0000:00:00.0: BAR 0 [mem 0x00000000-0x00000fff]
+Sep 17 02:00:00 fedora kernel: pci 0000:00:00.0: PCI bridge to [bus 01-ff]
+Sep 17 02:00:00 fedora kernel: pci 0000:00:00.0:   bridge window [io  0x0000-0x0fff]
+Sep 17 02:00:00 fedora kernel: pci 0000:00:00.0:   bridge window [mem 0x00000000-0x000fffff]
+Sep 17 02:00:00 fedora kernel: pci 0000:00:00.0:   bridge window [mem 0x00000000-0x000fffff 64bit pref]
+Sep 17 02:00:00 fedora kernel: pci 0000:00:00.0: PME# supported from D0 D3hot D3cold
+Sep 17 02:00:00 fedora kernel: pci 0000:00:00.0: Adding to iommu group 14
+Sep 17 02:00:00 fedora kernel: pci 0000:00:00.0: BAR 0 [mem 0x60300000-0x60300fff]: assigned
+Sep 17 02:00:00 fedora kernel: pci 0000:00:00.0: PCI bridge to [bus 01-ff]
+Sep 17 02:00:00 fedora kernel: pci_bus 0000:00: resource 4 [io  0x0000-0xfffff]
+Sep 17 02:00:00 fedora kernel: pci_bus 0000:00: resource 5 [mem 0x60300000-0x63ffffff]
+Sep 17 02:00:00 fedora kernel: pcieport 0000:00:00.0: PME: Signaling with IRQ 196
+Sep 17 02:00:00 fedora kernel: pcieport 0000:00:00.0: AER: enabled with IRQ 196
+Sep 17 02:00:00 fedora kernel: scsi host0: ufshcd
+Sep 17 02:00:00 fedora kernel: msm_dsi ae94000.dsi: supply refgen not found, using dummy regulator
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/dsi@ae94000: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/dsi@ae94000/panel@0
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/dsi@ae94000/panel@0: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/dsi@ae94000
+Sep 17 02:00:00 fedora kernel: scsi 0:0:0:49488: Well-known LUN    MICRON   MT256GARAT4U31   0102 PQ: 0 ANSI: 6
+Sep 17 02:00:00 fedora kernel: input: gpio-keys as /devices/platform/gpio-keys/input/input2
+Sep 17 02:00:00 fedora kernel: clk: Disabling unused clocks
+Sep 17 02:00:00 fedora kernel: PM: genpd: Disabling unused power domains
+Sep 17 02:00:00 fedora kernel: ALSA device list:
+Sep 17 02:00:00 fedora kernel:   No soundcards found.
+Sep 17 02:00:00 fedora kernel: scsi 0:0:0:49476: Well-known LUN    MICRON   MT256GARAT4U31   0102 PQ: 0 ANSI: 6
+Sep 17 02:00:00 fedora kernel: scsi 0:0:0:49456: Well-known LUN    MICRON   MT256GARAT4U31   0102 PQ: 0 ANSI: 6
+Sep 17 02:00:00 fedora kernel: scsi 0:0:0:0: Direct-Access     MICRON   MT256GARAT4U31   0102 PQ: 0 ANSI: 6
+Sep 17 02:00:00 fedora kernel: scsi 0:0:0:1: Direct-Access     MICRON   MT256GARAT4U31   0102 PQ: 0 ANSI: 6
+Sep 17 02:00:00 fedora kernel: scsi 0:0:0:2: Direct-Access     MICRON   MT256GARAT4U31   0102 PQ: 0 ANSI: 6
+Sep 17 02:00:00 fedora kernel: scsi 0:0:0:3: Direct-Access     MICRON   MT256GARAT4U31   0102 PQ: 0 ANSI: 6
+Sep 17 02:00:00 fedora kernel: scsi 0:0:0:4: Direct-Access     MICRON   MT256GARAT4U31   0102 PQ: 0 ANSI: 6
+Sep 17 02:00:00 fedora kernel: scsi 0:0:0:5: Direct-Access     MICRON   MT256GARAT4U31   0102 PQ: 0 ANSI: 6
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:1: [sdb] 4096 4096-byte logical blocks: (16.8 MB/16.0 MiB)
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:0: [sda] 61880320 4096-byte logical blocks: (253 GB/236 GiB)
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:1: [sdb] Write Protect is off
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:1: [sdb] Mode Sense: 00 32 00 10
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:2: [sdc] 4096 4096-byte logical blocks: (16.8 MB/16.0 MiB)
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:2: [sdc] Write Protect is off
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:2: [sdc] Mode Sense: 00 32 00 10
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:1: [sdb] Write cache: disabled, read cache: enabled, supports DPO and FUA
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:0: [sda] Write Protect is off
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:0: [sda] Mode Sense: 00 32 00 10
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:1: [sdb] Preferred minimum I/O size 65536 bytes
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:1: [sdb] Optimal transfer size 524288 bytes
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:2: [sdc] Write cache: disabled, read cache: enabled, supports DPO and FUA
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:3: [sdd] 8192 4096-byte logical blocks: (33.6 MB/32.0 MiB)
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:2: [sdc] Preferred minimum I/O size 65536 bytes
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:2: [sdc] Optimal transfer size 524288 bytes
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:3: [sdd] Write Protect is off
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:3: [sdd] Mode Sense: 00 32 00 10
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:4: [sde] 557056 4096-byte logical blocks: (2.28 GB/2.13 GiB)
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:4: [sde] Write Protect is off
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:4: [sde] Mode Sense: 00 32 00 10
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:5: [sdf] 16384 4096-byte logical blocks: (67.1 MB/64.0 MiB)
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:0: [sda] Write cache: enabled, read cache: enabled, supports DPO and FUA
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:3: [sdd] Write cache: enabled, read cache: enabled, supports DPO and FUA
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:5: [sdf] Write Protect is off
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:5: [sdf] Mode Sense: 00 32 00 10
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:3: [sdd] Preferred minimum I/O size 65536 bytes
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:3: [sdd] Optimal transfer size 524288 bytes
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:4: [sde] Write cache: enabled, read cache: enabled, supports DPO and FUA
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:0: [sda] Preferred minimum I/O size 65536 bytes
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:5: [sdf] Write cache: enabled, read cache: enabled, supports DPO and FUA
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:0: [sda] Optimal transfer size 524288 bytes
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:4: [sde] Preferred minimum I/O size 65536 bytes
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:4: [sde] Optimal transfer size 524288 bytes
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:5: [sdf] Preferred minimum I/O size 65536 bytes
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:5: [sdf] Optimal transfer size 524288 bytes
+Sep 17 02:00:00 fedora kernel:  sdc: sdc1 sdc2
+Sep 17 02:00:00 fedora kernel:  sdb: sdb1 sdb2
+Sep 17 02:00:00 fedora kernel:  sdd: sdd1 sdd2 sdd3 sdd4
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:2: [sdc] Attached SCSI disk
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:1: [sdb] Attached SCSI disk
+Sep 17 02:00:00 fedora kernel:  sda: sda1 sda2 sda3 sda4 sda5 sda6 sda7 sda8 sda9 sda10 sda11 sda12 sda13 sda14 sda15 sda16 sda17 sda18 sda19 sda20 sda21 sda22 sda23 sda24 sda25 sda26 sda27 sda28 sda29 sda30 sda31 sda32 sda33 sda34 sda35 sda36 sda37
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:3: [sdd] Attached SCSI disk
+Sep 17 02:00:00 fedora kernel:  sdf: sdf1 sdf2 sdf3 sdf4 sdf5 sdf6 sdf7 sdf8 sdf9 sdf10
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:5: [sdf] Attached SCSI disk
+Sep 17 02:00:00 fedora kernel:  sde: sde1 sde2 sde3 sde4 sde5 sde6 sde7 sde8 sde9 sde10 sde11 sde12 sde13 sde14 sde15 sde16 sde17 sde18 sde19 sde20 sde21 sde22 sde23 sde24 sde25 sde26 sde27 sde28 sde29 sde30 sde31 sde32 sde33 sde34 sde35 sde36 sde37 sde38 sde39 sde40 sde41 sde42 sde43 sde44 sde45 sde46 sde47 sde48 sde49 sde50 sde51 sde52 sde53 sde54 sde55 sde56 sde57 sde58 sde59 sde60 sde61 sde62 sde63 sde64 sde65 sde66
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:0: [sda] Attached SCSI disk
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:4: [sde] Attached SCSI disk
+Sep 17 02:00:00 fedora kernel: Freeing unused kernel memory: 1920K
+Sep 17 02:00:00 fedora kernel: Run /init as init process
+Sep 17 02:00:00 fedora kernel:   with arguments:
+Sep 17 02:00:00 fedora kernel:     /init
+Sep 17 02:00:00 fedora kernel:   with environment:
+Sep 17 02:00:00 fedora kernel:     HOME=/
+Sep 17 02:00:00 fedora kernel:     TERM=linux
+Sep 17 02:00:00 fedora kernel:     dtb=\sm8250-xiaomi-alioth.dtb
+Sep 17 02:00:00 fedora kernel: EXT4-fs (sda37): mounted filesystem 9a466b26-6149-41e7-986d-84227cab0f3d r/w with ordered data mode. Quota mode: none.
+Sep 17 02:00:00 fedora systemd[1]: System time advanced to built-in epoch: Wed 2025-09-17 02:00:00 CEST
+Sep 17 02:00:00 fedora kernel: NET: Registered PF_INET6 protocol family
+Sep 17 02:00:00 fedora kernel: Segment Routing with IPv6
+Sep 17 02:00:00 fedora kernel: In-situ OAM (IOAM) with IPv6
+Sep 17 02:00:00 fedora systemd[1]: systemd 258-1.fc43 running in system mode (+PAM +AUDIT +SELINUX -APPARMOR +IMA +IPE +SMACK +SECCOMP -GCRYPT +GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN -IPTC +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF +XKBCOMMON +UTMP +SYSVINIT +LIBARCHIVE)
+Sep 17 02:00:00 fedora systemd[1]: Detected architecture arm64.
+Sep 17 02:00:00 fedora systemd[1]: No hostname configured, using default hostname.
+Sep 17 02:00:00 fedora systemd[1]: Hostname set to <fedora>.
+Sep 17 02:00:00 fedora systemd[1]: bpf-restrict-fs: BPF LSM hook not enabled in the kernel, BPF LSM not supported.
+Sep 17 02:00:00 fedora kernel: zram: Added device: zram0
+Sep 17 02:00:00 fedora systemd[1]: Queued start job for default target graphical.target.
+Sep 17 02:00:00 fedora systemd[1]: Created slice system-getty.slice - Slice /system/getty.
+Sep 17 02:00:00 fedora systemd[1]: Created slice system-modprobe.slice - Slice /system/modprobe.
+Sep 17 02:00:00 fedora systemd[1]: Created slice system-systemd\x2dfsck.slice - Slice /system/systemd-fsck.
+Sep 17 02:00:00 fedora systemd[1]: Created slice system-systemd\x2dzram\x2dsetup.slice - Slice /system/systemd-zram-setup.
+Sep 17 02:00:00 fedora systemd[1]: Created slice user.slice - User and Session Slice.
+Sep 17 02:00:00 fedora systemd[1]: Started systemd-ask-password-wall.path - Forward Password Requests to Wall Directory Watch.
+Sep 17 02:00:00 fedora systemd[1]: Set up automount proc-sys-fs-binfmt_misc.automount - Arbitrary Executable File Formats File System Automount Point.
+Sep 17 02:00:00 fedora systemd[1]: Expecting device dev-disk-by\x2duuid-49AD\x2d4598.device - /dev/disk/by-uuid/49AD-4598...
+Sep 17 02:00:00 fedora systemd[1]: Expecting device dev-zram0.device - /dev/zram0...
+Sep 17 02:00:00 fedora systemd[1]: Reached target getty.target - Login Prompts.
+Sep 17 02:00:00 fedora systemd[1]: Reached target imports.target - Image Downloads.
+Sep 17 02:00:00 fedora systemd[1]: Reached target integritysetup.target - Local Integrity Protected Volumes.
+Sep 17 02:00:00 fedora systemd[1]: Reached target slices.target - Slice Units.
+Sep 17 02:00:00 fedora systemd[1]: Reached target veritysetup.target - Local Verity Protected Volumes.
+Sep 17 02:00:00 fedora systemd[1]: Listening on dm-event.socket - Device-mapper event daemon FIFOs.
+Sep 17 02:00:00 fedora systemd[1]: Listening on lvm2-lvmpolld.socket - LVM2 poll daemon socket.
+Sep 17 02:00:00 fedora systemd[1]: Listening on systemd-ask-password.socket - Query the User Interactively for a Password.
+Sep 17 02:00:00 fedora systemd[1]: Listening on systemd-coredump.socket - Process Core Dump Socket.
+Sep 17 02:00:00 fedora systemd[1]: Listening on systemd-creds.socket - Credential Encryption/Decryption.
+Sep 17 02:00:00 fedora systemd[1]: Listening on systemd-factory-reset.socket - Factory Reset Management.
+Sep 17 02:00:00 fedora systemd[1]: Listening on systemd-journald-audit.socket - Journal Audit Socket.
+Sep 17 02:00:00 fedora systemd[1]: Listening on systemd-journald-dev-log.socket - Journal Socket (/dev/log).
+Sep 17 02:00:00 fedora systemd[1]: Listening on systemd-journald.socket - Journal Sockets.
+Sep 17 02:00:00 fedora systemd[1]: Listening on systemd-oomd.socket - Userspace Out-Of-Memory (OOM) Killer Socket.
+Sep 17 02:00:00 fedora systemd[1]: systemd-pcrextend.socket - TPM PCR Measurements was skipped because of an unmet condition check (ConditionSecurity=measured-uki).
+Sep 17 02:00:00 fedora systemd[1]: systemd-pcrlock.socket - Make TPM PCR Policy was skipped because of an unmet condition check (ConditionSecurity=measured-uki).
+Sep 17 02:00:00 fedora systemd[1]: Listening on systemd-resolved-monitor.socket - Resolve Monitor Varlink Socket.
+Sep 17 02:00:00 fedora systemd[1]: Listening on systemd-resolved-varlink.socket - Resolve Service Varlink Socket.
+Sep 17 02:00:00 fedora systemd[1]: Listening on systemd-udevd-control.socket - udev Control Socket.
+Sep 17 02:00:00 fedora systemd[1]: Listening on systemd-udevd-kernel.socket - udev Kernel Socket.
+Sep 17 02:00:00 fedora systemd[1]: Listening on systemd-udevd-varlink.socket - udev Varlink Socket.
+Sep 17 02:00:00 fedora systemd[1]: Listening on systemd-userdbd.socket - User Database Manager Socket.
+Sep 17 02:00:00 fedora systemd[1]: Mounting dev-hugepages.mount - Huge Pages File System...
+Sep 17 02:00:00 fedora systemd[1]: Mounting dev-mqueue.mount - POSIX Message Queue File System...
+Sep 17 02:00:00 fedora systemd[1]: Mounting sys-kernel-debug.mount - Kernel Debug File System...
+Sep 17 02:00:00 fedora systemd[1]: sys-kernel-tracing.mount - Kernel Trace File System was skipped because of an unmet condition check (ConditionPathExists=/sys/kernel/tracing).
+Sep 17 02:00:00 fedora systemd[1]: auth-rpcgss-module.service - Kernel Module supporting RPCSEC_GSS was skipped because of an unmet condition check (ConditionPathExists=/etc/krb5.keytab).
+Sep 17 02:00:00 fedora systemd[1]: fips-crypto-policy-overlay.service - Bind-mount FIPS crypto-policy in FIPS mode was skipped because of an unmet condition check (ConditionKernelCommandLine=fips=1).
+Sep 17 02:00:00 fedora systemd[1]: Starting kmod-static-nodes.service - Create List of Static Device Nodes...
+Sep 17 02:00:00 fedora systemd[1]: Starting lvm2-monitor.service - Monitoring of LVM2 mirrors, snapshots etc. using dmeventd or progress polling...
+Sep 17 02:00:00 fedora systemd[1]: modprobe@configfs.service - Load Kernel Module configfs was skipped because of an unmet condition check (ConditionKernelModuleLoaded=!configfs).
+Sep 17 02:00:00 fedora systemd[1]: Mounting sys-kernel-config.mount - Kernel Configuration File System...
+Sep 17 02:00:00 fedora systemd[1]: modprobe@dm_mod.service - Load Kernel Module dm_mod was skipped because of an unmet condition check (ConditionKernelModuleLoaded=!dm_mod).
+Sep 17 02:00:00 fedora systemd[1]: Starting modprobe@dm_multipath.service - Load Kernel Module dm_multipath...
+Sep 17 02:00:00 fedora systemd[1]: modprobe@drm.service - Load Kernel Module drm was skipped because of an unmet condition check (ConditionKernelModuleLoaded=!drm).
+Sep 17 02:00:00 fedora systemd[1]: modprobe@efi_pstore.service - Load Kernel Module efi_pstore was skipped because of an unmet condition check (ConditionKernelModuleLoaded=!efi_pstore).
+Sep 17 02:00:00 fedora systemd[1]: Starting modprobe@fuse.service - Load Kernel Module fuse...
+Sep 17 02:00:00 fedora systemd[1]: modprobe@loop.service - Load Kernel Module loop was skipped because of an unmet condition check (ConditionKernelModuleLoaded=!loop).
+Sep 17 02:00:00 fedora systemd[1]: systemd-boot-clear-sysfail.service - Clear SysFail Entry If The Boot Is Successful was skipped because of an unmet condition check (ConditionPathExists=/sys/firmware/efi/efivars/LoaderEntrySysFail-4a67b082-0a4c-41cf-b6c7-440b29bb8c4f).
+Sep 17 02:00:00 fedora systemd[1]: systemd-fsck-root.service - File System Check on Root Device was skipped because of an unmet condition check (ConditionPathIsReadWrite=!/).
+Sep 17 02:00:00 fedora systemd[1]: systemd-hibernate-clear.service - Clear Stale Hibernate Storage Info was skipped because of an unmet condition check (ConditionPathExists=/sys/firmware/efi/efivars/HibernateLocation-8cf2644b-4b0b-428f-9387-6d876050dc67).
+Sep 17 02:00:00 fedora systemd[1]: Starting systemd-journald.service - Journal Service...
+Sep 17 02:00:00 fedora systemd[1]: Starting systemd-modules-load.service - Load Kernel Modules...
+Sep 17 02:00:00 fedora systemd[1]: Starting systemd-network-generator.service - Generate network units from Kernel command line...
+Sep 17 02:00:00 fedora systemd[1]: systemd-pcrmachine.service - TPM PCR Machine ID Measurement was skipped because of an unmet condition check (ConditionSecurity=measured-uki).
+Sep 17 02:00:00 fedora systemd[1]: Starting systemd-remount-fs.service - Remount Root and Kernel File Systems...
+Sep 17 02:00:00 fedora systemd[1]: systemd-tpm2-setup-early.service - Early TPM SRK Setup was skipped because of an unmet condition check (ConditionSecurity=measured-uki).
+Sep 17 02:00:00 fedora kernel: fuse: init (API version 7.45)
+Sep 17 02:00:00 fedora systemd[1]: Starting systemd-repart.service - Repartition Root Disk...
+Sep 17 02:00:00 fedora systemd[1]: Starting systemd-udev-load-credentials.service - Load udev Rules from Credentials...
+Sep 17 02:00:00 fedora systemd[1]: Starting systemd-udev-trigger.service - Coldplug All udev Devices...
+Sep 17 02:00:00 fedora systemd[1]: Starting systemd-vconsole-setup.service - Virtual Console Setup...
+Sep 17 02:00:00 fedora systemd[1]: Mounted dev-hugepages.mount - Huge Pages File System.
+Sep 17 02:00:00 fedora systemd[1]: Mounted dev-mqueue.mount - POSIX Message Queue File System.
+Sep 17 02:00:00 fedora systemd[1]: Mounted sys-kernel-debug.mount - Kernel Debug File System.
+Sep 17 02:00:00 fedora systemd[1]: Finished kmod-static-nodes.service - Create List of Static Device Nodes.
+Sep 17 02:00:00 fedora systemd[1]: Mounted sys-kernel-config.mount - Kernel Configuration File System.
+Sep 17 02:00:00 fedora systemd[1]: modprobe@dm_multipath.service: Deactivated successfully.
+Sep 17 02:00:00 fedora systemd[1]: Finished modprobe@dm_multipath.service - Load Kernel Module dm_multipath.
+Sep 17 02:00:00 fedora systemd[1]: modprobe@fuse.service: Deactivated successfully.
+Sep 17 02:00:00 fedora systemd[1]: Finished modprobe@fuse.service - Load Kernel Module fuse.
+Sep 17 02:00:00 fedora systemd[1]: Mounting sys-fs-fuse-connections.mount - FUSE Control File System...
+Sep 17 02:00:00 fedora systemd[1]: Starting systemd-tmpfiles-setup-dev-early.service - Create Static Device Nodes in /dev gracefully...
+Sep 17 02:00:00 fedora systemd[1]: Finished systemd-network-generator.service - Generate network units from Kernel command line.
+Sep 17 02:00:00 fedora systemd[1]: Mounted sys-fs-fuse-connections.mount - FUSE Control File System.
+Sep 17 02:00:00 fedora systemd-journald[274]: Collecting audit messages is enabled.
+Sep 17 02:00:00 fedora kernel: EXT4-fs (sda37): re-mounted 9a466b26-6149-41e7-986d-84227cab0f3d.
+Sep 17 02:00:00 fedora systemd[1]: Finished systemd-remount-fs.service - Remount Root and Kernel File Systems.
+Sep 17 02:00:00 fedora kernel: audit: type=1130 audit(1758067200.403:2): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-remount-fs comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+Sep 17 02:00:00 fedora systemd[1]: multipathd.service - Device-Mapper Multipath Device Controller was skipped because of an unmet condition check (ConditionPathExists=/etc/multipath.conf).
+Sep 17 02:00:00 fedora systemd[1]: systemd-hwdb-update.service - Rebuild Hardware Database was skipped because of an unmet condition check (ConditionNeedsUpdate=/etc).
+Sep 17 02:00:00 fedora systemd[1]: systemd-pstore.service - Platform Persistent Storage Archival was skipped because of an unmet condition check (ConditionDirectoryNotEmpty=/sys/fs/pstore).
+Sep 17 02:00:00 fedora systemd[1]: Starting systemd-random-seed.service - Load/Save OS Random Seed...
+Sep 17 02:00:00 fedora systemd[1]: systemd-tpm2-setup.service - TPM SRK Setup was skipped because of an unmet condition check (ConditionSecurity=measured-uki).
+Sep 17 02:00:00 fedora systemd[1]: Finished systemd-modules-load.service - Load Kernel Modules.
+Sep 17 02:00:00 fedora kernel: audit: type=1130 audit(1758067200.406:3): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-modules-load comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+Sep 17 02:00:00 fedora systemd[1]: systemd-repart.service: Main process exited, code=exited, status=1/FAILURE
+Sep 17 02:00:00 fedora systemd[1]: systemd-repart.service: Failed with result 'exit-code'.
+Sep 17 02:00:00 fedora systemd[1]: Failed to start systemd-repart.service - Repartition Root Disk.
+Sep 17 02:00:00 fedora kernel: audit: type=1130 audit(1758067200.406:4): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-repart comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=failed'
+Sep 17 02:00:00 fedora systemd[1]: Starting systemd-sysctl.service - Apply Kernel Variables...
+Sep 17 02:00:00 fedora systemd[1]: Finished systemd-udev-load-credentials.service - Load udev Rules from Credentials.
+Sep 17 02:00:00 fedora kernel: audit: type=1130 audit(1758067200.410:5): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-udev-load-credentials comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+Sep 17 02:00:00 fedora systemd[1]: Finished systemd-random-seed.service - Load/Save OS Random Seed.
+Sep 17 02:00:00 fedora kernel: audit: type=1130 audit(1758067200.422:6): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-random-seed comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+Sep 17 02:00:00 fedora systemd[1]: Finished systemd-sysctl.service - Apply Kernel Variables.
+Sep 17 02:00:00 fedora kernel: audit: type=1130 audit(1758067200.422:7): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-sysctl comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+Sep 17 02:00:00 fedora systemd[1]: Started systemd-journald.service - Journal Service.
+Sep 17 02:00:00 fedora kernel: audit: type=1130 audit(1758067200.423:8): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-journald comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+Sep 17 02:00:00 fedora kernel: audit: type=1334 audit(1758067200.431:9): prog-id=16 op=LOAD
+Sep 17 02:00:00 fedora kernel: audit: type=1334 audit(1758067200.431:10): prog-id=17 op=LOAD
+Sep 17 02:00:00 fedora systemd-journald[274]: Received client request to flush runtime journal.
+Sep 17 02:00:00 fedora systemd-journald[274]: File /var/log/journal/c22bffdb35464dfa94e8418be11812d7/system.journal corrupted or uncleanly shut down, renaming and replacing.
+Sep 17 02:00:00 fedora kernel: zram0: detected capacity change from 0 to 15347712
+Sep 17 02:00:01 fedora kernel: Adding 7673852k swap on /dev/zram0.  Priority:100 extents:1 across:7673852k SSDsc
+Sep 17 02:00:01 fedora kernel: cpu cpu0: EM: created perf domain
+Sep 17 02:00:01 fedora kernel: cpu cpu4: EM: created perf domain
+Sep 17 02:00:01 fedora kernel:  cs_system_cfg: CoreSight Configuration manager initialised
+Sep 17 02:00:01 fedora kernel: cpu cpu7: EM: created perf domain
+Sep 17 02:00:01 fedora kernel: coresight stm0: STM32 initialized
+Sep 17 02:00:01 fedora kernel: NET: Registered PF_QIPCRTR protocol family
+Sep 17 02:00:01 fedora kernel: remoteproc remoteproc0: slpi is available
+Sep 17 02:00:01 fedora kernel: remoteproc remoteproc1: cdsp is available
+Sep 17 02:00:01 fedora kernel: remoteproc remoteproc2: adsp is available
+Sep 17 02:00:01 fedora kernel: remoteproc remoteproc1: powering up cdsp
+Sep 17 02:00:01 fedora kernel: remoteproc remoteproc1: Booting fw image qcom/sm8250/xiaomi/alioth/cdsp.mbn, size 5818132
+Sep 17 02:00:01 fedora kernel: remoteproc remoteproc0: powering up slpi
+Sep 17 02:00:01 fedora kernel: remoteproc remoteproc0: Booting fw image qcom/sm8250/xiaomi/alioth/slpi.mbn, size 7869796
+Sep 17 02:00:01 fedora kernel: remoteproc remoteproc2: powering up adsp
+Sep 17 02:00:01 fedora kernel: remoteproc remoteproc2: Booting fw image qcom/sm8250/xiaomi/alioth/adsp.mbn, size 21094524
+Sep 17 02:00:01 fedora kernel: Unable to handle kernel paging request at virtual address 0000000088c00000
+Sep 17 02:00:01 fedora kernel: Mem abort info:
+Sep 17 02:00:01 fedora kernel:   ESR = 0x0000000096000044
+Sep 17 02:00:01 fedora kernel:   EC = 0x25: DABT (current EL), IL = 32 bits
+Sep 17 02:00:01 fedora kernel:   SET = 0, FnV = 0
+Sep 17 02:00:01 fedora kernel:   EA = 0, S1PTW = 0
+Sep 17 02:00:01 fedora kernel:   FSC = 0x04: level 0 translation fault
+Sep 17 02:00:01 fedora kernel: Data abort info:
+Sep 17 02:00:01 fedora kernel:   ISV = 0, ISS = 0x00000044, ISS2 = 0x00000000
+Sep 17 02:00:01 fedora kernel:   CM = 0, WnR = 1, TnD = 0, TagAccess = 0
+Sep 17 02:00:01 fedora kernel:   GCS = 0, Overlay = 0, DirtyBit = 0, Xs = 0
+Sep 17 02:00:01 fedora kernel: user pgtable: 4k pages, 48-bit VAs, pgdp=000000010227d000
+Sep 17 02:00:01 fedora kernel: [0000000088c00000] pgd=0000000000000000, p4d=0000000000000000
+Sep 17 02:00:01 fedora kernel: Internal error: Oops: 0000000096000044 [#1]  SMP
+Sep 17 02:00:01 fedora kernel: Modules linked in: i2c_qcom_cci(+) mc(+) qcom_rng qrtr coresight_stm stm_core coresight_tmc coresight_replicator coresight_funnel coresight qcom_q6v5_pas qcom_pil_info pci_pwrctrl_pwrseq pwrseq_qcom_wcn qcom_q6v5 qcom_wdt qcom_sysmon qcom_common icc_osm_l3 qcom_glink_smem pwrseq_core binfmt_misc fuse nfnetlink zram zsmalloc ipv6
+Sep 17 02:00:01 fedora kernel: CPU: 7 UID: 0 PID: 53 Comm: kworker/7:0 Not tainted 6.18.8-sm8250+ #12 PREEMPT 
+Sep 17 02:00:01 fedora kernel: Hardware name: Xiaomi Inc Poco F3/Poco F3, BIOS 3.0.8 Jun 27 2025
+Sep 17 02:00:01 fedora kernel: Workqueue: events request_firmware_work_func
+Sep 17 02:00:01 fedora kernel: pstate: 20400005 (nzCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+Sep 17 02:00:01 fedora kernel: pc : __pi_memcpy_generic+0x128/0x22c
+Sep 17 02:00:01 fedora kernel: lr : __qcom_mdt_load.isra.0+0x20c/0x2c0
+Sep 17 02:00:01 fedora kernel: sp : ffff800082253bc0
+Sep 17 02:00:01 fedora kernel: x29: ffff800082253bc0 x28: 0000000088c00000 x27: 0000000000000000
+Sep 17 02:00:01 fedora kernel: x26: 0000000000000002 x25: 0000000088000000 x24: 0000000002000000
+Sep 17 02:00:01 fedora kernel: x23: ffff800089d81000 x22: ffff0000937164c0 x21: ffff00008006f658
+Sep 17 02:00:01 fedora kernel: x20: 0000000088c00000 x19: ffff800089d81074 x18: ffff80017d504000
+Sep 17 02:00:01 fedora kernel: x17: ffff00008001abc8 x16: ffff0000853fb2f8 x15: ffff800081b6d698
+Sep 17 02:00:01 fedora kernel: x14: 0000000000000000 x13: 5800c0005800c000 x12: 5800c0005800c00e
+Sep 17 02:00:01 fedora kernel: x11: 0000000002000000 x10: 0000000000609000 x9 : 0000000000000001
+Sep 17 02:00:01 fedora kernel: x8 : 0000000002f00000 x7 : 5800cbf65800c000 x6 : 5800c0005800c000
+Sep 17 02:00:01 fedora kernel: x5 : 0000000088c142b8 x4 : ffff800089d982b8 x3 : 0000000088c00000
+Sep 17 02:00:01 fedora kernel: x2 : 00000000000142b8 x1 : ffff800089d84000 x0 : 0000000088c00000
+Sep 17 02:00:01 fedora kernel: Call trace:
+Sep 17 02:00:01 fedora kernel:  __pi_memcpy_generic+0x128/0x22c (P)
+Sep 17 02:00:01 fedora kernel:  qcom_mdt_load_no_init+0x20/0x2c
+Sep 17 02:00:01 fedora kernel:  qcom_pas_start+0x2c8/0x3a0 [qcom_q6v5_pas]
+Sep 17 02:00:01 fedora kernel:  rproc_start+0xc0/0x164
+Sep 17 02:00:01 fedora kernel:  rproc_boot+0x4b0/0x5a0
+Sep 17 02:00:01 fedora kernel:  rproc_auto_boot_callback+0x1c/0x40
+Sep 17 02:00:01 fedora kernel:  request_firmware_work_func+0x54/0xa4
+Sep 17 02:00:01 fedora kernel:  process_one_work+0x150/0x29c
+Sep 17 02:00:01 fedora kernel:  worker_thread+0x2d0/0x3ec
+Sep 17 02:00:01 fedora kernel:  kthread+0x12c/0x1f0
+Sep 17 02:00:01 fedora kernel:  ret_from_fork+0x10/0x20
+Sep 17 02:00:01 fedora kernel: Code: 927cec03 cb0e0021 8b0e0042 a9411c26 (a900340c) 
+Sep 17 02:00:01 fedora kernel: ---[ end trace 0000000000000000 ]---
+Sep 17 02:00:01 fedora kernel: Unable to handle kernel paging request at virtual address 0000000087800000
+Sep 17 02:00:01 fedora kernel: Mem abort info:
+Sep 17 02:00:01 fedora kernel:   ESR = 0x0000000096000044
+Sep 17 02:00:01 fedora kernel:   EC = 0x25: DABT (current EL), IL = 32 bits
+Sep 17 02:00:01 fedora kernel:   SET = 0, FnV = 0
+Sep 17 02:00:01 fedora kernel:   EA = 0, S1PTW = 0
+Sep 17 02:00:01 fedora kernel:   FSC = 0x04: level 0 translation fault
+Sep 17 02:00:01 fedora kernel: Data abort info:
+Sep 17 02:00:01 fedora kernel:   ISV = 0, ISS = 0x00000044, ISS2 = 0x00000000
+Sep 17 02:00:01 fedora kernel:   CM = 0, WnR = 1, TnD = 0, TagAccess = 0
+Sep 17 02:00:01 fedora kernel:   GCS = 0, Overlay = 0, DirtyBit = 0, Xs = 0
+Sep 17 02:00:01 fedora kernel: user pgtable: 4k pages, 48-bit VAs, pgdp=0000000100fe4000
+Sep 17 02:00:01 fedora kernel: [0000000087800000] pgd=0000000000000000, p4d=0000000000000000

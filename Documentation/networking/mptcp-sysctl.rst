@@ -16,6 +16,8 @@ add_addr_timeout - INTEGER (seconds)
 
 	Do not retransmit if set to 0.
 
+	Do not retransmit if set to 0.
+
 	The default value matches TCP_RTO_MAX. This is a per-namespace
 	sysctl.
 
