@@ -1252,7 +1252,7 @@ void rtl8xxxu_gen1_config_channel(struct ieee80211_hw *hw)
 		opmode &= ~BW_OPMODE_20MHZ;
 		rtl8xxxu_write8(priv, REG_BW_OPMODE, opmode);
 		rsr &= ~RSR_RSC_BANDWIDTH_40M;
-		if (sec_ch_above)
+		if (!sec_ch_above)
 			rsr |= RSR_RSC_UPPER_SUB_CHANNEL;
 		else
 			rsr |= RSR_RSC_LOWER_SUB_CHANNEL;
@@ -1321,9 +1321,8 @@ void rtl8xxxu_gen1_config_channel(struct ieee80211_hw *hw)
 
 	for (i = RF_A; i < priv->rf_paths; i++) {
 		val32 = rtl8xxxu_read_rfreg(priv, i, RF6052_REG_MODE_AG);
-		if (hw->conf.chandef.width == NL80211_CHAN_WIDTH_40)
-			val32 &= ~MODE_AG_CHANNEL_20MHZ;
-		else
+		val32 &= ~MODE_AG_BW_MASK;
+		if (hw->conf.chandef.width != NL80211_CHAN_WIDTH_40)
 			val32 |= MODE_AG_CHANNEL_20MHZ;
 		rtl8xxxu_write_rfreg(priv, i, RF6052_REG_MODE_AG, val32);
 	}
@@ -1899,6 +1898,27 @@ static void rtl8xxxu_dump_efuse(struct rtl8xxxu_priv *priv)
 
 	print_hex_dump(KERN_INFO, "", DUMP_PREFIX_OFFSET, 16, 1,
 		       priv->efuse_wifi.raw, EFUSE_MAP_LEN, true);
+}
+
+static ssize_t read_file_efuse(struct file *file, char __user *user_buf,
+			       size_t count, loff_t *ppos)
+{
+	struct rtl8xxxu_priv *priv = file_inode(file)->i_private;
+
+	return simple_read_from_buffer(user_buf, count, ppos,
+				       priv->efuse_wifi.raw, EFUSE_MAP_LEN);
+}
+
+static const struct debugfs_short_fops fops_efuse = {
+	.read = read_file_efuse,
+};
+
+static void rtl8xxxu_debugfs_init(struct rtl8xxxu_priv *priv)
+{
+	struct dentry *phydir;
+
+	phydir = debugfs_create_dir("rtl8xxxu", priv->hw->wiphy->debugfsdir);
+	debugfs_create_file("efuse", 0400, phydir, priv, &fops_efuse);
 }
 
 void rtl8xxxu_reset_8051(struct rtl8xxxu_priv *priv)
@@ -7815,7 +7835,8 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
 			untested = 0;
 		break;
 	case 0x2357:
-		if (id->idProduct == 0x0109 || id->idProduct == 0x0135)
+		if (id->idProduct == 0x0109 || id->idProduct == 0x010c ||
+		    id->idProduct == 0x0135)
 			untested = 0;
 		break;
 	case 0x0b05:
@@ -7974,6 +7995,7 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
 	}
 
 	rtl8xxxu_init_led(priv);
+	rtl8xxxu_debugfs_init(priv);
 
 	return 0;
 
@@ -8112,6 +8134,9 @@ static const struct usb_device_id dev_table[] = {
 	.driver_info = (unsigned long)&rtl8192fu_fops},
 /* TP-Link TL-WN823N V2 */
 {USB_DEVICE_AND_INTERFACE_INFO(0x2357, 0x0135, 0xff, 0xff, 0xff),
+	.driver_info = (unsigned long)&rtl8192fu_fops},
+/* D-Link AN3U rev. A1 */
+{USB_DEVICE_AND_INTERFACE_INFO(0x2001, 0x3328, 0xff, 0xff, 0xff),
 	.driver_info = (unsigned long)&rtl8192fu_fops},
 #ifdef CONFIG_RTL8XXXU_UNTESTED
 /* Still supported by rtlwifi */

@@ -1802,7 +1802,7 @@ nfsd4_decode_layoutcommit(struct nfsd4_compoundargs *argp,
 	status = nfsd4_decode_stateid4(argp, &lcp->lc_sid);
 	if (status)
 		return status;
-	if (xdr_stream_decode_u32(argp->xdr, &lcp->lc_newoffset) < 0)
+	if (xdr_stream_decode_bool(argp->xdr, &lcp->lc_newoffset) < 0)
 		return nfserr_bad_xdr;
 	if (lcp->lc_newoffset) {
 		if (xdr_stream_decode_u64(argp->xdr, &lcp->lc_last_wr) < 0)
@@ -2630,10 +2630,8 @@ static __be32 nfsd4_encode_components_esc(struct xdr_stream *xdr, char sep,
 	__be32 *p;
 	__be32 pathlen;
 	int pathlen_offset;
-	int strlen, count=0;
 	char *str, *end, *next;
-
-	dprintk("nfsd4_encode_components(%s)\n", components);
+	int count = 0;
 
 	pathlen_offset = xdr->buf->len;
 	p = xdr_reserve_space(xdr, 4);
@@ -2660,9 +2658,8 @@ static __be32 nfsd4_encode_components_esc(struct xdr_stream *xdr, char sep,
 			for (; *end && (*end != sep); end++)
 				/* find sep or end of string */;
 
-		strlen = end - str;
-		if (strlen) {
-			if (xdr_stream_encode_opaque(xdr, str, strlen) < 0)
+		if (end > str) {
+			if (xdr_stream_encode_opaque(xdr, str, end - str) < 0)
 				return nfserr_resource;
 			count++;
 		} else
@@ -3378,6 +3375,11 @@ static __be32 nfsd4_encode_fattr4_suppattr_exclcreat(struct xdr_stream *xdr,
 	u32 supp[3];
 
 	memcpy(supp, nfsd_suppattrs[resp->cstate.minorversion], sizeof(supp));
+	if (!IS_POSIXACL(d_inode(args->dentry)))
+		supp[0] &= ~FATTR4_WORD0_ACL;
+	if (!args->contextsupport)
+		supp[2] &= ~FATTR4_WORD2_SECURITY_LABEL;
+
 	supp[0] &= NFSD_SUPPATTR_EXCLCREAT_WORD0;
 	supp[1] &= NFSD_SUPPATTR_EXCLCREAT_WORD1;
 	supp[2] &= NFSD_SUPPATTR_EXCLCREAT_WORD2;
@@ -5076,7 +5078,7 @@ nfsd4_encode_sequence(struct nfsd4_compoundres *resp, __be32 nfserr,
 		return nfserr;
 	/* Note slotid's are numbered from zero: */
 	/* sr_highest_slotid */
-	nfserr = nfsd4_encode_slotid4(xdr, seq->maxslots - 1);
+	nfserr = nfsd4_encode_slotid4(xdr, seq->maxslots_response - 1);
 	if (nfserr != nfs_ok)
 		return nfserr;
 	/* sr_target_highest_slotid */

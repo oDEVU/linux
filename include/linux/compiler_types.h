@@ -14,6 +14,19 @@
 #ifndef __ASSEMBLY__
 
 /*
+ * C23 introduces "auto" as a standard way to define type-inferred
+ * variables, but "auto" has been a (useless) keyword even since K&R C,
+ * so it has always been "namespace reserved."
+ *
+ * Until at some future time we require C23 support, we need the gcc
+ * extension __auto_type, but there is no reason to put that elsewhere
+ * in the source code.
+ */
+#if __STDC_VERSION__ < 202311L
+# define auto __auto_type
+#endif
+
+/*
  * Skipped when running bindgen due to a libclang issue;
  * see https://github.com/rust-lang/rust-bindgen/issues/2244.
  */
@@ -329,6 +342,29 @@ struct ftrace_likely_data {
 #endif
 
 /*
+ * The assume attribute is used to indicate that a certain condition is
+ * assumed to be true. If this condition is violated at runtime, the behavior
+ * is undefined. Compilers may or may not use this indication to generate
+ * optimized code.
+ *
+ * Note that the clang documentation states that optimizers may react
+ * differently to this attribute, and this may even have a negative
+ * performance impact. Therefore this attribute should be used with care.
+ *
+ * Optional: only supported since gcc >= 13
+ * Optional: only supported since clang >= 19
+ *
+ *   gcc: https://gcc.gnu.org/onlinedocs/gcc/Statement-Attributes.html#index-assume-statement-attribute
+ * clang: https://clang.llvm.org/docs/AttributeReference.html#id13
+ *
+ */
+#ifdef CONFIG_CC_HAS_ASSUME
+# define __assume(expr)			__attribute__((__assume__(expr)))
+#else
+# define __assume(expr)
+#endif
+
+/*
  * Optional: only supported since gcc >= 15
  * Optional: only supported since clang >= 18
  *
@@ -431,8 +467,16 @@ struct ftrace_likely_data {
 # define __noscs
 #endif
 
-#ifndef __nocfi
+#if defined(CONFIG_CFI)
+# define __nocfi		__attribute__((__no_sanitize__("kcfi")))
+#else
 # define __nocfi
+#endif
+
+#if defined(CONFIG_ARCH_USES_CFI_GENERIC_LLVM_PASS)
+# define __nocfi_generic	__nocfi
+#else
+# define __nocfi_generic
 #endif
 
 /*

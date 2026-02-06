@@ -114,8 +114,7 @@ struct i915_gem_mm {
 	struct intel_memory_region *stolen_region;
 	/** Memory allocator for GTT stolen memory */
 	struct drm_mm stolen;
-	/** Protects the usage of the GTT stolen memory allocator. This is
-	 * always the inner lock when overlapping with struct_mutex. */
+	/** Protects the usage of the GTT stolen memory allocator */
 	struct mutex stolen_lock;
 
 	/* Protects bound_list/unbound_list and #drm_i915_gem_object.mm.link */
@@ -236,8 +235,6 @@ struct drm_i915_private {
 	u32 irq_mask;
 
 	bool preserve_bios_swizzle;
-
-	unsigned int fsb_freq, mem_freq, is_ddr3;
 
 	unsigned int hpll_freq;
 	unsigned int czclk_freq;

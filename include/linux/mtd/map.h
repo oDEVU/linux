@@ -18,6 +18,9 @@
 struct device_node;
 struct module;
 
+struct device_node;
+struct module;
+
 #ifdef CONFIG_MTD_MAP_BANK_WIDTH_1
 #define map_bankwidth(map) 1
 #define map_bankwidth_is_1(map) (map_bankwidth(map) == 1)

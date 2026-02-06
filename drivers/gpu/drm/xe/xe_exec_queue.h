@@ -24,6 +24,7 @@ struct xe_exec_queue *xe_exec_queue_create_class(struct xe_device *xe, struct xe
 						 u32 flags, u64 extensions);
 struct xe_exec_queue *xe_exec_queue_create_bind(struct xe_device *xe,
 						struct xe_tile *tile,
+						struct xe_vm *user_vm,
 						u32 flags, u64 extensions);
 
 void xe_exec_queue_fini(struct xe_exec_queue *q);
@@ -90,4 +91,9 @@ int xe_exec_queue_last_fence_test_dep(struct xe_exec_queue *q,
 				      struct xe_vm *vm);
 void xe_exec_queue_update_run_ticks(struct xe_exec_queue *q);
 
+int xe_exec_queue_contexts_hwsp_rebase(struct xe_exec_queue *q, void *scratch);
+
+void xe_exec_queue_jobs_ring_restore(struct xe_exec_queue *q);
+
+struct xe_lrc *xe_exec_queue_lrc(struct xe_exec_queue *q);
 #endif

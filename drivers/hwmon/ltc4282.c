@@ -1018,8 +1018,9 @@ static umode_t ltc4282_in_is_visible(const struct ltc4282_state *st, u32 attr)
 	case hwmon_in_max:
 	case hwmon_in_min:
 	case hwmon_in_enable:
-	case hwmon_in_reset_history:
 		return 0644;
+	case hwmon_in_reset_history:
+		return 0200;
 	default:
 		return 0;
 	}
@@ -1038,8 +1039,9 @@ static umode_t ltc4282_curr_is_visible(u32 attr)
 		return 0444;
 	case hwmon_curr_max:
 	case hwmon_curr_min:
-	case hwmon_curr_reset_history:
 		return 0644;
+	case hwmon_curr_reset_history:
+		return 0200;
 	default:
 		return 0;
 	}
@@ -1057,8 +1059,9 @@ static umode_t ltc4282_power_is_visible(u32 attr)
 		return 0444;
 	case hwmon_power_max:
 	case hwmon_power_min:
-	case hwmon_power_reset_history:
 		return 0644;
+	case hwmon_power_reset_history:
+		return 0200;
 	default:
 		return 0;
 	}
@@ -1693,8 +1696,7 @@ static int ltc4282_probe(struct i2c_client *i2c)
 
 	st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
 	if (!st)
-		return dev_err_probe(dev, -ENOMEM,
-				     "Failed to allocate memory\n");
+		return -ENOMEM;
 
 	st->map = devm_regmap_init_i2c(i2c, &ltc4282_regmap_config);
 	if (IS_ERR(st->map))

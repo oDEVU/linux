@@ -1303,8 +1303,8 @@ static int omap_iommu_map(struct iommu_domain *domain, unsigned long da,
 	struct omap_iommu_device *iommu;
 	struct omap_iommu *oiommu;
 	struct iotlb_entry e;
+	int ret = -EINVAL;
 	int omap_pgsz;
-	u32 ret = -EINVAL;
 	int i;
 
 	omap_pgsz = bytes_to_iopgsz(bytes);
@@ -1675,6 +1675,7 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
 		}
 
 		oiommu = platform_get_drvdata(pdev);
+		put_device(&pdev->dev);
 		if (!oiommu) {
 			of_node_put(np);
 			kfree(arch_data);
@@ -1682,7 +1683,6 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
 		}
 
 		tmp->iommu_dev = oiommu;
-		tmp->dev = &pdev->dev;
 
 		of_node_put(np);
 	}

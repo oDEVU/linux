@@ -31,6 +31,7 @@
 enum hv_partition_type {
 	HV_PARTITION_TYPE_GUEST,
 	HV_PARTITION_TYPE_ROOT,
+	HV_PARTITION_TYPE_L1VH,
 };
 
 struct ms_hyperv_info {
@@ -123,10 +124,12 @@ static inline unsigned int hv_repcomp(u64 status)
 
 /*
  * Rep hypercalls. Callers of this functions are supposed to ensure that
- * rep_count and varhead_size comply with Hyper-V hypercall definition.
+ * rep_count, varhead_size, and rep_start comply with Hyper-V hypercall
+ * definition.
  */
-static inline u64 hv_do_rep_hypercall(u16 code, u16 rep_count, u16 varhead_size,
-				      void *input, void *output)
+static inline u64 hv_do_rep_hypercall_ex(u16 code, u16 rep_count,
+					 u16 varhead_size, u16 rep_start,
+					 void *input, void *output)
 {
 	u64 control = code;
 	u64 status;
@@ -134,6 +137,7 @@ static inline u64 hv_do_rep_hypercall(u16 code, u16 rep_count, u16 varhead_size,
 
 	control |= (u64)varhead_size << HV_HYPERCALL_VARHEAD_OFFSET;
 	control |= (u64)rep_count << HV_HYPERCALL_REP_COMP_OFFSET;
+	control |= (u64)rep_start << HV_HYPERCALL_REP_START_OFFSET;
 
 	do {
 		status = hv_do_hypercall(control, input, output);
@@ -151,6 +155,14 @@ static inline u64 hv_do_rep_hypercall(u16 code, u16 rep_count, u16 varhead_size,
 	return status;
 }
 
+/* For the typical case where rep_start is 0 */
+static inline u64 hv_do_rep_hypercall(u16 code, u16 rep_count, u16 varhead_size,
+				      void *input, void *output)
+{
+	return hv_do_rep_hypercall_ex(code, rep_count, varhead_size, 0,
+				      input, output);
+}
+
 /* Generate the guest OS identifier as described in the Hyper-V TLFS */
 static inline u64 hv_generate_guest_id(u64 kernel_version)
 {
@@ -162,6 +174,7 @@ static inline u64 hv_generate_guest_id(u64 kernel_version)
 	return guest_id;
 }
 
+#if IS_ENABLED(CONFIG_HYPERV_VMBUS)
 /* Free the message slot and signal end-of-message if required */
 static inline void vmbus_signal_eom(struct hv_message *msg, u32 old_msg_type)
 {
@@ -197,6 +210,10 @@ static inline void vmbus_signal_eom(struct hv_message *msg, u32 old_msg_type)
 	}
 }
 
+extern int vmbus_interrupt;
+extern int vmbus_irq;
+#endif /* CONFIG_HYPERV_VMBUS */
+
 int hv_get_hypervisor_version(union hv_hypervisor_version_info *info);
 
 void hv_setup_vmbus_handler(void (*handler)(void));
@@ -209,9 +226,6 @@ void hv_remove_kexec_handler(void);
 void hv_setup_crash_handler(void (*handler)(struct pt_regs *regs));
 void hv_remove_crash_handler(void);
 void hv_setup_mshv_handler(void (*handler)(void));
-
-extern int vmbus_interrupt;
-extern int vmbus_irq;
 
 #if IS_ENABLED(CONFIG_HYPERV)
 /*
@@ -354,12 +368,22 @@ static inline bool hv_root_partition(void)
 {
 	return hv_curr_partition_type == HV_PARTITION_TYPE_ROOT;
 }
+static inline bool hv_l1vh_partition(void)
+{
+	return hv_curr_partition_type == HV_PARTITION_TYPE_L1VH;
+}
+static inline bool hv_parent_partition(void)
+{
+	return hv_root_partition() || hv_l1vh_partition();
+}
 int hv_call_deposit_pages(int node, u64 partition_id, u32 num_pages);
 int hv_call_add_logical_proc(int node, u32 lp_index, u32 acpi_id);
 int hv_call_create_vp(int node, u64 partition_id, u32 vp_index, u32 flags);
 
 #else /* CONFIG_MSHV_ROOT */
 static inline bool hv_root_partition(void) { return false; }
+static inline bool hv_l1vh_partition(void) { return false; }
+static inline bool hv_parent_partition(void) { return false; }
 static inline int hv_call_deposit_pages(int node, u64 partition_id, u32 num_pages)
 {
 	return -EOPNOTSUPP;

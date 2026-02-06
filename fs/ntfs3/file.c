@@ -49,6 +49,30 @@ static int ntfs_ioctl_fitrim(struct ntfs_sb_info *sbi, unsigned long arg)
 	return 0;
 }
 
+static int ntfs_ioctl_get_volume_label(struct ntfs_sb_info *sbi, u8 __user *buf)
+{
+	if (copy_to_user(buf, sbi->volume.label, FSLABEL_MAX))
+		return -EFAULT;
+
+	return 0;
+}
+
+static int ntfs_ioctl_set_volume_label(struct ntfs_sb_info *sbi, u8 __user *buf)
+{
+	u8 user[FSLABEL_MAX] = {0};
+	int len;
+
+	if (!capable(CAP_SYS_ADMIN))
+		return -EPERM;
+
+	if (copy_from_user(user, buf, FSLABEL_MAX))
+		return -EFAULT;
+
+	len = strnlen(user, FSLABEL_MAX);
+
+	return ntfs_set_label(sbi, user, len);
+}
+
 /*
  * ntfs_ioctl - file_operations::unlocked_ioctl
  */
@@ -64,6 +88,10 @@ long ntfs_ioctl(struct file *filp, u32 cmd, unsigned long arg)
 	switch (cmd) {
 	case FITRIM:
 		return ntfs_ioctl_fitrim(sbi, arg);
+	case FS_IOC_GETFSLABEL:
+		return ntfs_ioctl_get_volume_label(sbi, (u8 __user *)arg);
+	case FS_IOC_SETFSLABEL:
+		return ntfs_ioctl_set_volume_label(sbi, (u8 __user *)arg);
 	}
 	return -ENOTTY; /* Inappropriate ioctl for device. */
 }
@@ -1347,6 +1375,18 @@ static ssize_t ntfs_file_splice_write(struct pipe_inode_info *pipe,
 	return iter_file_splice_write(pipe, file, ppos, len, flags);
 }
 
+/*
+ * ntfs_file_fsync - file_operations::fsync
+ */
+static int ntfs_file_fsync(struct file *file, loff_t start, loff_t end, int datasync)
+{
+	struct inode *inode = file_inode(file);
+	if (unlikely(ntfs3_forced_shutdown(inode->i_sb)))
+		return -EIO;
+
+	return generic_file_fsync(file, start, end, datasync);
+}
+
 // clang-format off
 const struct inode_operations ntfs_file_inode_operations = {
 	.getattr	= ntfs_getattr,
@@ -1369,7 +1409,7 @@ const struct file_operations ntfs_file_operations = {
 	.splice_write	= ntfs_file_splice_write,
 	.mmap_prepare	= ntfs_file_mmap_prepare,
 	.open		= ntfs_file_open,
-	.fsync		= generic_file_fsync,
+	.fsync		= ntfs_file_fsync,
 	.fallocate	= ntfs_fallocate,
 	.release	= ntfs_file_release,
 };

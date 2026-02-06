@@ -35,6 +35,7 @@
 #ifndef _NFSD4_STATE_H
 #define _NFSD4_STATE_H
 
+#include <crypto/md5.h>
 #include <linux/idr.h>
 #include <linux/refcount.h>
 #include <linux/sunrpc/svc_xprt.h>
@@ -217,10 +218,12 @@ struct nfs4_delegation {
 	struct nfs4_clnt_odstate *dl_clnt_odstate;
 	time64_t		dl_time;
 	u32			dl_type;
-/* For recall: */
+	/* For recall: */
 	int			dl_retries;
 	struct nfsd4_callback	dl_recall;
 	bool			dl_recalled;
+	bool			dl_written;
+	bool			dl_setattr;
 
 	/* for CB_GETATTR */
 	struct nfs4_cb_fattr    dl_cb_fattr;
@@ -389,7 +392,8 @@ struct nfsd4_sessionid {
 	u32		reserved;
 };
 
-#define HEXDIR_LEN     33 /* hex version of 16 byte md5 of cl_name plus '\0' */
+/* Length of MD5 digest as hex, plus terminating '\0' */
+#define HEXDIR_LEN	(2 * MD5_DIGEST_SIZE + 1)
 
 /*
  *       State                Meaning                  Where set
@@ -837,15 +841,15 @@ static inline void get_nfs4_file(struct nfs4_file *fi)
 struct nfsd_file *find_any_file(struct nfs4_file *f);
 
 #ifdef CONFIG_NFSD_V4
-void nfsd4_revoke_states(struct net *net, struct super_block *sb);
+void nfsd4_revoke_states(struct nfsd_net *nn, struct super_block *sb);
 #else
-static inline void nfsd4_revoke_states(struct net *net, struct super_block *sb)
+static inline void nfsd4_revoke_states(struct nfsd_net *nn, struct super_block *sb)
 {
 }
 #endif
 
 /* grace period management */
-void nfsd4_end_grace(struct nfsd_net *nn);
+bool nfsd4_force_end_grace(struct nfsd_net *nn);
 
 /* nfs4recover operations */
 extern int nfsd4_client_tracking_init(struct net *net);

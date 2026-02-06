@@ -749,9 +749,7 @@ static int gfs2_freeze_super(struct super_block *sb, enum freeze_holder who,
 			break;
 		}
 
-		error = gfs2_do_thaw(sdp, who, freeze_owner);
-		if (error)
-			goto out;
+		(void)gfs2_do_thaw(sdp, who, freeze_owner);
 
 		if (error == -EBUSY)
 			fs_err(sdp, "waiting for recovery before freeze\n");
@@ -1050,7 +1048,7 @@ static int gfs2_drop_inode(struct inode *inode)
 	if (test_bit(SDF_EVICTING, &sdp->sd_flags))
 		return 1;
 
-	return generic_drop_inode(inode);
+	return inode_generic_drop(inode);
 }
 
 /**

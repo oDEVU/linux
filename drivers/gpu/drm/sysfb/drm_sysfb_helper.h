@@ -48,15 +48,6 @@ const struct drm_format_info *drm_sysfb_get_format_si(struct drm_device *dev,
 #endif
 
 /*
- * Input parsing
- */
-
-int drm_sysfb_get_validated_int(struct drm_device *dev, const char *name,
-				u64 value, u32 max);
-int drm_sysfb_get_validated_int0(struct drm_device *dev, const char *name,
-				 u64 value, u32 max);
-
-/*
  * Display modes
  */
 
@@ -132,7 +123,7 @@ int drm_sysfb_plane_helper_get_scanout_buffer(struct drm_plane *plane,
 struct drm_sysfb_crtc_state {
 	struct drm_crtc_state base;
 
-	/* Primary-plane format; required for color mgmt. */
+	/* CRTC input color format; required for color mgmt. */
 	const struct drm_format_info *format;
 };
 

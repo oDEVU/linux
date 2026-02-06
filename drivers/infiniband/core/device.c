@@ -1543,7 +1543,7 @@ static void __ib_unregister_device(struct ib_device *ib_dev)
 
 	/*
 	 * We have a registration lock so that all the calls to unregister are
-	 * fully fenced, once any unregister returns the device is truely
+	 * fully fenced, once any unregister returns the device is truly
 	 * unregistered even if multiple callers are unregistering it at the
 	 * same time. This also interacts with the registration flow and
 	 * provides sane semantics if register and unregister are racing.
@@ -2881,8 +2881,10 @@ int ib_del_sub_device_and_put(struct ib_device *sub)
 {
 	struct ib_device *parent = sub->parent;
 
-	if (!parent)
+	if (!parent) {
+		ib_device_put(sub);
 		return -EOPNOTSUPP;
+	}
 
 	mutex_lock(&parent->subdev_lock);
 	list_del(&sub->subdev_list);

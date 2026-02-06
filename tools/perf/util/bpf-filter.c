@@ -56,6 +56,7 @@
 #include "util/debug.h"
 #include "util/evsel.h"
 #include "util/target.h"
+#include "util/bpf-utils.h"
 
 #include "util/bpf-filter.h"
 #include <util/bpf-filter-flex.h>
