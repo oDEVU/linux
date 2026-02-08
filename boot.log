@@ -1,5 +1,6 @@
 Sep 17 02:00:00 fedora kernel: Booting Linux on physical CPU 0x0000000000 [0x51df805e]
-Sep 17 02:00:00 fedora kernel: Linux version 6.18.8-sm8250+ (devu@fedora-pc) (aarch64-linux-gnu-gcc (GCC) 15.2.1 20250808 (Red Hat Cross 15.2.1-1), GNU ld version 2.45-1.fc43) #12 SMP PREEMPT Fri Feb  6 10:18:45 CET 2026
+Sep 17 02:00:00 fedora kernel: Linux version 6.19.0-rc8-sm8250+ (devu@fedora-pc) (aarch64-linux-gnu-gcc (GCC) 15.2.1 20250808 (Red Hat Cross 15.2.1-1), GNU ld version 2.45-1.fc43) #7 SMP PREEMPT Sun Feb  8 20:53:17 CET 2026
+Sep 17 02:00:00 fedora kernel: KASLR enabled
 Sep 17 02:00:00 fedora kernel: Machine model: Xiaomi POCO F3
 Sep 17 02:00:00 fedora kernel: efi: EFI v2.7 by Project Silicium
 Sep 17 02:00:00 fedora kernel: efi: SMBIOS=0x9a6f7000 SMBIOS 3.0=0x9a6f3000 ACPI 2.0=0x988c3fd8 MEMATTR=0x97f98118 INITRD=0x94956ff0 RNG=0x94954fd8 MEMRESERVE=0x94952ff0 
@@ -23,7 +24,7 @@ Sep 17 02:00:00 fedora kernel: OF: reserved mem: 0x000000008bb00000..0x000000008
 Sep 17 02:00:00 fedora kernel: OF: reserved mem: 0x000000008e000000..0x000000008e0fffff (1024 KiB) nomap non-reusable spss@8e000000
 Sep 17 02:00:00 fedora kernel: OF: reserved mem: 0x000000008e100000..0x00000000926fffff (71680 KiB) nomap non-reusable cdsp-secure-heap@8e100000
 Sep 17 02:00:00 fedora kernel: NUMA: Faking a node at [mem 0x0000000080000000-0x000000027fffffff]
-Sep 17 02:00:00 fedora kernel: NODE_DATA(0) allocated [mem 0x27f009180-0x27f00bf7f]
+Sep 17 02:00:00 fedora kernel: NODE_DATA(0) allocated [mem 0x27f0088c0-0x27f00b6bf]
 Sep 17 02:00:00 fedora kernel: Zone ranges:
 Sep 17 02:00:00 fedora kernel:   DMA      [mem 0x0000000080000000-0x00000000ffffffff]
 Sep 17 02:00:00 fedora kernel:   DMA32    empty
@@ -68,11 +69,13 @@ Sep 17 02:00:00 fedora kernel: psci: MIGRATE_INFO_TYPE not supported.
 Sep 17 02:00:00 fedora kernel: psci: SMC Calling Convention v1.1
 Sep 17 02:00:00 fedora kernel: psci: OSI mode supported.
 Sep 17 02:00:00 fedora kernel: psci: [Firmware Bug]: failed to set PC mode: -3
-Sep 17 02:00:00 fedora kernel: percpu: Embedded 25 pages/cpu s61784 r8192 d32424 u102400
-Sep 17 02:00:00 fedora kernel: pcpu-alloc: s61784 r8192 d32424 u102400 alloc=25*4096
+Sep 17 02:00:00 fedora kernel: percpu: Embedded 25 pages/cpu s62360 r8192 d31848 u102400
+Sep 17 02:00:00 fedora kernel: pcpu-alloc: s62360 r8192 d31848 u102400 alloc=25*4096
 Sep 17 02:00:00 fedora kernel: pcpu-alloc: [0] 0 [0] 1 [0] 2 [0] 3 [0] 4 [0] 5 [0] 6 [0] 7 
 Sep 17 02:00:00 fedora kernel: Detected VIPT I-cache on CPU0
 Sep 17 02:00:00 fedora kernel: CPU features: detected: GICv3 CPU interface
+Sep 17 02:00:00 fedora kernel: CPU features: kernel page table isolation forced ON by KASLR
+Sep 17 02:00:00 fedora kernel: CPU features: detected: Kernel page table isolation (KPTI)
 Sep 17 02:00:00 fedora kernel: CPU features: detected: ARM errata 1165522, 1319367, or 1530923
 Sep 17 02:00:00 fedora kernel: alternatives: applying boot alternatives
 Sep 17 02:00:00 fedora kernel: Kernel command line: rw root=UUID=9a466b26-6149-41e7-986d-84227cab0f3d dtb=\sm8250-xiaomi-alioth.dtb console=tty0 loglevel=7 systemd.show_status=true initrd=\initramfs-linux.img
@@ -110,7 +113,6 @@ Sep 17 02:00:00 fedora kernel: Console: colour dummy device 80x25
 Sep 17 02:00:00 fedora kernel: printk: legacy console [tty0] enabled
 Sep 17 02:00:00 fedora kernel: Calibrating delay loop (skipped), value calculated using timer frequency.. 38.40 BogoMIPS (lpj=19200)
 Sep 17 02:00:00 fedora kernel: pid_max: default: 32768 minimum: 301
-Sep 17 02:00:00 fedora kernel: LSM: initializing lsm=capability
 Sep 17 02:00:00 fedora kernel: Mount-cache hash table entries: 16384 (order: 5, 131072 bytes, linear)
 Sep 17 02:00:00 fedora kernel: Mountpoint-cache hash table entries: 16384 (order: 5, 131072 bytes, linear)
 Sep 17 02:00:00 fedora kernel: rcu: Hierarchical SRCU implementation.
@@ -155,31 +157,31 @@ Sep 17 02:00:00 fedora kernel: CPU features: detected: LSE atomic instructions
 Sep 17 02:00:00 fedora kernel: CPU features: detected: Privileged Access Never
 Sep 17 02:00:00 fedora kernel: CPU features: detected: PMUv3
 Sep 17 02:00:00 fedora kernel: CPU features: detected: RAS Extension Support
+Sep 17 02:00:00 fedora kernel: CPU features: detected: XNX
 Sep 17 02:00:00 fedora kernel: CPU features: detected: Speculative Store Bypassing Safe (SSBS)
 Sep 17 02:00:00 fedora kernel: alternatives: applying system-wide alternatives
 Sep 17 02:00:00 fedora kernel: CPU features: detected: Hardware dirty bit management on CPU4-7
-Sep 17 02:00:00 fedora kernel: Memory: 7398800K/8000384K available (17536K kernel code, 3258K rwdata, 8444K rodata, 1920K init, 437K bss, 335124K reserved, 262144K cma-reserved)
+Sep 17 02:00:00 fedora kernel: Memory: 7398708K/8000384K available (17792K kernel code, 2862K rwdata, 8668K rodata, 1920K init, 438K bss, 335256K reserved, 262144K cma-reserved)
 Sep 17 02:00:00 fedora kernel: devtmpfs: initialized
 Sep 17 02:00:00 fedora kernel: clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1911260446275000 ns
 Sep 17 02:00:00 fedora kernel: posixtimers hash table entries: 4096 (order: 4, 65536 bytes, linear)
 Sep 17 02:00:00 fedora kernel: futex hash table entries: 2048 (131072 bytes on 1 NUMA nodes, total 128 KiB, linear).
-Sep 17 02:00:00 fedora kernel: 24816 pages in range for non-PLT usage
-Sep 17 02:00:00 fedora kernel: 516336 pages in range for PLT usage
-Sep 17 02:00:00 fedora kernel: pinctrl core: initialized pinctrl subsystem
+Sep 17 02:00:00 fedora kernel: 2G module region forced by RANDOMIZE_MODULE_REGION_FULL
+Sep 17 02:00:00 fedora kernel: 0 pages in range for non-PLT usage
+Sep 17 02:00:00 fedora kernel: 516304 pages in range for PLT usage
 Sep 17 02:00:00 fedora kernel: SMBIOS 3.3.0 present.
 Sep 17 02:00:00 fedora kernel: DMI: Xiaomi Inc Poco F3/Poco F3, BIOS 3.0.8 Jun 27 2025
 Sep 17 02:00:00 fedora kernel: DMI: Memory slots populated: 1/1
 Sep 17 02:00:00 fedora kernel: NET: Registered PF_NETLINK/PF_ROUTE protocol family
 Sep 17 02:00:00 fedora kernel: DMA: preallocated 1024 KiB GFP_KERNEL pool for atomic allocations
 Sep 17 02:00:00 fedora kernel: DMA: preallocated 1024 KiB GFP_KERNEL|GFP_DMA pool for atomic allocations
-Sep 17 02:00:00 fedora kernel: DMA: preallocated 1024 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
 Sep 17 02:00:00 fedora kernel: audit: initializing netlink subsys (disabled)
 Sep 17 02:00:00 fedora kernel: audit: type=2000 audit(0.019:1): state=initialized audit_enabled=0 res=1
 Sep 17 02:00:00 fedora kernel: thermal_sys: Registered thermal governor 'step_wise'
 Sep 17 02:00:00 fedora kernel: thermal_sys: Registered thermal governor 'power_allocator'
 Sep 17 02:00:00 fedora kernel: cpuidle: using governor menu
 Sep 17 02:00:00 fedora kernel: hw-breakpoint: found 6 breakpoint and 4 watchpoint registers.
-Sep 17 02:00:00 fedora kernel: ASID allocator initialised with 65536 entries
+Sep 17 02:00:00 fedora kernel: ASID allocator initialised with 32768 entries
 Sep 17 02:00:00 fedora kernel: Serial: AMBA PL011 UART driver
 Sep 17 02:00:00 fedora kernel: CPUidle PSCI: Initialized CPU PM domain topology using OSI mode
 Sep 17 02:00:00 fedora kernel: /soc@0/geniqup@8c0000/i2c@884000/typec-mux@42: Fixed dependency cycle(s) with /soc@0/spmi@c440000/pmic@2/typec@1500/connector
@@ -359,16 +361,16 @@ Sep 17 02:00:00 fedora kernel: HugeTLB: registered 2.00 MiB page size, pre-alloc
 Sep 17 02:00:00 fedora kernel: HugeTLB: 0 KiB vmemmap can be freed for a 2.00 MiB page
 Sep 17 02:00:00 fedora kernel: HugeTLB: registered 64.0 KiB page size, pre-allocated 0 pages
 Sep 17 02:00:00 fedora kernel: HugeTLB: 0 KiB vmemmap can be freed for a 64.0 KiB page
-Sep 17 02:00:00 fedora kernel: raid6: neonx8   gen() 13275 MB/s
+Sep 17 02:00:00 fedora kernel: raid6: neonx8   gen() 13297 MB/s
 Sep 17 02:00:00 fedora kernel: raid6: neonx4   gen() 13274 MB/s
-Sep 17 02:00:00 fedora kernel: raid6: neonx2   gen() 12312 MB/s
-Sep 17 02:00:00 fedora kernel: raid6: neonx1   gen() 10722 MB/s
+Sep 17 02:00:00 fedora kernel: raid6: neonx2   gen() 12221 MB/s
+Sep 17 02:00:00 fedora kernel: raid6: neonx1   gen() 10737 MB/s
 Sep 17 02:00:00 fedora kernel: raid6: int64x8  gen()  6978 MB/s
-Sep 17 02:00:00 fedora kernel: raid6: int64x4  gen()  7514 MB/s
-Sep 17 02:00:00 fedora kernel: raid6: int64x2  gen()  5925 MB/s
-Sep 17 02:00:00 fedora kernel: raid6: int64x1  gen()  4879 MB/s
-Sep 17 02:00:00 fedora kernel: raid6: using algorithm neonx8 gen() 13275 MB/s
-Sep 17 02:00:00 fedora kernel: raid6: .... xor() 10283 MB/s, rmw enabled
+Sep 17 02:00:00 fedora kernel: raid6: int64x4  gen()  7513 MB/s
+Sep 17 02:00:00 fedora kernel: raid6: int64x2  gen()  5926 MB/s
+Sep 17 02:00:00 fedora kernel: raid6: int64x1  gen()  4877 MB/s
+Sep 17 02:00:00 fedora kernel: raid6: using algorithm neonx8 gen() 13297 MB/s
+Sep 17 02:00:00 fedora kernel: raid6: .... xor() 10243 MB/s, rmw enabled
 Sep 17 02:00:00 fedora kernel: raid6: using neon recovery algorithm
 Sep 17 02:00:00 fedora kernel: ACPI: Interpreter disabled.
 Sep 17 02:00:00 fedora kernel: iommu: Default domain type: Translated
@@ -421,10 +423,10 @@ Sep 17 02:00:00 fedora kernel: nfs4flexfilelayout_init: NFSv4 Flexfile Layout Dr
 Sep 17 02:00:00 fedora kernel: Key type cifs.idmap registered
 Sep 17 02:00:00 fedora kernel: NET: Registered PF_ALG protocol family
 Sep 17 02:00:00 fedora kernel: xor: measuring software checksum speed
-Sep 17 02:00:00 fedora kernel:    8regs           : 21346 MB/sec
-Sep 17 02:00:00 fedora kernel:    32regs          : 21812 MB/sec
-Sep 17 02:00:00 fedora kernel:    arm64_neon      : 30154 MB/sec
-Sep 17 02:00:00 fedora kernel: xor: using function: arm64_neon (30154 MB/sec)
+Sep 17 02:00:00 fedora kernel:    8regs           : 18264 MB/sec
+Sep 17 02:00:00 fedora kernel:    32regs          : 18554 MB/sec
+Sep 17 02:00:00 fedora kernel:    arm64_neon      : 25795 MB/sec
+Sep 17 02:00:00 fedora kernel: xor: using function: arm64_neon (25795 MB/sec)
 Sep 17 02:00:00 fedora kernel: Key type asymmetric registered
 Sep 17 02:00:00 fedora kernel: Asymmetric key parser 'x509' registered
 Sep 17 02:00:00 fedora kernel: Asymmetric key parser 'pkcs8' registered
@@ -447,12 +449,12 @@ Sep 17 02:00:00 fedora kernel: arm-smmu 3da0000.iommu: probing hardware configur
 Sep 17 02:00:00 fedora kernel: arm-smmu 3da0000.iommu: SMMUv2 with:
 Sep 17 02:00:00 fedora kernel: arm-smmu 3da0000.iommu:         stage 1 translation
 Sep 17 02:00:00 fedora kernel: arm-smmu 3da0000.iommu:         coherent table walk
+Sep 17 02:00:00 fedora kernel: vreg_l7c_2p85: Setting 2856000-3104000uV
 Sep 17 02:00:00 fedora kernel: arm-smmu 3da0000.iommu:         stream matching with 6 register groups
 Sep 17 02:00:00 fedora kernel: arm-smmu 3da0000.iommu:         5 context banks (0 stage-2 only)
 Sep 17 02:00:00 fedora kernel: arm-smmu 3da0000.iommu:         Supported page sizes: 0x61311000
 Sep 17 02:00:00 fedora kernel: arm-smmu 3da0000.iommu:         Stage-1: 48-bit VA -> 36-bit IPA
 Sep 17 02:00:00 fedora kernel: arm-smmu 3da0000.iommu:         preserved 0 boot mappings
-Sep 17 02:00:00 fedora kernel: vreg_l7c_2p85: Setting 2856000-3104000uV
 Sep 17 02:00:00 fedora kernel: vreg_l8c_1p8: Setting 1800000-1800000uV
 Sep 17 02:00:00 fedora kernel: platform 3d00000.gpu: Adding to iommu group 0
 Sep 17 02:00:00 fedora kernel: platform 3d6a000.gmu: Adding to iommu group 1
@@ -532,16 +534,14 @@ Sep 17 02:00:00 fedora kernel: vreg_l1p: Bringing 1200000uV into 1056000-1056000
 Sep 17 02:00:00 fedora kernel: vreg_l2p: Bringing 1200000uV into 1104000-1104000uV
 Sep 17 02:00:00 fedora kernel: vreg_l3p: Bringing 2800000uV into 2704000-2704000uV
 Sep 17 02:00:00 fedora kernel: vreg_l5p: Bringing 1800000uV into 2800000-2800000uV
-Sep 17 02:00:00 fedora kernel: vreg_l6p: Bringing 2800000uV into 1800000-1800000uV
 Sep 17 02:00:00 fedora kernel: Freeing initrd memory: 7384K
-Sep 17 02:00:00 fedora kernel: 998000.serial: ttyHS0 at MMIO 0x998000 (irq = 173, base_baud = 0) is a MSM
+Sep 17 02:00:00 fedora kernel: vreg_l6p: Bringing 2800000uV into 1800000-1800000uV
+Sep 17 02:00:00 fedora kernel: ft8756-spi spi4.0: enter ft8756_spi_probe
+Sep 17 02:00:00 fedora kernel: ft8756-spi spi4.0: Interrupts GPIO: 0xad
+Sep 17 02:00:00 fedora kernel: ft8756-spi spi4.0: supply lab not found, using dummy regulator
+Sep 17 02:00:00 fedora kernel: 998000.serial: ttyHS0 at MMIO 0x998000 (irq = 174, base_baud = 0) is a MSM
 Sep 17 02:00:00 fedora kernel: serial serial0: tty port ttyHS0 registered
 Sep 17 02:00:00 fedora kernel: vreg_s4a_1p8: Setting 1800000-1920000uV
-Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/display-controller@ae01000: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/dsi@ae94000
-Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/display-controller@ae01000: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/dsi@ae94000
-Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/dsi@ae94000: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/dsi@ae94000/panel@0
-Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/dsi@ae94000: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/display-controller@ae01000
-Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/dsi@ae94000/panel@0: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/dsi@ae94000
 Sep 17 02:00:00 fedora kernel: vreg_s5a_1p9: Setting 1824000-2040000uV
 Sep 17 02:00:00 fedora kernel: vreg_s6a_0p95: Setting 600000-1128000uV
 Sep 17 02:00:00 fedora kernel: vreg_l2a_3p1: Setting 3072000-3072000uV
@@ -555,20 +555,24 @@ Sep 17 02:00:00 fedora kernel: vreg_l14a_1p88: Setting 1800000-1880000uV
 Sep 17 02:00:00 fedora kernel: vreg_l16a_3p3: Setting 3024000-3304000uV
 Sep 17 02:00:00 fedora kernel: vreg_l17a_3p0: Setting 2496000-3008000uV
 Sep 17 02:00:00 fedora kernel: vreg_l18a_0p9: Setting 800000-920000uV
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/display-controller@ae01000: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/dsi@ae94000
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/display-controller@ae01000: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/dsi@ae94000
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/dsi@ae94000: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/dsi@ae94000/panel@0
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/dsi@ae94000: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/display-controller@ae01000
+Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/dsi@ae94000/panel@0: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/dsi@ae94000
 Sep 17 02:00:00 fedora kernel: platform a600000.usb: Adding to iommu group 13
 Sep 17 02:00:00 fedora kernel: /soc@0/spmi@c440000/pmic@2/typec@1500/connector: Fixed dependency cycle(s) with /soc@0/usb@a6f8800/usb@a600000
 Sep 17 02:00:00 fedora kernel: /soc@0/usb@a6f8800/usb@a600000: Fixed dependency cycle(s) with /soc@0/spmi@c440000/pmic@2/typec@1500/connector
 Sep 17 02:00:00 fedora kernel: ufshcd-qcom 1d84000.ufshc: freq-table-hz property not specified
 Sep 17 02:00:00 fedora kernel: ufshcd-qcom 1d84000.ufshc: ufshcd_populate_vreg: Unable to find vdd-hba-supply regulator, assuming enabled
+Sep 17 02:00:00 fedora kernel: ft8756-spi spi4.0: enter ft8756_spi_probe
+Sep 17 02:00:00 fedora kernel: ft8756-spi spi4.0: Interrupts GPIO: 0xad
+Sep 17 02:00:00 fedora kernel: ft8756-spi spi4.0: supply lab not found, using dummy regulator
 Sep 17 02:00:00 fedora kernel: qcom-pcie 1c00000.pcie: supply vdda not found, using dummy regulator
 Sep 17 02:00:00 fedora kernel: qcom-pcie 1c00000.pcie: supply vddpe-3v3 not found, using dummy regulator
 Sep 17 02:00:00 fedora kernel: qcom-pcie 1c00000.pcie: host bridge /soc@0/pcie@1c00000 ranges:
 Sep 17 02:00:00 fedora kernel: qcom-pcie 1c00000.pcie:       IO 0x0060200000..0x00602fffff -> 0x0000000000
 Sep 17 02:00:00 fedora kernel: qcom-pcie 1c00000.pcie:      MEM 0x0060300000..0x0063ffffff -> 0x0060300000
-Sep 17 02:00:00 fedora kernel: ufshcd-qcom 1d84000.ufshc: freq-table-hz property not specified
-Sep 17 02:00:00 fedora kernel: ufshcd-qcom 1d84000.ufshc: ufshcd_populate_vreg: Unable to find vdd-hba-supply regulator, assuming enabled
-Sep 17 02:00:00 fedora kernel: ufshcd-qcom 1d84000.ufshc: dme-get: attr-id 0x0 failed 0 retries
-Sep 17 02:00:00 fedora kernel: ufshcd-qcom 1d84000.ufshc: hw clk gating enabled failed
 Sep 17 02:00:00 fedora kernel: qcom-pcie 1c00000.pcie: iATU: unroll T, 8 ob, 8 ib, align 4K, limit 1024G
 Sep 17 02:00:00 fedora kernel: qcom-pcie 1c00000.pcie: PCI host bridge to bus 0000:00
 Sep 17 02:00:00 fedora kernel: pci_bus 0000:00: root bus resource [bus 00-ff]
@@ -586,19 +590,22 @@ Sep 17 02:00:00 fedora kernel: pci 0000:00:00.0: BAR 0 [mem 0x60300000-0x60300ff
 Sep 17 02:00:00 fedora kernel: pci 0000:00:00.0: PCI bridge to [bus 01-ff]
 Sep 17 02:00:00 fedora kernel: pci_bus 0000:00: resource 4 [io  0x0000-0xfffff]
 Sep 17 02:00:00 fedora kernel: pci_bus 0000:00: resource 5 [mem 0x60300000-0x63ffffff]
-Sep 17 02:00:00 fedora kernel: pcieport 0000:00:00.0: PME: Signaling with IRQ 196
-Sep 17 02:00:00 fedora kernel: pcieport 0000:00:00.0: AER: enabled with IRQ 196
+Sep 17 02:00:00 fedora kernel: pcieport 0000:00:00.0: PME: Signaling with IRQ 200
+Sep 17 02:00:00 fedora kernel: pcieport 0000:00:00.0: AER: enabled with IRQ 200
+Sep 17 02:00:00 fedora kernel: input: Focaltech FT8756 Touchscreen as /devices/platform/soc@0/9c0000.geniqup/990000.spi/spi_master/spi4/spi4.0/input/input2
+Sep 17 02:00:00 fedora kernel: ft8756-spi spi4.0: FT8756 touchscreen initialized
+Sep 17 02:00:00 fedora kernel: ufshcd-qcom 1d84000.ufshc: freq-table-hz property not specified
+Sep 17 02:00:00 fedora kernel: ufshcd-qcom 1d84000.ufshc: ufshcd_populate_vreg: Unable to find vdd-hba-supply regulator, assuming enabled
+Sep 17 02:00:00 fedora kernel: ufshcd-qcom 1d84000.ufshc: dme-get: attr-id 0x0 failed 0 retries
+Sep 17 02:00:00 fedora kernel: ufshcd-qcom 1d84000.ufshc: hw clk gating enabled failed
 Sep 17 02:00:00 fedora kernel: scsi host0: ufshcd
-Sep 17 02:00:00 fedora kernel: msm_dsi ae94000.dsi: supply refgen not found, using dummy regulator
-Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/dsi@ae94000: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/dsi@ae94000/panel@0
-Sep 17 02:00:00 fedora kernel: /soc@0/display-subsystem@ae00000/dsi@ae94000/panel@0: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/dsi@ae94000
 Sep 17 02:00:00 fedora kernel: scsi 0:0:0:49488: Well-known LUN    MICRON   MT256GARAT4U31   0102 PQ: 0 ANSI: 6
-Sep 17 02:00:00 fedora kernel: input: gpio-keys as /devices/platform/gpio-keys/input/input2
+Sep 17 02:00:00 fedora kernel: input: gpio-keys as /devices/platform/gpio-keys/input/input3
+Sep 17 02:00:00 fedora kernel: scsi 0:0:0:49476: Well-known LUN    MICRON   MT256GARAT4U31   0102 PQ: 0 ANSI: 6
 Sep 17 02:00:00 fedora kernel: clk: Disabling unused clocks
 Sep 17 02:00:00 fedora kernel: PM: genpd: Disabling unused power domains
 Sep 17 02:00:00 fedora kernel: ALSA device list:
 Sep 17 02:00:00 fedora kernel:   No soundcards found.
-Sep 17 02:00:00 fedora kernel: scsi 0:0:0:49476: Well-known LUN    MICRON   MT256GARAT4U31   0102 PQ: 0 ANSI: 6
 Sep 17 02:00:00 fedora kernel: scsi 0:0:0:49456: Well-known LUN    MICRON   MT256GARAT4U31   0102 PQ: 0 ANSI: 6
 Sep 17 02:00:00 fedora kernel: scsi 0:0:0:0: Direct-Access     MICRON   MT256GARAT4U31   0102 PQ: 0 ANSI: 6
 Sep 17 02:00:00 fedora kernel: scsi 0:0:0:1: Direct-Access     MICRON   MT256GARAT4U31   0102 PQ: 0 ANSI: 6
@@ -606,52 +613,52 @@ Sep 17 02:00:00 fedora kernel: scsi 0:0:0:2: Direct-Access     MICRON   MT256GAR
 Sep 17 02:00:00 fedora kernel: scsi 0:0:0:3: Direct-Access     MICRON   MT256GARAT4U31   0102 PQ: 0 ANSI: 6
 Sep 17 02:00:00 fedora kernel: scsi 0:0:0:4: Direct-Access     MICRON   MT256GARAT4U31   0102 PQ: 0 ANSI: 6
 Sep 17 02:00:00 fedora kernel: scsi 0:0:0:5: Direct-Access     MICRON   MT256GARAT4U31   0102 PQ: 0 ANSI: 6
-Sep 17 02:00:00 fedora kernel: sd 0:0:0:1: [sdb] 4096 4096-byte logical blocks: (16.8 MB/16.0 MiB)
 Sep 17 02:00:00 fedora kernel: sd 0:0:0:0: [sda] 61880320 4096-byte logical blocks: (253 GB/236 GiB)
-Sep 17 02:00:00 fedora kernel: sd 0:0:0:1: [sdb] Write Protect is off
-Sep 17 02:00:00 fedora kernel: sd 0:0:0:1: [sdb] Mode Sense: 00 32 00 10
-Sep 17 02:00:00 fedora kernel: sd 0:0:0:2: [sdc] 4096 4096-byte logical blocks: (16.8 MB/16.0 MiB)
-Sep 17 02:00:00 fedora kernel: sd 0:0:0:2: [sdc] Write Protect is off
-Sep 17 02:00:00 fedora kernel: sd 0:0:0:2: [sdc] Mode Sense: 00 32 00 10
-Sep 17 02:00:00 fedora kernel: sd 0:0:0:1: [sdb] Write cache: disabled, read cache: enabled, supports DPO and FUA
 Sep 17 02:00:00 fedora kernel: sd 0:0:0:0: [sda] Write Protect is off
 Sep 17 02:00:00 fedora kernel: sd 0:0:0:0: [sda] Mode Sense: 00 32 00 10
-Sep 17 02:00:00 fedora kernel: sd 0:0:0:1: [sdb] Preferred minimum I/O size 65536 bytes
-Sep 17 02:00:00 fedora kernel: sd 0:0:0:1: [sdb] Optimal transfer size 524288 bytes
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:2: [sdc] 4096 4096-byte logical blocks: (16.8 MB/16.0 MiB)
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:0: [sda] Write cache: enabled, read cache: enabled, supports DPO and FUA
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:2: [sdc] Write Protect is off
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:2: [sdc] Mode Sense: 00 32 00 10
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:1: [sdb] 4096 4096-byte logical blocks: (16.8 MB/16.0 MiB)
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:0: [sda] Preferred minimum I/O size 65536 bytes
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:0: [sda] Optimal transfer size 524288 bytes
 Sep 17 02:00:00 fedora kernel: sd 0:0:0:2: [sdc] Write cache: disabled, read cache: enabled, supports DPO and FUA
-Sep 17 02:00:00 fedora kernel: sd 0:0:0:3: [sdd] 8192 4096-byte logical blocks: (33.6 MB/32.0 MiB)
 Sep 17 02:00:00 fedora kernel: sd 0:0:0:2: [sdc] Preferred minimum I/O size 65536 bytes
 Sep 17 02:00:00 fedora kernel: sd 0:0:0:2: [sdc] Optimal transfer size 524288 bytes
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:1: [sdb] Write Protect is off
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:1: [sdb] Mode Sense: 00 32 00 10
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:3: [sdd] 8192 4096-byte logical blocks: (33.6 MB/32.0 MiB)
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:1: [sdb] Write cache: disabled, read cache: enabled, supports DPO and FUA
 Sep 17 02:00:00 fedora kernel: sd 0:0:0:3: [sdd] Write Protect is off
 Sep 17 02:00:00 fedora kernel: sd 0:0:0:3: [sdd] Mode Sense: 00 32 00 10
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:1: [sdb] Preferred minimum I/O size 65536 bytes
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:1: [sdb] Optimal transfer size 524288 bytes
 Sep 17 02:00:00 fedora kernel: sd 0:0:0:4: [sde] 557056 4096-byte logical blocks: (2.28 GB/2.13 GiB)
 Sep 17 02:00:00 fedora kernel: sd 0:0:0:4: [sde] Write Protect is off
 Sep 17 02:00:00 fedora kernel: sd 0:0:0:4: [sde] Mode Sense: 00 32 00 10
 Sep 17 02:00:00 fedora kernel: sd 0:0:0:5: [sdf] 16384 4096-byte logical blocks: (67.1 MB/64.0 MiB)
-Sep 17 02:00:00 fedora kernel: sd 0:0:0:0: [sda] Write cache: enabled, read cache: enabled, supports DPO and FUA
-Sep 17 02:00:00 fedora kernel: sd 0:0:0:3: [sdd] Write cache: enabled, read cache: enabled, supports DPO and FUA
-Sep 17 02:00:00 fedora kernel: sd 0:0:0:5: [sdf] Write Protect is off
-Sep 17 02:00:00 fedora kernel: sd 0:0:0:5: [sdf] Mode Sense: 00 32 00 10
-Sep 17 02:00:00 fedora kernel: sd 0:0:0:3: [sdd] Preferred minimum I/O size 65536 bytes
-Sep 17 02:00:00 fedora kernel: sd 0:0:0:3: [sdd] Optimal transfer size 524288 bytes
 Sep 17 02:00:00 fedora kernel: sd 0:0:0:4: [sde] Write cache: enabled, read cache: enabled, supports DPO and FUA
-Sep 17 02:00:00 fedora kernel: sd 0:0:0:0: [sda] Preferred minimum I/O size 65536 bytes
-Sep 17 02:00:00 fedora kernel: sd 0:0:0:5: [sdf] Write cache: enabled, read cache: enabled, supports DPO and FUA
-Sep 17 02:00:00 fedora kernel: sd 0:0:0:0: [sda] Optimal transfer size 524288 bytes
 Sep 17 02:00:00 fedora kernel: sd 0:0:0:4: [sde] Preferred minimum I/O size 65536 bytes
 Sep 17 02:00:00 fedora kernel: sd 0:0:0:4: [sde] Optimal transfer size 524288 bytes
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:5: [sdf] Write Protect is off
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:5: [sdf] Mode Sense: 00 32 00 10
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:5: [sdf] Write cache: enabled, read cache: enabled, supports DPO and FUA
 Sep 17 02:00:00 fedora kernel: sd 0:0:0:5: [sdf] Preferred minimum I/O size 65536 bytes
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:3: [sdd] Write cache: enabled, read cache: enabled, supports DPO and FUA
 Sep 17 02:00:00 fedora kernel: sd 0:0:0:5: [sdf] Optimal transfer size 524288 bytes
-Sep 17 02:00:00 fedora kernel:  sdc: sdc1 sdc2
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:3: [sdd] Preferred minimum I/O size 65536 bytes
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:3: [sdd] Optimal transfer size 524288 bytes
 Sep 17 02:00:00 fedora kernel:  sdb: sdb1 sdb2
+Sep 17 02:00:00 fedora kernel:  sdc: sdc1 sdc2
 Sep 17 02:00:00 fedora kernel:  sdd: sdd1 sdd2 sdd3 sdd4
-Sep 17 02:00:00 fedora kernel: sd 0:0:0:2: [sdc] Attached SCSI disk
-Sep 17 02:00:00 fedora kernel: sd 0:0:0:1: [sdb] Attached SCSI disk
-Sep 17 02:00:00 fedora kernel:  sda: sda1 sda2 sda3 sda4 sda5 sda6 sda7 sda8 sda9 sda10 sda11 sda12 sda13 sda14 sda15 sda16 sda17 sda18 sda19 sda20 sda21 sda22 sda23 sda24 sda25 sda26 sda27 sda28 sda29 sda30 sda31 sda32 sda33 sda34 sda35 sda36 sda37
-Sep 17 02:00:00 fedora kernel: sd 0:0:0:3: [sdd] Attached SCSI disk
 Sep 17 02:00:00 fedora kernel:  sdf: sdf1 sdf2 sdf3 sdf4 sdf5 sdf6 sdf7 sdf8 sdf9 sdf10
-Sep 17 02:00:00 fedora kernel: sd 0:0:0:5: [sdf] Attached SCSI disk
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:1: [sdb] Attached SCSI disk
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:2: [sdc] Attached SCSI disk
 Sep 17 02:00:00 fedora kernel:  sde: sde1 sde2 sde3 sde4 sde5 sde6 sde7 sde8 sde9 sde10 sde11 sde12 sde13 sde14 sde15 sde16 sde17 sde18 sde19 sde20 sde21 sde22 sde23 sde24 sde25 sde26 sde27 sde28 sde29 sde30 sde31 sde32 sde33 sde34 sde35 sde36 sde37 sde38 sde39 sde40 sde41 sde42 sde43 sde44 sde45 sde46 sde47 sde48 sde49 sde50 sde51 sde52 sde53 sde54 sde55 sde56 sde57 sde58 sde59 sde60 sde61 sde62 sde63 sde64 sde65 sde66
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:3: [sdd] Attached SCSI disk
+Sep 17 02:00:00 fedora kernel: sd 0:0:0:5: [sdf] Attached SCSI disk
+Sep 17 02:00:00 fedora kernel:  sda: sda1 sda2 sda3 sda4 sda5 sda6 sda7 sda8 sda9 sda10 sda11 sda12 sda13 sda14 sda15 sda16 sda17 sda18 sda19 sda20 sda21 sda22 sda23 sda24 sda25 sda26 sda27 sda28 sda29 sda30 sda31 sda32 sda33 sda34 sda35 sda36 sda37
 Sep 17 02:00:00 fedora kernel: sd 0:0:0:0: [sda] Attached SCSI disk
 Sep 17 02:00:00 fedora kernel: sd 0:0:0:4: [sde] Attached SCSI disk
 Sep 17 02:00:00 fedora kernel: Freeing unused kernel memory: 1920K
@@ -731,125 +738,341 @@ Sep 17 02:00:00 fedora systemd[1]: Starting systemd-network-generator.service - 
 Sep 17 02:00:00 fedora systemd[1]: systemd-pcrmachine.service - TPM PCR Machine ID Measurement was skipped because of an unmet condition check (ConditionSecurity=measured-uki).
 Sep 17 02:00:00 fedora systemd[1]: Starting systemd-remount-fs.service - Remount Root and Kernel File Systems...
 Sep 17 02:00:00 fedora systemd[1]: systemd-tpm2-setup-early.service - Early TPM SRK Setup was skipped because of an unmet condition check (ConditionSecurity=measured-uki).
-Sep 17 02:00:00 fedora kernel: fuse: init (API version 7.45)
 Sep 17 02:00:00 fedora systemd[1]: Starting systemd-repart.service - Repartition Root Disk...
 Sep 17 02:00:00 fedora systemd[1]: Starting systemd-udev-load-credentials.service - Load udev Rules from Credentials...
+Sep 17 02:00:00 fedora kernel: fuse: init (API version 7.45)
 Sep 17 02:00:00 fedora systemd[1]: Starting systemd-udev-trigger.service - Coldplug All udev Devices...
 Sep 17 02:00:00 fedora systemd[1]: Starting systemd-vconsole-setup.service - Virtual Console Setup...
 Sep 17 02:00:00 fedora systemd[1]: Mounted dev-hugepages.mount - Huge Pages File System.
 Sep 17 02:00:00 fedora systemd[1]: Mounted dev-mqueue.mount - POSIX Message Queue File System.
 Sep 17 02:00:00 fedora systemd[1]: Mounted sys-kernel-debug.mount - Kernel Debug File System.
-Sep 17 02:00:00 fedora systemd[1]: Finished kmod-static-nodes.service - Create List of Static Device Nodes.
-Sep 17 02:00:00 fedora systemd[1]: Mounted sys-kernel-config.mount - Kernel Configuration File System.
 Sep 17 02:00:00 fedora systemd[1]: modprobe@dm_multipath.service: Deactivated successfully.
 Sep 17 02:00:00 fedora systemd[1]: Finished modprobe@dm_multipath.service - Load Kernel Module dm_multipath.
 Sep 17 02:00:00 fedora systemd[1]: modprobe@fuse.service: Deactivated successfully.
 Sep 17 02:00:00 fedora systemd[1]: Finished modprobe@fuse.service - Load Kernel Module fuse.
 Sep 17 02:00:00 fedora systemd[1]: Mounting sys-fs-fuse-connections.mount - FUSE Control File System...
+Sep 17 02:00:00 fedora systemd[1]: Mounted sys-kernel-config.mount - Kernel Configuration File System.
+Sep 17 02:00:00 fedora systemd[1]: Finished kmod-static-nodes.service - Create List of Static Device Nodes.
 Sep 17 02:00:00 fedora systemd[1]: Starting systemd-tmpfiles-setup-dev-early.service - Create Static Device Nodes in /dev gracefully...
-Sep 17 02:00:00 fedora systemd[1]: Finished systemd-network-generator.service - Generate network units from Kernel command line.
 Sep 17 02:00:00 fedora systemd[1]: Mounted sys-fs-fuse-connections.mount - FUSE Control File System.
-Sep 17 02:00:00 fedora systemd-journald[274]: Collecting audit messages is enabled.
+Sep 17 02:00:00 fedora systemd-journald[290]: Collecting audit messages is enabled.
+Sep 17 02:00:00 fedora systemd[1]: Finished systemd-network-generator.service - Generate network units from Kernel command line.
+Sep 17 02:00:00 fedora kernel: audit: type=1130 audit(1758067200.456:2): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-network-generator comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+Sep 17 02:00:00 fedora systemd[1]: Finished systemd-modules-load.service - Load Kernel Modules.
+Sep 17 02:00:00 fedora kernel: audit: type=1130 audit(1758067200.456:3): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-modules-load comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
 Sep 17 02:00:00 fedora kernel: EXT4-fs (sda37): re-mounted 9a466b26-6149-41e7-986d-84227cab0f3d.
+Sep 17 02:00:00 fedora systemd[1]: Starting systemd-sysctl.service - Apply Kernel Variables...
 Sep 17 02:00:00 fedora systemd[1]: Finished systemd-remount-fs.service - Remount Root and Kernel File Systems.
-Sep 17 02:00:00 fedora kernel: audit: type=1130 audit(1758067200.403:2): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-remount-fs comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+Sep 17 02:00:00 fedora kernel: audit: type=1130 audit(1758067200.463:4): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-remount-fs comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
 Sep 17 02:00:00 fedora systemd[1]: multipathd.service - Device-Mapper Multipath Device Controller was skipped because of an unmet condition check (ConditionPathExists=/etc/multipath.conf).
 Sep 17 02:00:00 fedora systemd[1]: systemd-hwdb-update.service - Rebuild Hardware Database was skipped because of an unmet condition check (ConditionNeedsUpdate=/etc).
 Sep 17 02:00:00 fedora systemd[1]: systemd-pstore.service - Platform Persistent Storage Archival was skipped because of an unmet condition check (ConditionDirectoryNotEmpty=/sys/fs/pstore).
 Sep 17 02:00:00 fedora systemd[1]: Starting systemd-random-seed.service - Load/Save OS Random Seed...
 Sep 17 02:00:00 fedora systemd[1]: systemd-tpm2-setup.service - TPM SRK Setup was skipped because of an unmet condition check (ConditionSecurity=measured-uki).
-Sep 17 02:00:00 fedora systemd[1]: Finished systemd-modules-load.service - Load Kernel Modules.
-Sep 17 02:00:00 fedora kernel: audit: type=1130 audit(1758067200.406:3): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-modules-load comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
-Sep 17 02:00:00 fedora systemd[1]: systemd-repart.service: Main process exited, code=exited, status=1/FAILURE
-Sep 17 02:00:00 fedora systemd[1]: systemd-repart.service: Failed with result 'exit-code'.
-Sep 17 02:00:00 fedora systemd[1]: Failed to start systemd-repart.service - Repartition Root Disk.
-Sep 17 02:00:00 fedora kernel: audit: type=1130 audit(1758067200.406:4): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-repart comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=failed'
-Sep 17 02:00:00 fedora systemd[1]: Starting systemd-sysctl.service - Apply Kernel Variables...
 Sep 17 02:00:00 fedora systemd[1]: Finished systemd-udev-load-credentials.service - Load udev Rules from Credentials.
-Sep 17 02:00:00 fedora kernel: audit: type=1130 audit(1758067200.410:5): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-udev-load-credentials comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
-Sep 17 02:00:00 fedora systemd[1]: Finished systemd-random-seed.service - Load/Save OS Random Seed.
-Sep 17 02:00:00 fedora kernel: audit: type=1130 audit(1758067200.422:6): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-random-seed comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
-Sep 17 02:00:00 fedora systemd[1]: Finished systemd-sysctl.service - Apply Kernel Variables.
-Sep 17 02:00:00 fedora kernel: audit: type=1130 audit(1758067200.422:7): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-sysctl comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+Sep 17 02:00:00 fedora kernel: audit: type=1130 audit(1758067200.479:5): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-udev-load-credentials comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
 Sep 17 02:00:00 fedora systemd[1]: Started systemd-journald.service - Journal Service.
-Sep 17 02:00:00 fedora kernel: audit: type=1130 audit(1758067200.423:8): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-journald comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
-Sep 17 02:00:00 fedora kernel: audit: type=1334 audit(1758067200.431:9): prog-id=16 op=LOAD
-Sep 17 02:00:00 fedora kernel: audit: type=1334 audit(1758067200.431:10): prog-id=17 op=LOAD
-Sep 17 02:00:00 fedora systemd-journald[274]: Received client request to flush runtime journal.
-Sep 17 02:00:00 fedora systemd-journald[274]: File /var/log/journal/c22bffdb35464dfa94e8418be11812d7/system.journal corrupted or uncleanly shut down, renaming and replacing.
-Sep 17 02:00:00 fedora kernel: zram0: detected capacity change from 0 to 15347712
-Sep 17 02:00:01 fedora kernel: Adding 7673852k swap on /dev/zram0.  Priority:100 extents:1 across:7673852k SSDsc
+Sep 17 02:00:00 fedora kernel: audit: type=1130 audit(1758067200.483:6): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-journald comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+Sep 17 02:00:00 fedora kernel: audit: type=1130 audit(1758067200.486:7): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-sysctl comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+Sep 17 02:00:00 fedora kernel: audit: type=1130 audit(1758067200.495:8): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=lvm2-monitor comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+Sep 17 02:00:00 fedora systemd-journald[290]: Received client request to flush runtime journal.
+Sep 17 02:00:00 fedora kernel: audit: type=1130 audit(1758067200.501:9): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-random-seed comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+Sep 17 02:00:00 fedora kernel: audit: type=1130 audit(1758067200.501:10): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-repart comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=failed'
+Sep 17 02:00:00 fedora systemd-journald[290]: /var/log/journal/c22bffdb35464dfa94e8418be11812d7/system.journal: Realtime clock jumped backwards relative to last journal entry, rotating.
+Sep 17 02:00:00 fedora systemd-journald[290]: Rotating system journal.
+Sep 17 02:00:01 fedora kernel: zram0: detected capacity change from 0 to 15347712
 Sep 17 02:00:01 fedora kernel: cpu cpu0: EM: created perf domain
 Sep 17 02:00:01 fedora kernel: cpu cpu4: EM: created perf domain
-Sep 17 02:00:01 fedora kernel:  cs_system_cfg: CoreSight Configuration manager initialised
-Sep 17 02:00:01 fedora kernel: cpu cpu7: EM: created perf domain
-Sep 17 02:00:01 fedora kernel: coresight stm0: STM32 initialized
 Sep 17 02:00:01 fedora kernel: NET: Registered PF_QIPCRTR protocol family
+Sep 17 02:00:01 fedora kernel:  cs_system_cfg: CoreSight Configuration manager initialised
 Sep 17 02:00:01 fedora kernel: remoteproc remoteproc0: slpi is available
 Sep 17 02:00:01 fedora kernel: remoteproc remoteproc1: cdsp is available
-Sep 17 02:00:01 fedora kernel: remoteproc remoteproc2: adsp is available
-Sep 17 02:00:01 fedora kernel: remoteproc remoteproc1: powering up cdsp
-Sep 17 02:00:01 fedora kernel: remoteproc remoteproc1: Booting fw image qcom/sm8250/xiaomi/alioth/cdsp.mbn, size 5818132
 Sep 17 02:00:01 fedora kernel: remoteproc remoteproc0: powering up slpi
 Sep 17 02:00:01 fedora kernel: remoteproc remoteproc0: Booting fw image qcom/sm8250/xiaomi/alioth/slpi.mbn, size 7869796
+Sep 17 02:00:01 fedora kernel: coresight stm0: STM32 initialized
+Sep 17 02:00:01 fedora kernel: cpu cpu7: EM: created perf domain
+Sep 17 02:00:01 fedora kernel: remoteproc remoteproc2: adsp is available
+Sep 17 02:00:01 fedora kernel: pci 0000:01:00.0: [17cb:1101] type 00 class 0xff0000 PCIe Endpoint
+Sep 17 02:00:01 fedora kernel: pci 0000:01:00.0: BAR 0 [mem 0x00000000-0x000fffff 64bit]
+Sep 17 02:00:01 fedora kernel: pci 0000:01:00.0: PME# supported from D0 D3hot D3cold
+Sep 17 02:00:01 fedora kernel: pci 0000:01:00.0: 4.000 Gb/s available PCIe bandwidth, limited by 5.0 GT/s PCIe x1 link at 0000:00:00.0 (capable of 7.876 Gb/s with 8.0 GT/s PCIe x1 link)
+Sep 17 02:00:01 fedora kernel: remoteproc remoteproc1: powering up cdsp
+Sep 17 02:00:01 fedora kernel: remoteproc remoteproc1: Booting fw image qcom/sm8250/xiaomi/alioth/cdsp.mbn, size 5818132
 Sep 17 02:00:01 fedora kernel: remoteproc remoteproc2: powering up adsp
 Sep 17 02:00:01 fedora kernel: remoteproc remoteproc2: Booting fw image qcom/sm8250/xiaomi/alioth/adsp.mbn, size 21094524
-Sep 17 02:00:01 fedora kernel: Unable to handle kernel paging request at virtual address 0000000088c00000
-Sep 17 02:00:01 fedora kernel: Mem abort info:
-Sep 17 02:00:01 fedora kernel:   ESR = 0x0000000096000044
-Sep 17 02:00:01 fedora kernel:   EC = 0x25: DABT (current EL), IL = 32 bits
-Sep 17 02:00:01 fedora kernel:   SET = 0, FnV = 0
-Sep 17 02:00:01 fedora kernel:   EA = 0, S1PTW = 0
-Sep 17 02:00:01 fedora kernel:   FSC = 0x04: level 0 translation fault
-Sep 17 02:00:01 fedora kernel: Data abort info:
-Sep 17 02:00:01 fedora kernel:   ISV = 0, ISS = 0x00000044, ISS2 = 0x00000000
-Sep 17 02:00:01 fedora kernel:   CM = 0, WnR = 1, TnD = 0, TagAccess = 0
-Sep 17 02:00:01 fedora kernel:   GCS = 0, Overlay = 0, DirtyBit = 0, Xs = 0
-Sep 17 02:00:01 fedora kernel: user pgtable: 4k pages, 48-bit VAs, pgdp=000000010227d000
-Sep 17 02:00:01 fedora kernel: [0000000088c00000] pgd=0000000000000000, p4d=0000000000000000
-Sep 17 02:00:01 fedora kernel: Internal error: Oops: 0000000096000044 [#1]  SMP
-Sep 17 02:00:01 fedora kernel: Modules linked in: i2c_qcom_cci(+) mc(+) qcom_rng qrtr coresight_stm stm_core coresight_tmc coresight_replicator coresight_funnel coresight qcom_q6v5_pas qcom_pil_info pci_pwrctrl_pwrseq pwrseq_qcom_wcn qcom_q6v5 qcom_wdt qcom_sysmon qcom_common icc_osm_l3 qcom_glink_smem pwrseq_core binfmt_misc fuse nfnetlink zram zsmalloc ipv6
-Sep 17 02:00:01 fedora kernel: CPU: 7 UID: 0 PID: 53 Comm: kworker/7:0 Not tainted 6.18.8-sm8250+ #12 PREEMPT 
-Sep 17 02:00:01 fedora kernel: Hardware name: Xiaomi Inc Poco F3/Poco F3, BIOS 3.0.8 Jun 27 2025
-Sep 17 02:00:01 fedora kernel: Workqueue: events request_firmware_work_func
-Sep 17 02:00:01 fedora kernel: pstate: 20400005 (nzCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-Sep 17 02:00:01 fedora kernel: pc : __pi_memcpy_generic+0x128/0x22c
-Sep 17 02:00:01 fedora kernel: lr : __qcom_mdt_load.isra.0+0x20c/0x2c0
-Sep 17 02:00:01 fedora kernel: sp : ffff800082253bc0
-Sep 17 02:00:01 fedora kernel: x29: ffff800082253bc0 x28: 0000000088c00000 x27: 0000000000000000
-Sep 17 02:00:01 fedora kernel: x26: 0000000000000002 x25: 0000000088000000 x24: 0000000002000000
-Sep 17 02:00:01 fedora kernel: x23: ffff800089d81000 x22: ffff0000937164c0 x21: ffff00008006f658
-Sep 17 02:00:01 fedora kernel: x20: 0000000088c00000 x19: ffff800089d81074 x18: ffff80017d504000
-Sep 17 02:00:01 fedora kernel: x17: ffff00008001abc8 x16: ffff0000853fb2f8 x15: ffff800081b6d698
-Sep 17 02:00:01 fedora kernel: x14: 0000000000000000 x13: 5800c0005800c000 x12: 5800c0005800c00e
-Sep 17 02:00:01 fedora kernel: x11: 0000000002000000 x10: 0000000000609000 x9 : 0000000000000001
-Sep 17 02:00:01 fedora kernel: x8 : 0000000002f00000 x7 : 5800cbf65800c000 x6 : 5800c0005800c000
-Sep 17 02:00:01 fedora kernel: x5 : 0000000088c142b8 x4 : ffff800089d982b8 x3 : 0000000088c00000
-Sep 17 02:00:01 fedora kernel: x2 : 00000000000142b8 x1 : ffff800089d84000 x0 : 0000000088c00000
-Sep 17 02:00:01 fedora kernel: Call trace:
-Sep 17 02:00:01 fedora kernel:  __pi_memcpy_generic+0x128/0x22c (P)
-Sep 17 02:00:01 fedora kernel:  qcom_mdt_load_no_init+0x20/0x2c
-Sep 17 02:00:01 fedora kernel:  qcom_pas_start+0x2c8/0x3a0 [qcom_q6v5_pas]
-Sep 17 02:00:01 fedora kernel:  rproc_start+0xc0/0x164
-Sep 17 02:00:01 fedora kernel:  rproc_boot+0x4b0/0x5a0
-Sep 17 02:00:01 fedora kernel:  rproc_auto_boot_callback+0x1c/0x40
-Sep 17 02:00:01 fedora kernel:  request_firmware_work_func+0x54/0xa4
-Sep 17 02:00:01 fedora kernel:  process_one_work+0x150/0x29c
-Sep 17 02:00:01 fedora kernel:  worker_thread+0x2d0/0x3ec
-Sep 17 02:00:01 fedora kernel:  kthread+0x12c/0x1f0
-Sep 17 02:00:01 fedora kernel:  ret_from_fork+0x10/0x20
-Sep 17 02:00:01 fedora kernel: Code: 927cec03 cb0e0021 8b0e0042 a9411c26 (a900340c) 
-Sep 17 02:00:01 fedora kernel: ---[ end trace 0000000000000000 ]---
-Sep 17 02:00:01 fedora kernel: Unable to handle kernel paging request at virtual address 0000000087800000
-Sep 17 02:00:01 fedora kernel: Mem abort info:
-Sep 17 02:00:01 fedora kernel:   ESR = 0x0000000096000044
-Sep 17 02:00:01 fedora kernel:   EC = 0x25: DABT (current EL), IL = 32 bits
-Sep 17 02:00:01 fedora kernel:   SET = 0, FnV = 0
-Sep 17 02:00:01 fedora kernel:   EA = 0, S1PTW = 0
-Sep 17 02:00:01 fedora kernel:   FSC = 0x04: level 0 translation fault
-Sep 17 02:00:01 fedora kernel: Data abort info:
-Sep 17 02:00:01 fedora kernel:   ISV = 0, ISS = 0x00000044, ISS2 = 0x00000000
-Sep 17 02:00:01 fedora kernel:   CM = 0, WnR = 1, TnD = 0, TagAccess = 0
-Sep 17 02:00:01 fedora kernel:   GCS = 0, Overlay = 0, DirtyBit = 0, Xs = 0
-Sep 17 02:00:01 fedora kernel: user pgtable: 4k pages, 48-bit VAs, pgdp=0000000100fe4000
-Sep 17 02:00:01 fedora kernel: [0000000087800000] pgd=0000000000000000, p4d=0000000000000000
+Sep 17 02:00:01 fedora kernel: pci 0000:01:00.0: Adding to iommu group 14
+Sep 17 02:00:01 fedora kernel: pci 0000:01:00.0: ASPM: default states L0s L1
+Sep 17 02:00:01 fedora kernel: pcieport 0000:00:00.0: bridge window [mem 0x60400000-0x604fffff]: assigned
+Sep 17 02:00:01 fedora kernel: pci 0000:01:00.0: BAR 0 [mem 0x60400000-0x604fffff 64bit]: assigned
+Sep 17 02:00:01 fedora kernel: mc: Linux media interface: v0.10
+Sep 17 02:00:01 fedora kernel: ir-spi spi2.0: supply irda_regulator not found, using dummy regulator
+Sep 17 02:00:01 fedora kernel: rc rc0: IR SPI as /devices/platform/soc@0/9c0000.geniqup/988000.spi/spi_master/spi2/spi2.0/rc/rc0
+Sep 17 02:00:01 fedora kernel: rc rc0: lirc_dev: driver ir-spi registered at minor = 0, no receiver, raw IR transmitter
+Sep 17 02:00:01 fedora kernel: /soc@0/display-subsystem@ae00000/dsi@ae94000: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/dsi@ae94000/panel@0
+Sep 17 02:00:01 fedora kernel: videodev: Linux video capture interface: v2.00
+Sep 17 02:00:01 fedora kernel: /soc@0/display-subsystem@ae00000/dsi@ae94000/panel@0: Fixed dependency cycle(s) with /soc@0/display-subsystem@ae00000/dsi@ae94000
+Sep 17 02:00:01 fedora kernel: nfc: nfc_init: NFC Core ver 0.1
+Sep 17 02:00:01 fedora kernel: NET: Registered PF_NFC protocol family
+Sep 17 02:00:01 fedora kernel: qcom-venus aa00000.video-codec: non legacy binding
+Sep 17 02:00:01 fedora kernel: /soc@0/camss@ac6a000: Fixed dependency cycle(s) with /soc@0/cci@ac4f000/i2c-bus@0/imx582@10
+Sep 17 02:00:01 fedora kernel: cs35l41 3-0040: cannot find GPIO chip gpiolib_shared.proxy.4, deferring
+Sep 17 02:00:01 fedora kernel: /soc@0/cci@ac4f000/i2c-bus@0/imx582@10: Fixed dependency cycle(s) with /soc@0/camss@ac6a000
+Sep 17 02:00:01 fedora kernel: remoteproc remoteproc1: remote processor cdsp is now up
+Sep 17 02:00:01 fedora kernel: /soc@0/camss@ac6a000: Fixed dependency cycle(s) with /soc@0/cci@ac4f000/i2c-bus@1/s5k5e9@2d
+Sep 17 02:00:01 fedora kernel: /soc@0/cci@ac4f000/i2c-bus@1/s5k5e9@2d: Fixed dependency cycle(s) with /soc@0/camss@ac6a000
+Sep 17 02:00:01 fedora kernel: cs35l41 3-0041: cannot find GPIO chip gpiolib_shared.proxy.6, deferring
+Sep 17 02:00:01 fedora kernel: cs35l41 3-0040: cannot find GPIO chip gpiolib_shared.proxy.4, deferring
+Sep 17 02:00:01 fedora kernel: /soc@0/camss@ac6a000: Fixed dependency cycle(s) with /soc@0/cci@ac50000/i2c-bus@0/imx355@1a
+Sep 17 02:00:01 fedora kernel: /soc@0/cci@ac50000/i2c-bus@0/imx355@1a: Fixed dependency cycle(s) with /soc@0/camss@ac6a000
+Sep 17 02:00:01 fedora kernel: cs35l41 3-0041: cannot find GPIO chip gpiolib_shared.proxy.6, deferring
+Sep 17 02:00:01 fedora kernel: qcom,fastrpc 8300000.remoteproc:glink-edge.fastrpcglink-apps-dsp.-1.-1: no reserved DMA memory for FASTRPC
+Sep 17 02:00:01 fedora kernel: rtc-pm8xxx c440000.spmi:pmic@0:rtc@6000: registered as rtc1
+Sep 17 02:00:01 fedora kernel: cs35l41 3-0040: cannot find GPIO chip gpiolib_shared.proxy.4, deferring
+Sep 17 02:00:01 fedora kernel: cs35l41 3-0041: cannot find GPIO chip gpiolib_shared.proxy.6, deferring
+Sep 17 02:00:01 fedora kernel: platform 8300000.remoteproc:glink-edge:fastrpc:compute-cb@1: Adding to iommu group 15
+Sep 17 02:00:01 fedora kernel: platform 8300000.remoteproc:glink-edge:fastrpc:compute-cb@2: Adding to iommu group 16
+Sep 17 02:00:01 fedora kernel: cs35l41 3-0040: cannot find GPIO chip gpiolib_shared.proxy.4, deferring
+Sep 17 02:00:01 fedora kernel: platform 8300000.remoteproc:glink-edge:fastrpc:compute-cb@3: Adding to iommu group 17
+Sep 17 02:00:01 fedora kernel: platform 8300000.remoteproc:glink-edge:fastrpc:compute-cb@4: Adding to iommu group 18
+Sep 17 02:00:01 fedora kernel: cs35l41 3-0041: cannot find GPIO chip gpiolib_shared.proxy.6, deferring
+Sep 17 02:00:01 fedora kernel: platform 8300000.remoteproc:glink-edge:fastrpc:compute-cb@5: Adding to iommu group 19
+Sep 17 02:00:01 fedora kernel: cs35l41 3-0040: cannot find GPIO chip gpiolib_shared.proxy.4, deferring
+Sep 17 02:00:01 fedora kernel: platform 8300000.remoteproc:glink-edge:fastrpc:compute-cb@6: Adding to iommu group 20
+Sep 17 02:00:01 fedora kernel: platform 8300000.remoteproc:glink-edge:fastrpc:compute-cb@7: Adding to iommu group 21
+Sep 17 02:00:01 fedora kernel: cs35l41 3-0041: cannot find GPIO chip gpiolib_shared.proxy.6, deferring
+Sep 17 02:00:01 fedora kernel: platform 8300000.remoteproc:glink-edge:fastrpc:compute-cb@8: Adding to iommu group 22
+Sep 17 02:00:01 fedora kernel: cs35l41 3-0040: cannot find GPIO chip gpiolib_shared.proxy.4, deferring
+Sep 17 02:00:01 fedora kernel: remoteproc remoteproc0: remote processor slpi is now up
+Sep 17 02:00:01 fedora kernel: qcom,fastrpc 5c00000.remoteproc:glink-edge.fastrpcglink-apps-dsp.-1.-1: no reserved DMA memory for FASTRPC
+Sep 17 02:00:01 fedora kernel: cs35l41 3-0041: cannot find GPIO chip gpiolib_shared.proxy.6, deferring
+Sep 17 02:00:01 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@1: Adding to iommu group 23
+Sep 17 02:00:01 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@2: Adding to iommu group 24
+Sep 17 02:00:01 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@3: Adding to iommu group 25
+Sep 17 02:00:01 fedora kernel: cs35l41 3-0040: Subsystem ID not found
+Sep 17 02:00:01 fedora kernel: cs35l41 3-0040: Cirrus Logic CS35L41 (35a40), Revision: B2
+Sep 17 02:00:01 fedora kernel: remoteproc remoteproc2: remote processor adsp is now up
+Sep 17 02:00:01 fedora kernel: qcom,fastrpc 17300000.remoteproc:glink-edge.fastrpcglink-apps-dsp.-1.-1: no reserved DMA memory for FASTRPC
+Sep 17 02:00:01 fedora kernel: platform 17300000.remoteproc:glink-edge:fastrpc:compute-cb@3: Adding to iommu group 26
+Sep 17 02:00:01 fedora kernel: platform 17300000.remoteproc:glink-edge:fastrpc:compute-cb@4: Adding to iommu group 27
+Sep 17 02:00:01 fedora kernel: Bluetooth: Core ver 2.22
+Sep 17 02:00:01 fedora kernel: NET: Registered PF_BLUETOOTH protocol family
+Sep 17 02:00:01 fedora kernel: Bluetooth: HCI device and connection manager initialized
+Sep 17 02:00:01 fedora kernel: Bluetooth: HCI socket layer initialized
+Sep 17 02:00:01 fedora kernel: Bluetooth: L2CAP socket layer initialized
+Sep 17 02:00:01 fedora kernel: Bluetooth: SCO socket layer initialized
+Sep 17 02:00:01 fedora kernel: platform 17300000.remoteproc:glink-edge:fastrpc:compute-cb@5: Adding to iommu group 28
+Sep 17 02:00:01 fedora kernel: Bluetooth: HCI UART driver ver 2.3
+Sep 17 02:00:01 fedora kernel: Bluetooth: HCI UART protocol H4 registered
+Sep 17 02:00:01 fedora kernel: Bluetooth: HCI UART protocol LL registered
+Sep 17 02:00:01 fedora kernel: Bluetooth: HCI UART protocol Broadcom registered
+Sep 17 02:00:01 fedora kernel: Bluetooth: HCI UART protocol QCA registered
+Sep 17 02:00:01 fedora kernel: Bluetooth: HCI UART protocol Marvell registered
+Sep 17 02:00:01 fedora kernel: Bluetooth: hci0: setting up ROME/QCA6390
+Sep 17 02:00:01 fedora kernel: cs35l41 3-0041: Subsystem ID not found
+Sep 17 02:00:01 fedora kernel: cs35l41 3-0041: Cirrus Logic CS35L41 (35a40), Revision: B2
+Sep 17 02:00:01 fedora kernel: Bluetooth: Received HCI_IBS_WAKE_ACK in tx state 0
+Sep 17 02:00:02 fedora kernel: qcom,apr 17300000.remoteproc:glink-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:3
+Sep 17 02:00:02 fedora kernel: qcom,apr 17300000.remoteproc:glink-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:4
+Sep 17 02:00:02 fedora kernel: qcom,apr 17300000.remoteproc:glink-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:7
+Sep 17 02:00:02 fedora kernel: platform 17300000.remoteproc:glink-edge:apr:service@7:dais: Adding to iommu group 29
+Sep 17 02:00:02 fedora kernel: qcom,apr 17300000.remoteproc:glink-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:8
+Sep 17 02:00:02 fedora kernel: cfg80211: Loading compiled-in X.509 certificates for regulatory database
+Sep 17 02:00:02 fedora kernel: input: xiaomi-alioth Headset Jack as /devices/platform/sound/sound/card0/input4
+Sep 17 02:00:02 fedora kernel: Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+Sep 17 02:00:02 fedora kernel: Loaded X.509 cert 'wens: 61c038651aabdcf94bd0ac7ff06c7248db18c600'
+Sep 17 02:00:02 fedora kernel: Bluetooth: hci0: QCA Product ID   :0x00000010
+Sep 17 02:00:02 fedora kernel: Bluetooth: hci0: QCA SOC Version  :0x400a0200
+Sep 17 02:00:02 fedora kernel: Bluetooth: hci0: QCA ROM Version  :0x00000200
+Sep 17 02:00:02 fedora kernel: Bluetooth: hci0: QCA Patch Version:0x00000d2b
+Sep 17 02:00:02 fedora kernel: Bluetooth: hci0: QCA controller version 0x02000200
+Sep 17 02:00:02 fedora kernel: Bluetooth: hci0: QCA Downloading qca/htbtfw20.tlv
+Sep 17 02:00:02 fedora kernel: ath11k_pci 0000:01:00.0: BAR 0 [mem 0x60400000-0x604fffff 64bit]: assigned
+Sep 17 02:00:02 fedora kernel: ath11k_pci 0000:01:00.0: enabling device (0000 -> 0002)
+Sep 17 02:00:02 fedora kernel: ath11k_pci 0000:01:00.0: MSI vectors: 32
+Sep 17 02:00:02 fedora kernel: ath11k_pci 0000:01:00.0: qca6390 hw2.0
+Sep 17 02:00:02 fedora kernel: mhi mhi0: Requested to power ON
+Sep 17 02:00:02 fedora kernel: mhi mhi0: Power on setup success
+Sep 17 02:00:02 fedora kernel: Adding 7673852k swap on /dev/zram0.  Priority:100 extents:1 across:7673852k SSDsc
+Sep 17 02:00:02 fedora kernel: mhi mhi0: Wait for device to enter SBL or Mission mode
+Sep 17 02:00:02 fedora kernel: ath11k_pci 0000:01:00.0: chip_id 0x0 chip_family 0xb board_id 0xff soc_id 0xffffffff
+Sep 17 02:00:02 fedora kernel: ath11k_pci 0000:01:00.0: fw_version 0x10121492 fw_build_timestamp 2021-11-04 11:23 fw_build_id 
+Sep 17 02:00:02 fedora kernel: ath11k_pci 0000:01:00.0 wlp1s0: renamed from wlan0
+Sep 17 02:00:03 fedora kernel: Bluetooth: hci0: QCA Downloading qca/htnv20.bin
+Sep 17 02:00:03 fedora kernel: qcom,pmic-typec c440000.spmi:pmic@2:typec@1500: isr: tx_sig
+Sep 17 02:00:03 fedora kernel: Bluetooth: hci0: QCA setup on UART is completed
+Sep 17 02:00:04 fedora kernel: qcom,pmic-typec c440000.spmi:pmic@2:typec@1500: isr: tx_sig
+Sep 17 02:00:09 fedora kernel: wlp1s0: authenticate with c0:4a:00:b5:d3:ba (local address=3e:e2:7c:c3:16:35)
+Sep 17 02:00:09 fedora kernel: wlp1s0: send auth to c0:4a:00:b5:d3:ba (try 1/3)
+Sep 17 02:00:09 fedora kernel: wlp1s0: authenticated
+Sep 17 02:00:09 fedora kernel: wlp1s0: associate with c0:4a:00:b5:d3:ba (try 1/3)
+Sep 17 02:00:09 fedora kernel: wlp1s0: RX AssocResp from c0:4a:00:b5:d3:ba (capab=0x411 status=0 aid=2)
+Sep 17 02:00:09 fedora kernel: wlp1s0: associated
+Sep 17 02:00:09 fedora kernel: wlp1s0: Limiting TX power to 23 (23 - 0) dBm as advertised by c0:4a:00:b5:d3:ba
+Sep 17 02:00:12 fedora kernel: mipi-dsi ae94000.dsi.0: deferred probe pending: mipi-dsi: wait for supplier /soc@0/spmi@c440000/pmic@5/leds@d800/backlight
+Sep 17 02:00:12 fedora kernel: qnoc-sm8250 163d000.interconnect: sync_state() pending due to 1dfa000.crypto
+Sep 17 02:00:12 fedora kernel: qnoc-sm8250 1700000.interconnect: sync_state() pending due to 1dfa000.crypto
+Sep 17 02:00:12 fedora kernel: gcc-sm8250 100000.clock-controller: sync_state() pending due to 3d6a000.gmu
+Sep 17 02:00:12 fedora kernel: sm8250-gpucc 3d90000.clock-controller: sync_state() pending due to 3d6a000.gmu
+Sep 17 02:00:12 fedora kernel: cam_cc-sm8250 ad00000.clock-controller: sync_state() pending due to 20-0010
+Sep 17 02:00:12 fedora kernel: cam_cc-sm8250 ad00000.clock-controller: sync_state() pending due to 21-002d
+Sep 17 02:00:12 fedora kernel: cam_cc-sm8250 ad00000.clock-controller: sync_state() pending due to 22-001a
+Feb 08 20:54:54 fedora kernel: qmi_decode_string_elem: String len 128 >= Max Len 65
+Feb 08 20:54:54 fedora kernel: failed to decode incoming message
+Feb 08 20:54:54 fedora kernel: qcom_q6v5_pas 5c00000.remoteproc: fatal error received: err_qdi.c:1038:EF:sensor_process:0x1:TMR_CLNT_1:0x88:dog_virtual_user.c:240:USER-PD DOG detects stalled initialization, triage with IMAGE OWNER
+Feb 08 20:54:54 fedora kernel: remoteproc remoteproc0: crash detected in slpi: type fatal error
+Feb 08 20:54:54 fedora kernel: remoteproc remoteproc0: handling crash #1 in slpi
+Feb 08 20:54:54 fedora kernel: remoteproc remoteproc0: recovering slpi
+Feb 08 20:54:54 fedora kernel: remoteproc remoteproc0: stopped remote processor slpi
+Feb 08 20:54:54 fedora kernel: remoteproc remoteproc0: remote processor slpi is now up
+Feb 08 20:54:54 fedora kernel: qcom,fastrpc 5c00000.remoteproc:glink-edge.fastrpcglink-apps-dsp.-1.-1: no reserved DMA memory for FASTRPC
+Feb 08 20:54:54 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@1: Adding to iommu group 23
+Feb 08 20:54:54 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@2: Adding to iommu group 24
+Feb 08 20:54:54 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@3: Adding to iommu group 25
+Feb 08 20:55:34 fedora kernel: qmi_decode_string_elem: String len 128 >= Max Len 65
+Feb 08 20:55:34 fedora kernel: failed to decode incoming message
+Feb 08 20:55:34 fedora kernel: qcom_q6v5_pas 5c00000.remoteproc: fatal error received: err_qdi.c:1038:EF:sensor_process:0x1:TMR_CLNT_1:0x87:dog_virtual_user.c:240:USER-PD DOG detects stalled initialization, triage with IMAGE OWNER
+Feb 08 20:55:34 fedora kernel: remoteproc remoteproc0: crash detected in slpi: type fatal error
+Feb 08 20:55:34 fedora kernel: remoteproc remoteproc0: handling crash #2 in slpi
+Feb 08 20:55:34 fedora kernel: remoteproc remoteproc0: recovering slpi
+Feb 08 20:55:34 fedora kernel: remoteproc remoteproc0: stopped remote processor slpi
+Feb 08 20:55:35 fedora kernel: remoteproc remoteproc0: remote processor slpi is now up
+Feb 08 20:55:35 fedora kernel: qcom,fastrpc 5c00000.remoteproc:glink-edge.fastrpcglink-apps-dsp.-1.-1: no reserved DMA memory for FASTRPC
+Feb 08 20:55:35 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@1: Adding to iommu group 23
+Feb 08 20:55:35 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@2: Adding to iommu group 24
+Feb 08 20:55:35 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@3: Adding to iommu group 25
+Feb 08 20:56:15 fedora kernel: qmi_decode_string_elem: String len 128 >= Max Len 65
+Feb 08 20:56:15 fedora kernel: failed to decode incoming message
+Feb 08 20:56:15 fedora kernel: qcom_q6v5_pas 5c00000.remoteproc: fatal error received: err_qdi.c:1038:EF:sensor_process:0x1:TMR_CLNT_1:0x87:dog_virtual_user.c:240:USER-PD DOG detects stalled initialization, triage with IMAGE OWNER
+Feb 08 20:56:15 fedora kernel: remoteproc remoteproc0: crash detected in slpi: type fatal error
+Feb 08 20:56:15 fedora kernel: remoteproc remoteproc0: handling crash #3 in slpi
+Feb 08 20:56:15 fedora kernel: remoteproc remoteproc0: recovering slpi
+Feb 08 20:56:15 fedora kernel: remoteproc remoteproc0: stopped remote processor slpi
+Feb 08 20:56:15 fedora kernel: remoteproc remoteproc0: remote processor slpi is now up
+Feb 08 20:56:15 fedora kernel: qcom,fastrpc 5c00000.remoteproc:glink-edge.fastrpcglink-apps-dsp.-1.-1: no reserved DMA memory for FASTRPC
+Feb 08 20:56:15 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@1: Adding to iommu group 23
+Feb 08 20:56:15 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@2: Adding to iommu group 24
+Feb 08 20:56:15 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@3: Adding to iommu group 25
+Feb 08 20:56:55 fedora kernel: qmi_decode_string_elem: String len 128 >= Max Len 65
+Feb 08 20:56:55 fedora kernel: failed to decode incoming message
+Feb 08 20:56:55 fedora kernel: qcom_q6v5_pas 5c00000.remoteproc: fatal error received: err_qdi.c:1038:EF:sensor_process:0x1:TMR_CLNT_1:0x87:dog_virtual_user.c:240:USER-PD DOG detects stalled initialization, triage with IMAGE OWNER
+Feb 08 20:56:55 fedora kernel: remoteproc remoteproc0: crash detected in slpi: type fatal error
+Feb 08 20:56:55 fedora kernel: remoteproc remoteproc0: handling crash #4 in slpi
+Feb 08 20:56:55 fedora kernel: remoteproc remoteproc0: recovering slpi
+Feb 08 20:56:55 fedora kernel: remoteproc remoteproc0: stopped remote processor slpi
+Feb 08 20:56:55 fedora kernel: remoteproc remoteproc0: remote processor slpi is now up
+Feb 08 20:56:55 fedora kernel: qcom,fastrpc 5c00000.remoteproc:glink-edge.fastrpcglink-apps-dsp.-1.-1: no reserved DMA memory for FASTRPC
+Feb 08 20:56:55 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@1: Adding to iommu group 23
+Feb 08 20:56:55 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@2: Adding to iommu group 24
+Feb 08 20:56:55 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@3: Adding to iommu group 25
+Feb 08 20:57:35 fedora kernel: qmi_decode_string_elem: String len 128 >= Max Len 65
+Feb 08 20:57:35 fedora kernel: failed to decode incoming message
+Feb 08 20:57:35 fedora kernel: qcom_q6v5_pas 5c00000.remoteproc: fatal error received: err_qdi.c:1038:EF:sensor_process:0x1:TMR_CLNT_1:0x87:dog_virtual_user.c:240:USER-PD DOG detects stalled initialization, triage with IMAGE OWNER
+Feb 08 20:57:35 fedora kernel: remoteproc remoteproc0: crash detected in slpi: type fatal error
+Feb 08 20:57:35 fedora kernel: remoteproc remoteproc0: handling crash #5 in slpi
+Feb 08 20:57:35 fedora kernel: remoteproc remoteproc0: recovering slpi
+Feb 08 20:57:35 fedora kernel: remoteproc remoteproc0: stopped remote processor slpi
+Feb 08 20:57:35 fedora kernel: remoteproc remoteproc0: remote processor slpi is now up
+Feb 08 20:57:35 fedora kernel: qcom,fastrpc 5c00000.remoteproc:glink-edge.fastrpcglink-apps-dsp.-1.-1: no reserved DMA memory for FASTRPC
+Feb 08 20:57:35 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@1: Adding to iommu group 23
+Feb 08 20:57:35 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@2: Adding to iommu group 24
+Feb 08 20:57:35 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@3: Adding to iommu group 25
+Feb 08 20:58:15 fedora kernel: qmi_decode_string_elem: String len 128 >= Max Len 65
+Feb 08 20:58:15 fedora kernel: failed to decode incoming message
+Feb 08 20:58:15 fedora kernel: qcom_q6v5_pas 5c00000.remoteproc: fatal error received: err_qdi.c:1038:EF:sensor_process:0x1:TMR_CLNT_1:0x87:dog_virtual_user.c:240:USER-PD DOG detects stalled initialization, triage with IMAGE OWNER
+Feb 08 20:58:15 fedora kernel: remoteproc remoteproc0: crash detected in slpi: type fatal error
+Feb 08 20:58:15 fedora kernel: remoteproc remoteproc0: handling crash #6 in slpi
+Feb 08 20:58:15 fedora kernel: remoteproc remoteproc0: recovering slpi
+Feb 08 20:58:16 fedora kernel: remoteproc remoteproc0: stopped remote processor slpi
+Feb 08 20:58:16 fedora kernel: remoteproc remoteproc0: remote processor slpi is now up
+Feb 08 20:58:16 fedora kernel: qcom,fastrpc 5c00000.remoteproc:glink-edge.fastrpcglink-apps-dsp.-1.-1: no reserved DMA memory for FASTRPC
+Feb 08 20:58:16 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@1: Adding to iommu group 23
+Feb 08 20:58:16 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@2: Adding to iommu group 24
+Feb 08 20:58:16 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@3: Adding to iommu group 25
+Feb 08 20:58:56 fedora kernel: qmi_decode_string_elem: String len 128 >= Max Len 65
+Feb 08 20:58:56 fedora kernel: failed to decode incoming message
+Feb 08 20:58:56 fedora kernel: qcom_q6v5_pas 5c00000.remoteproc: fatal error received: err_qdi.c:1038:EF:sensor_process:0x1:TMR_CLNT_1:0x87:dog_virtual_user.c:240:USER-PD DOG detects stalled initialization, triage with IMAGE OWNER
+Feb 08 20:58:56 fedora kernel: remoteproc remoteproc0: crash detected in slpi: type fatal error
+Feb 08 20:58:56 fedora kernel: remoteproc remoteproc0: handling crash #7 in slpi
+Feb 08 20:58:56 fedora kernel: remoteproc remoteproc0: recovering slpi
+Feb 08 20:58:56 fedora kernel: remoteproc remoteproc0: stopped remote processor slpi
+Feb 08 20:58:56 fedora kernel: remoteproc remoteproc0: remote processor slpi is now up
+Feb 08 20:58:56 fedora kernel: qcom,fastrpc 5c00000.remoteproc:glink-edge.fastrpcglink-apps-dsp.-1.-1: no reserved DMA memory for FASTRPC
+Feb 08 20:58:56 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@1: Adding to iommu group 23
+Feb 08 20:58:56 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@2: Adding to iommu group 24
+Feb 08 20:58:56 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@3: Adding to iommu group 25
+Feb 08 20:59:36 fedora kernel: qmi_decode_string_elem: String len 128 >= Max Len 65
+Feb 08 20:59:36 fedora kernel: failed to decode incoming message
+Feb 08 20:59:36 fedora kernel: qcom_q6v5_pas 5c00000.remoteproc: fatal error received: err_qdi.c:1038:EF:sensor_process:0x1:TMR_CLNT_1:0x87:dog_virtual_user.c:240:USER-PD DOG detects stalled initialization, triage with IMAGE OWNER
+Feb 08 20:59:36 fedora kernel: remoteproc remoteproc0: crash detected in slpi: type fatal error
+Feb 08 20:59:36 fedora kernel: remoteproc remoteproc0: handling crash #8 in slpi
+Feb 08 20:59:36 fedora kernel: remoteproc remoteproc0: recovering slpi
+Feb 08 20:59:36 fedora kernel: remoteproc remoteproc0: stopped remote processor slpi
+Feb 08 20:59:36 fedora kernel: remoteproc remoteproc0: remote processor slpi is now up
+Feb 08 20:59:36 fedora kernel: qcom,fastrpc 5c00000.remoteproc:glink-edge.fastrpcglink-apps-dsp.-1.-1: no reserved DMA memory for FASTRPC
+Feb 08 20:59:36 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@1: Adding to iommu group 23
+Feb 08 20:59:36 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@2: Adding to iommu group 24
+Feb 08 20:59:36 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@3: Adding to iommu group 25
+Feb 08 21:00:16 fedora kernel: qmi_decode_string_elem: String len 128 >= Max Len 65
+Feb 08 21:00:16 fedora kernel: failed to decode incoming message
+Feb 08 21:00:16 fedora kernel: qcom_q6v5_pas 5c00000.remoteproc: fatal error received: err_qdi.c:1038:EF:sensor_process:0x1:TMR_CLNT_1:0x87:dog_virtual_user.c:240:USER-PD DOG detects stalled initialization, triage with IMAGE OWNER
+Feb 08 21:00:16 fedora kernel: remoteproc remoteproc0: crash detected in slpi: type fatal error
+Feb 08 21:00:16 fedora kernel: remoteproc remoteproc0: handling crash #9 in slpi
+Feb 08 21:00:16 fedora kernel: remoteproc remoteproc0: recovering slpi
+Feb 08 21:00:16 fedora kernel: remoteproc remoteproc0: stopped remote processor slpi
+Feb 08 21:00:17 fedora kernel: remoteproc remoteproc0: remote processor slpi is now up
+Feb 08 21:00:17 fedora kernel: qcom,fastrpc 5c00000.remoteproc:glink-edge.fastrpcglink-apps-dsp.-1.-1: no reserved DMA memory for FASTRPC
+Feb 08 21:00:17 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@1: Adding to iommu group 23
+Feb 08 21:00:17 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@2: Adding to iommu group 24
+Feb 08 21:00:17 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@3: Adding to iommu group 25
+Feb 08 21:00:57 fedora kernel: qmi_decode_string_elem: String len 128 >= Max Len 65
+Feb 08 21:00:57 fedora kernel: failed to decode incoming message
+Feb 08 21:00:57 fedora kernel: qcom_q6v5_pas 5c00000.remoteproc: fatal error received: err_qdi.c:1038:EF:sensor_process:0x1:TMR_CLNT_1:0x87:dog_virtual_user.c:240:USER-PD DOG detects stalled initialization, triage with IMAGE OWNER
+Feb 08 21:00:57 fedora kernel: remoteproc remoteproc0: crash detected in slpi: type fatal error
+Feb 08 21:00:57 fedora kernel: remoteproc remoteproc0: handling crash #10 in slpi
+Feb 08 21:00:57 fedora kernel: remoteproc remoteproc0: recovering slpi
+Feb 08 21:00:57 fedora kernel: remoteproc remoteproc0: stopped remote processor slpi
+Feb 08 21:00:57 fedora kernel: remoteproc remoteproc0: remote processor slpi is now up
+Feb 08 21:00:57 fedora kernel: qcom,fastrpc 5c00000.remoteproc:glink-edge.fastrpcglink-apps-dsp.-1.-1: no reserved DMA memory for FASTRPC
+Feb 08 21:00:57 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@1: Adding to iommu group 23
+Feb 08 21:00:57 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@2: Adding to iommu group 24
+Feb 08 21:00:57 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@3: Adding to iommu group 25
+Feb 08 21:01:37 fedora kernel: qmi_decode_string_elem: String len 128 >= Max Len 65
+Feb 08 21:01:37 fedora kernel: failed to decode incoming message
+Feb 08 21:01:37 fedora kernel: qcom_q6v5_pas 5c00000.remoteproc: fatal error received: err_qdi.c:1038:EF:sensor_process:0x1:TMR_CLNT_1:0x87:dog_virtual_user.c:240:USER-PD DOG detects stalled initialization, triage with IMAGE OWNER
+Feb 08 21:01:37 fedora kernel: remoteproc remoteproc0: crash detected in slpi: type fatal error
+Feb 08 21:01:37 fedora kernel: remoteproc remoteproc0: handling crash #11 in slpi
+Feb 08 21:01:37 fedora kernel: remoteproc remoteproc0: recovering slpi
+Feb 08 21:01:37 fedora kernel: remoteproc remoteproc0: stopped remote processor slpi
+Feb 08 21:01:37 fedora kernel: remoteproc remoteproc0: remote processor slpi is now up
+Feb 08 21:01:37 fedora kernel: qcom,fastrpc 5c00000.remoteproc:glink-edge.fastrpcglink-apps-dsp.-1.-1: no reserved DMA memory for FASTRPC
+Feb 08 21:01:37 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@1: Adding to iommu group 23
+Feb 08 21:01:37 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@2: Adding to iommu group 24
+Feb 08 21:01:37 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@3: Adding to iommu group 25
+Feb 08 21:02:17 fedora kernel: wlp1s0: deauthenticating from c0:4a:00:b5:d3:ba by local choice (Reason: 3=DEAUTH_LEAVING)
+Feb 08 21:02:17 fedora kernel: kauditd_printk_skb: 31 callbacks suppressed
+Feb 08 21:02:17 fedora kernel: audit: type=1305 audit(1770580937.528:207): op=set audit_pid=0 old=598 auid=4294967295 ses=4294967295 res=1
+Feb 08 21:02:17 fedora kernel: audit: type=1131 audit(1770580937.532:208): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=auditd comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+Feb 08 21:02:17 fedora kernel: audit: type=1131 audit(1770580937.532:209): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-tmpfiles-setup comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+Feb 08 21:02:17 fedora kernel: audit: type=1131 audit(1770580937.558:210): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-fsck@dev-disk-by\x2duuid-49AD\x2d4598 comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+Feb 08 21:02:17 fedora kernel: audit: type=1131 audit(1770580937.562:211): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-remount-fs comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+Feb 08 21:02:17 fedora kernel: audit: type=1131 audit(1770580937.562:212): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-tmpfiles-setup-dev comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+Feb 08 21:02:17 fedora kernel: audit: type=1131 audit(1770580937.562:213): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-tmpfiles-setup-dev-early comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+Feb 08 21:02:17 fedora kernel: zram0: detected capacity change from 15347712 to 0
+Feb 08 21:02:17 fedora kernel: qmi_decode_string_elem: String len 128 >= Max Len 65
+Feb 08 21:02:17 fedora kernel: failed to decode incoming message
+Feb 08 21:02:17 fedora kernel: qcom_q6v5_pas 5c00000.remoteproc: fatal error received: err_qdi.c:1038:EF:sensor_process:0x1:TMR_CLNT_1:0x87:dog_virtual_user.c:240:USER-PD DOG detects stalled initialization, triage with IMAGE OWNER
+Feb 08 21:02:17 fedora kernel: remoteproc remoteproc0: crash detected in slpi: type fatal error
+Feb 08 21:02:17 fedora kernel: remoteproc remoteproc0: handling crash #12 in slpi
+Feb 08 21:02:17 fedora kernel: remoteproc remoteproc0: recovering slpi
+Feb 08 21:02:17 fedora kernel: remoteproc remoteproc0: stopped remote processor slpi
+Feb 08 21:02:17 fedora kernel: audit: type=1131 audit(1770580937.685:214): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=lvm2-monitor comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+Feb 08 21:02:17 fedora kernel: audit: type=1131 audit(1770580937.704:215): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-zram-setup@zram0 comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+Feb 08 21:02:17 fedora kernel: audit: type=1130 audit(1770580937.707:216): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-poweroff comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+Feb 08 21:02:17 fedora systemd-shutdown[1]: Syncing filesystems and block devices.
+Feb 08 21:02:17 fedora kernel: remoteproc remoteproc0: remote processor slpi is now up
+Feb 08 21:02:17 fedora kernel: qcom,fastrpc 5c00000.remoteproc:glink-edge.fastrpcglink-apps-dsp.-1.-1: no reserved DMA memory for FASTRPC
+Feb 08 21:02:17 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@1: Adding to iommu group 23
+Feb 08 21:02:17 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@2: Adding to iommu group 24
+Feb 08 21:02:17 fedora systemd-shutdown[1]: Sending SIGTERM to remaining processes...
+Feb 08 21:02:17 fedora kernel: platform 5c00000.remoteproc:glink-edge:fastrpc:compute-cb@3: Adding to iommu group 25
+Feb 08 21:02:17 fedora systemd-journald[290]: Received SIGTERM from PID 1 (systemd-shutdow).
